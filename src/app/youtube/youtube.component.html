@@ -1,0 +1,18 @@
+<div>
+    <iframe [src]="url | safe"></iframe>
+</div>
+<div class='block'>
+    <table class='table' *ngIf='urls && urls.length'>
+        <tbody>
+            <tr *ngFor="let url of urls">
+                <td>{{ url }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <input [value]="inputUrl" (input)="inputUrl = $event.target.value">
+    <div>
+        <button type="button" (click)='addLink(inputUrl)'>Add to playlist</button>
+        <button type="button" (click)='playNext()'>Play</button>
+    </div>
+</div>

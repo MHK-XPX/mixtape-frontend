@@ -1,0 +1,56 @@
+input{
+    display: inline-block;
+    text-align: center;
+    width: 25%;
+}
+
+table{
+    color: #333;
+    font-family: Arial, Helvetica, sans-serif;
+    width: 50%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    align-self: right;
+    margin: auto;
+    
+    display: inline-block;
+}
+
+iframe{ 
+    width: 640px;
+    height: 390px;
+    margin: auto;
+    float: left;
+}
+
+td, th{
+    border: 1px solid #CCC;
+    height: 30px;
+    width: 25%;
+    margin: auto;
+}
+
+th{
+    background: #F3F3F3;
+    font-weight: bold;
+}
+
+td{
+    background: #FAFAFA;
+    text-align: center;
+}
+
+a{
+    color: #000;
+}
+
+img{
+    width: 50px;
+    margin: 2;
+}
+
+/* Even row cells are one color */
+tr:nth-child(even) td { background: #F1F1F1; }
+
+/* Odd row cells are one color */
+tr:nth-child(odd) td { background: #FEFEFE; }

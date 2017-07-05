@@ -1,0 +1,21 @@
+<div>
+    <button type="button" (click)='createNewPlayList()'>Create new playlist</button>
+    <button type="button" (click)='savePlayList()'>Save playlist</button>
+</div>
+
+<div *ngIf="createNew">
+    <input [value]="inputUrl" (input)="inputUrl = $event.target.value">
+    <button type="button" (click)='addLink(inputUrl)'>Add to playlist</button>
+
+    <input [value]="inputName" (input)="inputName = $event.target.value">
+    <button type="button" (click)='setName(inputName)'>Name Playlist</button>
+</div>
+
+<div class='block'>
+    <ul class='table' *ngIf='urls && urls.length'>
+        <li *ngFor="let song of getUrls(); let i = index">
+            <img [src]="getUrlImage(i)"/>
+            {{ song }}
+        </li>
+    </ul>
+</div>

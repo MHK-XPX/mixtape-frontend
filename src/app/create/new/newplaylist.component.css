@@ -1,0 +1,66 @@
+input{
+    text-align: center;
+    width: 25%;
+    position: left;
+}
+
+ul {
+	margin: 1.5em; 
+}
+
+ul li {
+	border-bottom: 1px solid #ccc;
+	padding: .2em 0 .2em .5em;
+	font-weight: bold;
+	color: #666; 
+}
+
+ul li:hover {
+	cursor: pointer;
+	background-color: #f2f2f2;
+	color: #000; 
+}
+
+table{
+    color: #333;
+    font-family: Arial, Helvetica, sans-serif;
+    width: 50%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    align-self: right;
+    margin: auto;
+    
+    display: inline-block;
+}
+
+td, th{
+    border: 1px solid #CCC;
+    height: 30px;
+    width: 25%;
+    margin: auto;
+}
+
+th{
+    background: #F3F3F3;
+    font-weight: bold;
+}
+
+td{
+    background: #FAFAFA;
+    text-align: center;
+}
+
+a{
+    color: #000;
+}
+
+img{
+    width: 50px;
+    margin: 2;
+}
+
+/* Even row cells are one color */
+tr:nth-child(even) td { background: #F1F1F1; }
+
+/* Odd row cells are one color */
+tr:nth-child(odd) td { background: #FEFEFE; }
