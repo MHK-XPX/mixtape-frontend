@@ -1,29 +1,44 @@
-<h3>
-  Angular 2 Seed
-</h3>
 <nav>
-	<a [routerLink]="['/']">
-    Home
-  </a>
-  |
-	<a [routerLink]="['/about']">
-    About
-  </a>
-  |
-	<a [routerLink]="['/github', 'angular']">
-    Github Repos
-  </a>
-  |
-	<a [routerLink]="['/contact']">
-    Contact Us
-  </a>
+  <ul style="max-width: 75%; margin: auto;">
+    <li>
+      <a [routerLink]="['/']">
+        Home
+      </a>
+    </li>
+    |
+    <li>
+      <div>
+        <!--<a [routerLink]="['/create']">
+          Create
+        </a>-->
+        <button (click)="showDropDown()" class="dropbtn">Create</button>
+        <div id="dropDown" class="dropdown-content">
+          <a [routerLink]="['/create/newplaylist']" (click)="showDropDown()">New Playlist</a>
+          <a [routerLink]="['/create/editplaylist']" (click)="showDropDown()">Edit Playlist</a>
+          <a [routerLink]="['/create/play']" (click)="showDropDown()">Play playlist</a>
+        </div>
+      </div>
+    </li>
+    <li>
+      <a [routerLink]="['/about']">
+        About
+      </a>
+    </li>
+    <li>
+      <a [routerLink]="['/github', 'angular']">
+        Github Repos
+      </a>
+    </li>
+    <li>
+      <a [routerLink]="['/contact']">
+        Contact Us
+      </a>
+    </li>
+  </ul>
 </nav>
 
-<main>
-	<router-outlet></router-outlet>
-</main>
-
-
-<footer>
-  © 2016
-</footer>
+<div style="max-width: 75%; margin: auto;"> <!-- was 1024px -->
+    <main>
+      <router-outlet></router-outlet>
+    </main>
+</div>
