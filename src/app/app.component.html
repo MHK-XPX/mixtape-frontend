@@ -1,4 +1,4 @@
-<nav>
+<!--<nav>
   <ul style="max-width: 75%; margin: auto;">
     <li>
       <a [routerLink]="['/']">
@@ -7,15 +7,12 @@
     </li>
     |
     <li>
-      <div>
-        <!--<a [routerLink]="['/create']">
-          Create
-        </a>-->
-        <button (click)="showDropDown()" class="dropbtn">Create</button>
+      <div class="drop-container">
+        <button class="dropbtn">Create</button>
         <div id="dropDown" class="dropdown-content">
-          <a [routerLink]="['/create/newplaylist']" (click)="showDropDown()">New Playlist</a>
-          <a [routerLink]="['/create/editplaylist']" (click)="showDropDown()">Edit Playlist</a>
-          <a [routerLink]="['/create/play']" (click)="showDropDown()">Play playlist</a>
+          <a [routerLink]="['/create/newplaylist']">New Playlist</a>
+          <a [routerLink]="['/create/editplaylist']">Edit Playlist</a>
+          <a [routerLink]="['/create/play']">Play playlist</a>
         </div>
       </div>
     </li>
@@ -40,10 +37,28 @@
       </a>
     </li>
   </ul>
-</nav>
+</nav>-->
+
+<div style="max-width: 75%; margin: auto;" class="container">
+  <a [routerLink]="['/']">Home</a>
+  <div class="dropdown">
+    <button class="dropbtn">Create</button>
+    <div class="dropdown-content">
+      <a [routerLink]="['/create/newplaylist']">New Playlist</a>
+      <a [routerLink]="['/create/editplaylist']">Edit Playlist</a>
+      <a [routerLink]="['/create/play']">Play playlist</a>
+    </div>
+  </div>
+    <a [routerLink]="['/about']">About</a>
+    <a [routerLink]="['/github', 'angular']">Github Repos</a>
+    <a [routerLink]="['/contact']">Contact Us</a>
+    <a *ngIf="!_userService.loggedIn" style="float: right" [routerLink]="['/login']">Sign in</a>
+    <a *ngIf="_userService.loggedIn" style="float: right" [routerLink]="['/login']" (click)="logOut()">Sign out</a>
+</div>
 
 <div style="max-width: 75%; margin: auto;"> <!-- was 1024px -->
     <main>
       <router-outlet></router-outlet>
     </main>
 </div>
+
