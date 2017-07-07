@@ -131,7 +131,7 @@ export class YoutubePlayerService {
   }
 
   private createApi () {
-    this.api = new ReplaySubject(1);
+    this.api = new ReplaySubject<YT.Player>(1);
     const onYouTubeIframeAPIReady = () => {
       if (YoutubePlayerService.win) {
         this.api.next(<any> YoutubePlayerService.YT);

@@ -11,6 +11,10 @@ import { HttpModule } from '@angular/http';
 import { AboutComponent } from './about/about.component';
 import { HomeComponent } from './home/home.component';
 
+import { LoginComponent } from './login/login.component';
+
+import { ApiService } from './shared/api.service';
+
 import { CreateComponent } from './create/create.component';
 import { NewPlayListComponent } from './create/new/newplaylist.component';
 import { EditPlayListComponent } from './create/edit/editplaylist.component';
@@ -38,7 +42,8 @@ import { SafePipe } from './youtube/youtube.pipe';
     EditPlayListComponent,
     PlayComponent,
     SafePipe,
-    ContactComponent
+    ContactComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,
@@ -50,7 +55,8 @@ import { SafePipe } from './youtube/youtube.pipe';
   ],
   providers: [
     GithubService,
-    PlayListService
+    PlayListService,
+    ApiService
   ],
   bootstrap: [ AppComponent ]
 })
