@@ -3,6 +3,8 @@ import { Routes } from '@angular/router';
 import { AboutComponent } from './about/about.component';
 import { HomeComponent } from './home/home.component';
 
+import { LoginComponent } from './login/login.component';
+
 import { CreateComponent } from './create/create.component';
 import { NewPlayListComponent } from './create/new/newplaylist.component';
 import { EditPlayListComponent } from './create/edit/editplaylist.component';
@@ -35,6 +37,7 @@ export const rootRouterConfig: Routes = [
         ]
       }]
   },
-  { path: 'contact', component: ContactComponent }
+  { path: 'contact', component: ContactComponent },
+  { path: 'login', component: LoginComponent }
 ];
 
