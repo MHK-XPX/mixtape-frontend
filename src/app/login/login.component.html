@@ -1,4 +1,4 @@
-<div id="container">
+<div id="container" *ngIf="!_userService.loggedIn">
     <div>
         <label for="username">Username:</label>
         <input [value]="_username" (input)="_username = $event.target.value" type="text" id="username" name="username">
@@ -7,8 +7,14 @@
 
         <div id="lower">
             <input type="checkbox" id="checkbox">
-            <label for="checkbox">Keep me loggin in</label>
+            <label for="checkbox">Keep me logged in</label>
             <button input type="submit" value="login" (click)="signIn()">Sign In</button>
+            <!--<button input type="submit" value="check" (click)="createUser()">Create entity</button>
+            <button input type="submit" value="check" (click)="deleteUser()">Delete entity</button>-->
         </div>
     </div>
+</div>
+
+<div *ngIf="_userService.loggedIn">
+    <h3>Welcome {{ getUsername() }} </h3>
 </div>
