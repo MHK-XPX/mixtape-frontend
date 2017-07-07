@@ -11,6 +11,8 @@ import { HttpModule } from '@angular/http';
 import { AboutComponent } from './about/about.component';
 import { HomeComponent } from './home/home.component';
 
+import { UserService } from './user/user.service';
+
 import { LoginComponent } from './login/login.component';
 
 import { ApiService } from './shared/api.service';
@@ -56,7 +58,8 @@ import { SafePipe } from './youtube/youtube.pipe';
   providers: [
     GithubService,
     PlayListService,
-    ApiService
+    ApiService,
+    UserService
   ],
   bootstrap: [ AppComponent ]
 })
