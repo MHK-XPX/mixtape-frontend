@@ -8,9 +8,25 @@ export interface User{
             public string Username { get; set; }
 
     */
-    UserId: number;
-    FirstName: string;
-    LastName: string;
-    Password: string; //Dont actually keep this one here, I think
-    Username: string;
+    userId: number;
+    firstName: string;
+    lastName: string;
+    password: string; //Dont actually keep this one here, I think
+    username: string;
+    albumRating;
+    playlist;
+    songRating;
 }
+/*
+
+
+    "userId": 1,
+    "firstName": "Joseph",
+    "lastName": "Shaw",
+    "password": "not yet encrypted",
+    "username": "jshaw",
+    "albumRating": [],
+    "playlist": [],
+    "songRating": []
+
+*/
