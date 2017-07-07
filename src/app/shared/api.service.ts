@@ -7,6 +7,8 @@ import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/observable/throw';
 
+import { User } from '../user/user';
+
 /*
     Supports:
         GET, PUT, POST, DELETE
@@ -28,10 +30,10 @@ export class ApiService{
 
         api/<entity>/id
     */
-    getSingleEntity(path: string, id: number){
-        //let body = JSON.stringify(obj);
-        //console.log("Sending ", body);
-        return this._http.post(this._api + path + id, this._options).map((res: Response) => res.json());
+    getSingleEntity(path: string, id: number): Observable<any>{
+        return this._http.get(this._api + path + '/' + id)
+                .map((response: Response) => response.json())
+                .catch(this.handleError);
     }
 
     /*
@@ -40,9 +42,12 @@ export class ApiService{
         @return - a json string containing entity information
 
         api/<entity>
+        //WORKING
     */
-    getAllEntities(path: string){
-        return this._http.post(this._api + path, this._options).map((res: Response) => res.json());
+    getAllEntities(path: string): Observable<any[]>{
+        return this._http.get(this._api + path)
+                .map((response: Response) => response.json())
+                .catch(this.handleError);
     }
 
     /*
@@ -56,7 +61,9 @@ export class ApiService{
     */
     putEntity(path: string, obj: Object, id: number){
         let body = JSON.stringify(obj);
-        return this._http.put(this._api + path + id, body, this._options).map((res: Response) => res.json());
+        return this._http.put(this._api + path + id, body)
+                .map((response: Response) => response.json())
+                .catch(this.handleError);
     }
 
     /*
@@ -66,10 +73,16 @@ export class ApiService{
         @return - a json string containing entity information
 
         api/<entity>
+
+        //WORKING
     */
     postEntity(path: string, obj: Object){
         let body = JSON.stringify(obj);
-        return this._http.put(this._api + path, body, this._options).map((res: Response) => res.json());
+        console.log("sending: " + body);
+        return this._http.post(this._api + path, body, this._options)
+                .map((response: Response) => response.json())
+                .catch(this.handleError);
+        //return this._http.post(this._api + path, body).map((res: Response) => res.json());
     }
 
     /*
@@ -78,8 +91,16 @@ export class ApiService{
         @return - a json string containing entity information
 
         api/<entity>/id
+        //WORKING
     */
     deleteEntity(path: string, id: number){
-        return this._http.put(this._api + path + id, this._options).map((res: Response) => res.json());
+        return this._http.delete(this._api + path + '/' + id)
+                .map((response: Response) => response.json())
+                .catch(this.handleError);
+    }
+
+    private handleError(error: Response){
+        console.error(error);
+        return Observable.throw(error.json().error || 'Server error');
     }
 }
