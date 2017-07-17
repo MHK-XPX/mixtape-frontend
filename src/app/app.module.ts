@@ -57,9 +57,9 @@ import { SafePipe } from './youtube/youtube.pipe';
   ],
   providers: [
     GithubService,
+    UserService,
     PlayListService,
-    ApiService,
-    UserService
+    ApiService
   ],
   bootstrap: [ AppComponent ]
 })

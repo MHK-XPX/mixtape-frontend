@@ -1,3 +1,7 @@
+import { PlayList } from '../playlist/playlist';
+import { AlbumRating } from '../playlist/albumrating';
+import { SongRating } from '../playlist/songrating';
+
 export interface User{
      /*
         API USER LAYOUT:
@@ -11,11 +15,11 @@ export interface User{
     userId: number;
     firstName: string;
     lastName: string;
-    password: string; //Dont actually keep this one here, I think
+    password: string;
     username: string;
-    albumRating;
-    playlist;
-    songRating;
+    albumRating: AlbumRating[];
+    playlist: PlayList[];
+    songRating: SongRating[];
 }
 /*
 

@@ -4,11 +4,35 @@
 </div>
 
 <div *ngIf="createNew">
-    <input [value]="inputUrl" (input)="inputUrl = $event.target.value">
-    <button type="button" (click)='addLink(inputUrl)'>Add to playlist</button>
-
-    <input [value]="inputName" (input)="inputName = $event.target.value">
+    Song name: <input [value]="inputSongName" (input)="inputSongName = $event.target.value"><br>
+    URL: <input [value]="inputUrl" (input)="inputUrl = $event.target.value"><br>
+    <!--<input [value]="inputUrl" (input)="inputUrl = $event.target.value">
+    <input [value]="inputName" (input)="inputName = $event.target.value">-->
+     Playlist name: <input [value]="inputName" (input)="inputName = $event.target.value"><br>
+    <button type="button" (click)='addLink(inputSongName, inputUrl)'>Add to playlist</button>
     <button type="button" (click)='setName(inputName)'>Name Playlist</button>
+    <button type="button" (click)='loadArtists()'>Load artists</button>
+</div>
+
+<div>
+    <ul class='table' *ngIf='artists && artists.length'>
+        <li *ngFor="let a of artists; let i = index">
+            {{ a.name }}
+            <button type="button" (click)='loadAlbums(a)'>View Albums</button><br>
+            <ul *ngIf='a.album && a.album.length'>
+                <li *ngFor='let al of a.album'>
+                    {{ al.name }}
+                    <button type="button" (click)='loadSongs(al)'>View Songs</button><br>
+                    <ul *ngIf='al.song && al.song.length'>
+                        <li *ngFor='let s of al.song'>
+                            {{ s.name }}
+                            <button type="button" (click)='addSongToList(s)'>Add Song</button><br>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
 </div>
 
 <div class='block'>

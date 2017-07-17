@@ -2,12 +2,14 @@ import { Injectable } from '@angular/core';
 import { Http, Response, Headers, RequestOptions, RequestMethod } from '@angular/http';
 
 import { Observable } from 'rxjs/Observable';
+
+import { User } from '../user/user';
 import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/observable/throw';
 
-import { User } from '../user/user';
+//import { User } from '../user/user';
 
 /*
     Supports:
@@ -15,12 +17,11 @@ import { User } from '../user/user';
 */
 @Injectable()
 export class ApiService{
-    private _api = "http://localhost:49742/"; //This will change once we have a dedicated host
-    private _headers = new Headers({ "Content-Type": 'application/json' });
+    private _api =  "http://localhost:49742/"; //This will change once we have a dedicated host //"http://mhk-xpx-mixtape.azurewebsites.net/";//We now have a dedicated host!
+    private _headers = new Headers({ "Content-Type": 'application/json;' });
     private _options = new RequestOptions({ headers: this._headers });
 
     constructor(private _http: Http){}
-
     /*
         Allows the user to get a single entity from the api
         @param path: string - the path in the api to the entity (I.E User, Playlist, Song, Artist, etc)
@@ -31,8 +32,8 @@ export class ApiService{
         api/<entity>/id
     */
     getSingleEntity(path: string, id: number): Observable<any>{
-        return this._http.get(this._api + path + '/' + id)
-                .map((response: Response) => response.json())
+        return this._http.get(this._api + path + '/' + id, this._options)
+                .map(this.handleResponse)
                 .catch(this.handleError);
     }
 
@@ -45,9 +46,10 @@ export class ApiService{
         //WORKING
     */
     getAllEntities(path: string): Observable<any[]>{
+        //return this._http.get(this._api + 'api/Users');
         return this._http.get(this._api + path)
-                .map((response: Response) => response.json())
-                .catch(this.handleError);
+            .map(this.handleResponse)
+            .catch(this.handleError);
     }
 
     /*
@@ -99,8 +101,20 @@ export class ApiService{
                 .catch(this.handleError);
     }
 
-    private handleError(error: Response){
-        console.error(error);
-        return Observable.throw(error.json().error || 'Server error');
+    private handleResponse(res: Response){
+        return res.text() === "" ? res : res.json();
+    }
+
+    private handleError(error: Response | any){
+        let errMsg: string;
+        if(error instanceof Response){
+            const body = error.json() || '';
+            const err = body.error || JSON.stringify(body);
+            errMsg = `${error.status} - ${error.statusText || ''} ${err}`;
+        }else{
+            errMsg = error.message ? error.message : error.toString();
+        }
+        console.error(errMsg);
+        return Observable.throw(errMsg);
     }
 }

@@ -1,14 +1,14 @@
 <div *ngIf="!isPlaying">
-    <button type="button" (click)='loadPlayLists()'>Load All Playlist</button>
+    <!--<button type="button" (click)='loadPlayLists()'>Load All Playlist</button>-->
     
-    <ul class='table' *ngIf='playLists && playLists.length'>
-        <li *ngFor="let pList of playLists; let i = index">
+    <ul class='table' *ngIf='_userService.getPlayLists() && _userService.getPlayLists()'>
+        <li *ngFor="let pList of _userService.getPlayLists(); let i = index">
             {{ pList.name }}
             <button type="button" (click)='playPlayList(pList)'>Play</button>
             <ul class="songList">
-                <li *ngFor="let song of getAllLinks(pList); let i = index">
-                    <img [src]="getUrlImage(i, pList)"/>
-                    {{ song }}
+                <li *ngFor="let song of _userService.getSongs(pList.playlistId); let j = index">
+                    <img [src]="getUrlImage(song.url)"/>
+                    {{ song.name }}
                 </li>
             </ul>
         </li>
@@ -19,35 +19,35 @@
 
 <div *ngIf="isPlaying">
     <div id="left-player" style="float:left;">
-        <youtube-player [videoId]="url" [width]="854" [height]="480" (ready)="savePlayer($event)" (change)="onStateChange($event)"></youtube-player>
+        <youtube-player [videoId]="videoId" [width]="854" [height]="480" (ready)="savePlayer($event)" (change)="onStateChange($event)"></youtube-player> 
     </div>
 
     <div id="current-playlist-block" style="float:left; border: 5px solid black; height: 470px; width: 310px;">
-        <h3 style="text-align:center;"> {{ playList.name }}
+        <h3 style="text-align:center;"> {{ playlist.name }}
             <div style="margin:auto;">
                 <button type="button" (click)='playNext()'>Play Next</button>
                 <button type="button" (click)='repeatPlaylist()'>Repeat:{{ repeat }}</button>
             </div>
 
             <ul id='songs-in-list'>
-                <li *ngFor="let url of urls; let i = index">
-                    <img [src]="imgs[i]"/>
-                    {{ url }}
+                <li *ngFor="let song of songs; let i = index">
+                    <img [src]="getUrlImage(song.url)"/>
+                    {{ song.name }}
                 </li>
             </ul>
         </h3>
     </div>
 
     <div id="more-playlists">
-        <ng-container *ngIf='playLists && playLists.length'>
-            <ul id="playlist-list" *ngFor="let pList of playLists; let i = index">
+        <ng-container *ngIf='this._userService.getPlayLists() && this._userService.getPlayLists()'>
+            <ul id="playlist-list" *ngFor="let pList of _userService.getPlayLists(); let i = index">
                 <h3>{{ pList.name }}</h3>
                 <button type="button" (click)='appendPlayList(pList)'>Add</button>
                 <button type="button" (click)='loadNewPlayList(pList)'>Play</button>
                 <ul id="song-list">
-                    <li *ngFor="let song of getAllLinks(pList); let i = index">
-                        <img [src]="getUrlImage(i, pList)"/>
-                        {{ song }}
+                    <li *ngFor="let song of _userService.getSongs(pList.playlistId); let j = index">
+                        <img [src]="getUrlImage(song.url)"/>
+                        {{ song.name }}
                     </li>
                 </ul>
             </ul>

@@ -1,9 +1,13 @@
-import {Component, OnInit} from '@angular/core';
-
+import { Component, OnInit, OnDestroy} from '@angular/core';
+import { Subscription } from "rxjs";
 
 import { ApiService } from '../shared/api.service';
 import { User } from '../user/user';
 import { UserService } from '../user/user.service';
+
+import { PlayList } from '../playlist/playlist';
+import { AlbumRating } from '../playlist/albumrating';
+import { SongRating } from '../playlist/songrating';
 
 @Component({
   selector: 'login',
@@ -12,27 +16,62 @@ import { UserService } from '../user/user.service';
 })
 
 //Got the layout from: http://www.developerdrive.com/2013/03/how-to-create-a-beautiful-login-form/
-export class LoginComponent{
+
+//https://angular.io/api/common/AsyncPipe USE THIS AND
+//http://jasonwatmore.com/post/2016/12/01/angular-2-communicating-between-components-with-observable-subject (guide for proper setup)
+
+export class LoginComponent implements OnDestroy, OnInit{
     //init both username and password for two way binding
     private _username: string = "jshaw";
-    private _password: string = "not yet encrypted"; //store this for testing purpose (we have two way binding)
+    private _password: string = "not yet encrypted"; //store this for testing purposes (we have two way binding)
     private _saveLogin: boolean;
+    private _creatingAccount: boolean = false;
 
-    private _users: User[];
+    private _users: User[] = [];
     //private _user: User;
 
+    private errorMessage: string;
+
+    private subscriber: Subscription;
+
     constructor(private _apiService: ApiService, private _userService: UserService){}
+
+    ngOnInit(){
+        this.subscriber = this._apiService.getAllEntities('api/Users').subscribe(
+                            users => this._users = users,
+                            error => this.errorMessage = <any>error,
+                            () => console.log('loaded all users')); //this.checkValidLogin());
+    }
 
     /*
         This method is called when we click the sign in button, it pulls all of the user names from the api
     */
     public signIn(){
-        this._apiService.getAllEntities('api/Users')
-            .subscribe(users => this._users = users,
-                        error => console.log("ERROR WHEN LOADING"),
-                        () => this.checkValidLogin());
+        this.checkValidLogin();
     }
 
+    public createNewUserView(){
+        this._creatingAccount = true;
+    }
+
+    public createNewUser(fname: string, lname: string, uname: string, password: string){
+        let newUser: User = {
+            "userId": this._users.length + 1, //Set its ID to the next value
+            "firstName":  fname,
+            "lastName": lname,
+            "username": uname,
+            "password": password,
+            "albumRating": [],
+            "playlist": [],
+            "songRating": []
+        }
+
+        this._apiService.postEntity('api/Users', newUser).subscribe(
+            user => newUser = user,
+            error => console.log("CANNOT CREATE USER"),
+            () => this._userService.logIn(newUser));
+    }
+        
     /*
         This method will need to be rewritten, when it comes to validation, I have no idea what I am doing and
         what is the correct way of doing it.
@@ -57,7 +96,12 @@ export class LoginComponent{
             alert("Invalid login"); //The alert is for demo purpose only
             console.log("Not a valid login");
         }else{
-            this._userService.logIn(user);
+            //this._userService.logIn(user);
+            this._apiService.getSingleEntity('api/Users', user.userId).subscribe(
+                u => user = u,
+                err => console.log("unable to login"),
+                () => this._userService.logIn(user)
+            );
         }
     }
 
@@ -66,6 +110,10 @@ export class LoginComponent{
     */
     private getUsername(){
         return this._userService.getUserName();
+    }
+
+    ngOnDestroy(){
+        this.subscriber.unsubscribe();
     }
 
 

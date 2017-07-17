@@ -1,23 +1,8 @@
-<!--<div *ngIf="!isEditing">
-    <button type="button" (click)='loadPlayLists()'>Load All Playlist</button>
-    <table class='table' *ngIf='playLists && playLists.length'>
-        <tbody>
-            <tr *ngFor="let pList of playLists">
-                <td>{{ pList.name }}</td>
-                <td>
-                    <button type="button" (click)='editClicked()'>Edit</button>
-                </td >
-            </tr>
-        </tbody>
-    </table>
-</div>-->
-
 <div *ngIf="!isEditing">
-    <button type="button" (click)='loadPlayLists()'>Load All Playlist</button>
-    <ul class='table' *ngIf='playLists && playLists.length'>
-        <li *ngFor="let pList of playLists; let i = index">
+    <ul class='table' *ngIf='playlists && playlists.length'>
+        <li *ngFor="let pList of playlists; let i = index">
             {{ pList.name }}
-            <button type="button" (click)='editClicked(i)'>Edit</button>
+            <button type="button" (click)='editClicked(pList, i)'>Edit</button>
         </li>
     </ul>
 </div>
@@ -26,11 +11,12 @@
     <input [value]="inputUrl" (input)="inputUrl = $event.target.value">
     <button type="button" (click)='addLink(inputUrl)'>Add to playlist</button>
     
-    <ul class='table' *ngIf='playLists && playLists.length'>
-        <li *ngFor="let song of playList.getAllYouTubeLinks(); let i = index">
-            <img [src]="getUrlImage(i)"/>
-            {{ song }}
-            <button type="button" (click)='deleteClicked(i)'>Delete</button>
+    <button type="button" (click)='backClicked()'>Back</button>
+    <ul class='table' *ngIf='_userService.getSongs(playlistToEdit) && _userService.getSongs(playlistToEdit).length'>
+        <li *ngFor='let song of _userService.getSongs(playlistToEdit); let i = index'>
+            <img [src]="getUrlImage(i,song.url)"/>
+            {{ song.name }}
+            <button type="button" (click)='deleteClicked(i)'>Delete</button><br>
         </li>
     </ul>
 </div>

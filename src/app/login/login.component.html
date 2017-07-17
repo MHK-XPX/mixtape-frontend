@@ -1,4 +1,4 @@
-<div id="container" *ngIf="!_userService.loggedIn">
+<div id="container" *ngIf="!_userService.loggedIn && !_creatingAccount">
     <div>
         <label for="username">Username:</label>
         <input [value]="_username" (input)="_username = $event.target.value" type="text" id="username" name="username">
@@ -9,12 +9,23 @@
             <input type="checkbox" id="checkbox">
             <label for="checkbox">Keep me logged in</label>
             <button input type="submit" value="login" (click)="signIn()">Sign In</button>
-            <!--<button input type="submit" value="check" (click)="createUser()">Create entity</button>
-            <button input type="submit" value="check" (click)="deleteUser()">Delete entity</button>-->
+            <button input type="submit" value="create" (click)="createNewUserView()">Create Account</button>
         </div>
     </div>
 </div>
 
 <div *ngIf="_userService.loggedIn">
     <h3>Welcome {{ getUsername() }} </h3>
+</div>
+
+<div *ngIf="_creatingAccount && !_userService.loggedIn">
+    <div id="create-container">
+        First name: <input [(ngModel)]="fname" input type="text" name="fname"><br>
+        Last name: <input [(ngModel)]="lname" type="text" name="lname"><br>
+        Username: <input [(ngModel)]="uname" type="text" name="uname"><br>
+        Password: <input [(ngModel)]="password" type="password" name="password"><br>
+        <div id="lower">
+            <button input type="submit" value="create" (click)="createNewUser(fname, lname, uname, password)">Create Account</button>
+        </div>
+    </div>
 </div>
