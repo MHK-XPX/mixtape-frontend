@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { Subscription } from "rxjs";
 
 import { ApiService } from '../shared/api.service';
-import { User } from '../user/user';
 import { UserService } from '../user/user.service';
+import { StorageService } from '../shared/session-storage.service';
 
+import { User } from '../user/user';
 import { PlayList } from '../playlist/playlist';
 import { AlbumRating } from '../playlist/albumrating';
 import { SongRating } from '../playlist/songrating';
@@ -15,11 +16,6 @@ import { SongRating } from '../playlist/songrating';
   templateUrl: './login.component.html'
 })
 
-//Got the layout from: http://www.developerdrive.com/2013/03/how-to-create-a-beautiful-login-form/
-
-//https://angular.io/api/common/AsyncPipe USE THIS AND
-//http://jasonwatmore.com/post/2016/12/01/angular-2-communicating-between-components-with-observable-subject (guide for proper setup)
-
 export class LoginComponent implements OnInit{
     //init both username and password for two way binding
     private _username: string = "jshaw";
@@ -28,21 +24,25 @@ export class LoginComponent implements OnInit{
     private _creatingAccount: boolean = false;
 
     private _users: User[] = [];
-    //private _user: User;
 
-    constructor(private _apiService: ApiService, private _userService: UserService){}
+    constructor(private _apiService: ApiService, private _userService: UserService, private _storage: StorageService){}
 
     ngOnInit(){
         this._apiService.getAllEntities('api/Users').subscribe(
             users => this._users = users,
             error => console.log("Could not load all users"),
-            () => console.log('loaded all users')); //this.checkValidLogin());
+            () => this._storage.setValue('_users', this._users));
     }
         
     public createNewUserView(){
         this._creatingAccount = true;
     }
 
+    /*
+        When we click create new user after filling out the form it will post it to the backend api
+        All params come from the fields (might be changed)
+        Once the user is posted, they are put into session storage and logged in
+    */
     public createNewUser(fname: string, lname: string, uname: string, password: string){
         let newUser: User = {
             "userId": this._users.length + 1, //Set its ID to the next value
@@ -58,7 +58,10 @@ export class LoginComponent implements OnInit{
         this._apiService.postEntity('api/Users', newUser).subscribe(
             user => newUser = user,
             error => console.log("CANNOT CREATE USER"),
-            () => this._userService.logIn(newUser));
+            () => {
+                this._storage.setValue('_user', newUser);
+                this._userService.logIn();
+            });
     }
         
     /*
@@ -85,11 +88,14 @@ export class LoginComponent implements OnInit{
             alert("Invalid login"); //The alert is for demo purpose only
             console.log("Not a valid login");
         }else{
-            //this._userService.logIn(user);
             this._apiService.getSingleEntity('api/Users', user.userId).subscribe(
                 u => user = u,
                 err => console.log("unable to login"),
-                () => this._userService.logIn(user)
+                () => {
+                    this._storage.setValue('loggedIn', true);
+                    this._storage.setValue('_user', user);
+                    this._userService.logIn();
+                }
             );
         }
     }

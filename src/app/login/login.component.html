@@ -1,4 +1,4 @@
-<div id="container" *ngIf="!_userService.loggedIn && !_creatingAccount">
+<div id="container" *ngIf="!_storage.getValue('loggedIn') && !_creatingAccount">
     <div>
         <label for="username">Username:</label>
         <input [value]="_username" (input)="_username = $event.target.value" type="text" id="username" name="username">
@@ -14,7 +14,7 @@
     </div>
 </div>
 
-<div *ngIf="_userService.loggedIn">
+<div *ngIf="_storage.getValue('loggedIn')">
     <h3>Welcome {{ _userService.getUserName() }} </h3>
 </div>
 

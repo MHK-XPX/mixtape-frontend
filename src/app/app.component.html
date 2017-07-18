@@ -52,8 +52,8 @@
     <a [routerLink]="['/about']">About</a>
     <a [routerLink]="['/github', 'angular']">Github Repos</a>
     <a [routerLink]="['/contact']">Contact Us</a>
-    <a *ngIf="!_userService.loggedIn" style="float: right" [routerLink]="['/login']">Sign in</a>
-    <a *ngIf="_userService.loggedIn" style="float: right" [routerLink]="['/login']" (click)="logOut()">Sign out</a>
+    <a *ngIf="!_storage.getValue('loggedIn')" style="float: right" [routerLink]="['/login']">Sign in</a>
+    <a *ngIf="_storage.getValue('loggedIn')" style="float: right" [routerLink]="['/login']" (click)="logOut()">Sign out</a>
 </div>
 
 <div style="max-width: 75%; margin: auto;"> <!-- was 1024px -->
