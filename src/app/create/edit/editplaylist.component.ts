@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 
-import { ApiService } from '../../shared/api.service';
 import { UserService } from '../../user/user.service';
-import { PlayListService } from '../../playlist/playlist.service';
 
 import { PlayList } from '../../playlist/playlist';
 import { PlaylistSong } from '../../playlist/playlistsong';
@@ -21,7 +19,6 @@ import 'rxjs/add/operator/concatMap';
 
 export class EditPlayListComponent implements OnInit{
     playlists: PlayList[] = [];
-    playlist: PlayList;
 
     playlistSongs: Song[] = [];
 
@@ -45,18 +42,16 @@ export class EditPlayListComponent implements OnInit{
 
     //Not implemented
     private addLink(url: string){
-        //this._playlistService.addToPlayList(this.index, url);
         this.inputUrl = '';
     }
 
     //Not implemented
     private deleteClicked(index: number): void{
-        //this.playList.deleteYouTubeLink(index);
+        
     }
 
     private backClicked(){
         this.isEditing = false;
-        this._userService.clearSongs();
     }
 
     private getUrlImage(index: number, url: string): string{

@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 
-//import { PlayListService } from '../../playlist/playlist.service';
 import { UserService } from '../../user/user.service';
 
 import { PlayList } from '../../playlist/playlist';
@@ -27,7 +26,7 @@ export class PlayComponent{
     isPlaying: boolean = false;
     repeat: boolean = false;
 
-    constructor(private _userService: UserService){}//private _playlistService: PlayListService){}
+    constructor(private _userService: UserService){}
 
     player: YT.Player;
 

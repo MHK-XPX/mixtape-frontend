@@ -8,14 +8,14 @@
         <div id="lower">
             <input type="checkbox" id="checkbox">
             <label for="checkbox">Keep me logged in</label>
-            <button input type="submit" value="login" (click)="signIn()">Sign In</button>
+            <button input type="submit" value="login" (click)="checkValidLogin()">Sign In</button>
             <button input type="submit" value="create" (click)="createNewUserView()">Create Account</button>
         </div>
     </div>
 </div>
 
 <div *ngIf="_userService.loggedIn">
-    <h3>Welcome {{ getUsername() }} </h3>
+    <h3>Welcome {{ _userService.getUserName() }} </h3>
 </div>
 
 <div *ngIf="_creatingAccount && !_userService.loggedIn">

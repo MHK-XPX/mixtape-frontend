@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Subscription } from "rxjs";
 
 import { ApiService } from '../shared/api.service';
@@ -20,7 +20,7 @@ import { SongRating } from '../playlist/songrating';
 //https://angular.io/api/common/AsyncPipe USE THIS AND
 //http://jasonwatmore.com/post/2016/12/01/angular-2-communicating-between-components-with-observable-subject (guide for proper setup)
 
-export class LoginComponent implements OnDestroy, OnInit{
+export class LoginComponent implements OnInit{
     //init both username and password for two way binding
     private _username: string = "jshaw";
     private _password: string = "not yet encrypted"; //store this for testing purposes (we have two way binding)
@@ -30,26 +30,15 @@ export class LoginComponent implements OnDestroy, OnInit{
     private _users: User[] = [];
     //private _user: User;
 
-    private errorMessage: string;
-
-    private subscriber: Subscription;
-
     constructor(private _apiService: ApiService, private _userService: UserService){}
 
     ngOnInit(){
-        this.subscriber = this._apiService.getAllEntities('api/Users').subscribe(
-                            users => this._users = users,
-                            error => this.errorMessage = <any>error,
-                            () => console.log('loaded all users')); //this.checkValidLogin());
+        this._apiService.getAllEntities('api/Users').subscribe(
+            users => this._users = users,
+            error => console.log("Could not load all users"),
+            () => console.log('loaded all users')); //this.checkValidLogin());
     }
-
-    /*
-        This method is called when we click the sign in button, it pulls all of the user names from the api
-    */
-    public signIn(){
-        this.checkValidLogin();
-    }
-
+        
     public createNewUserView(){
         this._creatingAccount = true;
     }
@@ -103,17 +92,6 @@ export class LoginComponent implements OnDestroy, OnInit{
                 () => this._userService.logIn(user)
             );
         }
-    }
-
-    /*
-        Used to get the username of the current user via our service
-    */
-    private getUsername(){
-        return this._userService.getUserName();
-    }
-
-    ngOnDestroy(){
-        this.subscriber.unsubscribe();
     }
 
 

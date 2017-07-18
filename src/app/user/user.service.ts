@@ -9,27 +9,20 @@ import { PlayList } from '../playlist/playlist';
 import { Artist } from '../playlist/artist';
 import { Song } from '../playlist/song';
 
-//import { PlayListService } from '../playlist/playlist.service';
 import { ApiService } from '../shared/api.service';
+import { StorageService } from '../shared/session-storage.service';
 
 import 'rxjs/add/operator/take'
 
 @Injectable()
 export class UserService{
-    private _playlists: PlayList[] = [];
-    private _playlist: PlayList;
-    private _playlistSongs: Song[] = [];
-    
     private _songMap: Map<number, Song[]> = new Map<number, Song[]>();
 
     public loggedIn: boolean = false;
 
     private _user: User;
-    private _userID: number;
-
-    private _getter: Subscription;
     
-    constructor(private _apiService: ApiService){}
+    constructor(private _apiService: ApiService, private _storage: StorageService){}
 
     public getUserName(){
         return this._user.username;
@@ -38,7 +31,6 @@ export class UserService{
     public logIn(user: User){
         this.loggedIn = true;
         this._user = user;
-        this._userID = this._userID;
         console.log("User: " + this._user.username + " signed in");
 
         for(let i=0; i<this._user.playlist.length; i++){
@@ -51,17 +43,6 @@ export class UserService{
         console.log("User: " + this._user.username + " signed out");
         this._user = null;
         this._songMap.clear();
-    }
-
-    public loadPlayListsData(index: number){ //This will be reworked once we can go n layers into the api
-        for(let i=0; i<this._user.playlist[index].playlistSong.length; i++){
-            console.log(i);
-        }
-    }
-
-    //Called per playlist
-    private parseSongs(index: number){
-    
     }
 
     //For now, lets just load them for all user (IE get api/Playlists)
@@ -92,12 +73,7 @@ export class UserService{
     }
 
     public getSongs(index: number){
-        //return this._playlistSongs;
         return this._songMap.get(index);
-    }
-
-    public clearSongs(){
-        this._playlistSongs = [];
     }
 
     //Pulls the video ID from the URL with regex, saves it to this.URL

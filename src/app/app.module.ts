@@ -16,12 +16,12 @@ import { UserService } from './user/user.service';
 import { LoginComponent } from './login/login.component';
 
 import { ApiService } from './shared/api.service';
+import { StorageService } from './shared/session-storage.service';
 
 import { CreateComponent } from './create/create.component';
 import { NewPlayListComponent } from './create/new/newplaylist.component';
 import { EditPlayListComponent } from './create/edit/editplaylist.component';
 import { PlayComponent } from './create/play/play.component';
-import { PlayListService } from './playlist/playlist.service';
 import { YoutubePlayerModule } from './youtube/youtube-player.module';
 
 import { RepoBrowserComponent } from './github/repo-browser/repo-browser.component';
@@ -58,8 +58,8 @@ import { SafePipe } from './youtube/youtube.pipe';
   providers: [
     GithubService,
     UserService,
-    PlayListService,
-    ApiService
+    ApiService,
+    StorageService
   ],
   bootstrap: [ AppComponent ]
 })
