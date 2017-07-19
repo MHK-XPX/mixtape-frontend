@@ -91,6 +91,10 @@ export class UserService{
         this._songMap = this._storage.getValue('_songMap');
         return this._songMap[index];
     }
+    
+    public getAllEntity(path: string): Observable<any[]>{
+        return this._apiService.getAllEntities(path);
+    }
 
     //Pulls the video ID from the URL with regex, saves it to this.URL
     public getThumbnail(url: string){ 
