@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 
+import { SessionGuard } from './shared/session-guard.service';
 import { AboutComponent } from './about/about.component';
 import { HomeComponent } from './home/home.component';
 
@@ -18,7 +19,7 @@ import { ContactComponent } from './contact/contact.component';
 export const rootRouterConfig: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
-  { path: 'create', component: CreateComponent,
+  { path: 'create', canActivate: [ SessionGuard ], component: CreateComponent,
     children: [
       { path: '', redirectTo: 'create', pathMatch: 'full'},
       { path: 'newplaylist', component: NewPlayListComponent },

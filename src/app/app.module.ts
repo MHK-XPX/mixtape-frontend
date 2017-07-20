@@ -17,6 +17,7 @@ import { LoginComponent } from './login/login.component';
 
 import { ApiService } from './shared/api.service';
 import { StorageService } from './shared/session-storage.service';
+import { SessionGuard } from './shared/session-guard.service';
 
 import { CreateComponent } from './create/create.component';
 import { NewPlayListComponent } from './create/new/newplaylist.component';
@@ -59,7 +60,8 @@ import { SafePipe } from './youtube/youtube.pipe';
     GithubService,
     UserService,
     ApiService,
-    StorageService
+    StorageService,
+    SessionGuard
   ],
   bootstrap: [ AppComponent ]
 })
