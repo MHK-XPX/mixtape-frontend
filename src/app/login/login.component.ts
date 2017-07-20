@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Subscription } from "rxjs";
 
 import { ApiService } from '../shared/api.service';
@@ -25,7 +26,7 @@ export class LoginComponent implements OnInit{
 
     private _users: User[] = [];
 
-    constructor(private _apiService: ApiService, private _userService: UserService, private _storage: StorageService){}
+    constructor(private _apiService: ApiService, private _userService: UserService, private _storage: StorageService, private _router: Router){}
 
     ngOnInit(){
         this._apiService.getAllEntities('api/Users').subscribe(
@@ -94,6 +95,7 @@ export class LoginComponent implements OnInit{
                 () => {
                     this._storage.setValue('loggedIn', true);
                     this._storage.setValue('_user', user);
+                    this._router.navigate(['./home']);
                     this._userService.logIn();
                 }
             );

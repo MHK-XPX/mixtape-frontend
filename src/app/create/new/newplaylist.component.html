@@ -1,14 +1,14 @@
 <div>
-    <div id="left-player" style="float:left;">
+    <div id="left-player">
         <youtube-player [videoId]="videoId" [width]="750" [height]="480" (ready)="savePlayer($event)" (change)="onStateChange($event)"></youtube-player> 
     </div>
 
-    <div id="current-playlist-block" style="float:left; border: 5px solid black; height: 470px; width: 35%">
+    <div id="current-playlist-block">
             <div style="margin:auto;">
                 <input [value]="_playlistName" (input)="_playlistName = $event.target.value" type="text" id="_playlistName" name="_playlistName">
                 <button class="createButton" type="button" (click)='savePlayList()'>Save Playlist</button><br>
 
-            <ul id='songs-in-list' *ngIf='_playlistSongs && _playlistSongs.length'>
+            <ul id='songs-in-playlist' *ngIf='_playlistSongs && _playlistSongs.length'>
                 <li *ngFor="let song of _playlistSongs; let i = index">
                     <img [src]="getUrlImage(song.url)"/>
                     {{ song.name }}

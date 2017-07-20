@@ -111,7 +111,13 @@ export class NewPlayListComponent implements OnInit{
 
     //Youtube player methods below
     savePlayer(player){
+        var sw, sh;
+        sw = window.screen.width;
+        sh = window.screen.height;
+
         this.player = player;
+
+        this.player.setSize(.45 * sw, .45 * sh);
     }
 
     /*

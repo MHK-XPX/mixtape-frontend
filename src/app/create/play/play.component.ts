@@ -36,8 +36,13 @@ export class PlayComponent{
         next song on our playlist.
     */
     savePlayer(player){
-        this.player=player;
-        console.log("Player instance", player);
+        var sw, sh;
+        sw = window.screen.width;
+        sh = window.screen.height;
+
+        this.player = player;
+
+        this.player.setSize(.45 * sw, .45 * sh);
         this.playNext();
     }
 

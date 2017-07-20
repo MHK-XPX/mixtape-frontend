@@ -14,10 +14,6 @@
     </div>
 </div>
 
-<div *ngIf="_storage.getValue('loggedIn')">
-    <h3>Welcome {{ _userService.getUserName() }} </h3>
-</div>
-
 <div *ngIf="_creatingAccount && !_userService.loggedIn">
     <div id="create-container">
         First name: <input [(ngModel)]="fname" input type="text" name="fname"><br>

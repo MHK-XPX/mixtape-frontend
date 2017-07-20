@@ -39,7 +39,7 @@
   </ul>
 </nav>-->
 
-<div style="max-width: 75%; margin: auto;" class="container">
+<div style="max-width: 75vw; margin: auto" class="container">
   <a [routerLink]="['/']">Home</a>
   <div class="dropdown">
     <button class="dropbtn">Create</button>
@@ -56,7 +56,7 @@
     <a *ngIf="_storage.getValue('loggedIn')" style="float: right" [routerLink]="['/login']" (click)="logOut()">Sign out</a>
 </div>
 
-<div style="max-width: 75%; margin: auto;"> <!-- was 1024px -->
+<div style="max-width: 75vw; margin: auto"> <!-- was 1024px -->
     <main>
       <router-outlet></router-outlet>
     </main>

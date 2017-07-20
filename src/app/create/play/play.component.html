@@ -18,18 +18,18 @@
 
 
 <div *ngIf="isPlaying">
-    <div id="left-player" style="float:left;">
+    <div id="left-player">
         <youtube-player [videoId]="videoId" [width]="854" [height]="480" (ready)="savePlayer($event)" (change)="onStateChange($event)"></youtube-player> 
     </div>
 
-    <div id="current-playlist-block" style="float:left; border: 5px solid black; height: 470px; width: 310px;">
+    <div id="current-playlist-block">
         <h3 style="text-align:center;"> {{ playlist.name }}
             <div style="margin:auto;">
                 <button type="button" (click)='playNext()'>Play Next</button>
                 <button type="button" (click)='repeatPlaylist()'>Repeat:{{ repeat }}</button>
             </div>
 
-            <ul id='songs-in-list'>
+            <ul id='songs-in-playlist'>
                 <li *ngFor="let song of songs; let i = index">
                     <img [src]="getUrlImage(song.url)"/>
                     {{ song.name }}
@@ -40,7 +40,7 @@
 
     <div id="more-playlists">
         <ng-container *ngIf='this._userService.getPlayLists() && this._userService.getPlayLists()'>
-            <ul id="playlist-list" *ngFor="let pList of _userService.getPlayLists(); let i = index">
+            <ul id="other-playlist-list" *ngFor="let pList of _userService.getPlayLists(); let i = index">
                 <h3>{{ pList.name }}</h3>
                 <button type="button" (click)='appendPlayList(pList)'>Add</button>
                 <button type="button" (click)='loadNewPlayList(pList)'>Play</button>
