@@ -61,10 +61,8 @@ export class UserService{
 
         //If we already have the songs we can just return, this may be removed later, it depnds how I implement edits on playlists
         if(this._songMap[pID] !== null && this._songMap[pID] !== undefined){
-            console.log("Already have PID: " + pID);
             return;
         }else{
-            console.log("Creating new PID for: " + pID);
             this._songMap[pID] = [];
         }
 
@@ -72,6 +70,53 @@ export class UserService{
         for(let i=0; i<this._user.playlist[index].playlistSong.length; i++){
             pSong = this._user.playlist[index].playlistSong[i];
             this.addToSongMap(pID, pSong.songId);
+        }
+    }
+
+    /*
+        Called when we create a new playlist from the create menu. This method adds the playlist to the api and uses the returned json value
+        to call the finalize playlist method, which adds the songs to the new playlists (since we dont know its id we have to call a seperate method after
+        the async call)
+        @param playlist: Object - the new playlist to add to the api
+        @param songs: Song[] - The songs that will be in the playlist
+    */
+    public addPlaylist(playlist: Object, songs: Song[]): void{
+        let s: Subscription;
+        let returnedList: PlayList;
+
+        s = this._apiService.postEntity('api/Playlists', playlist).subscribe(
+            pl => returnedList = pl,
+            err => console.log("Unable to create new playlist"),
+            () => {
+                this.finalizeAddPlaylist(returnedList, songs);
+                s.unsubscribe();
+            }
+        );
+    }
+
+    /*
+        This method is called when we delete a playlist from the edit menu. It first deletes all of the playlist songs that are contained 
+        within the entity then it calls finalize delete and deletes itself (we can only delete empty parent objects)
+        @param playlist: PlayList - the playlist to delete
+    */
+    public deletePlaylist(playlist: PlayList): void{
+        let s: Subscription;
+        let pls: PlaylistSong;
+
+        //Delete all of the songs in the playlist
+        for(let i=0; i<playlist.playlistSong.length; i++){
+            pls = playlist.playlistSong[i];
+            s = this._apiService.deleteEntity('api/PlaylistSongs', pls.playlistSongId).subscribe(
+                sg => sg = sg,
+                error => console.log("Unable to delete playlist: " + playlist.playlistId),
+                () => {
+                    //Once we delete the last song, we delete the playlist
+                    if(i === playlist.playlistSong.length-1){
+                        this.finalizeDeletePlaylist(playlist);
+                    }
+                    s.unsubscribe();
+                }
+            );
         }
     }
 
@@ -129,6 +174,61 @@ export class UserService{
     }
 
     /*
+        Once we have the new playlist's id we can append playlist songs to it
+        @playlist: Playlist - the newly added playlist
+        @songs: Song[] - the songs to add to the playlist
+    */
+    private finalizeAddPlaylist(playlist: PlayList, songs: Song[]){
+        let pID: number = playlist.playlistId;
+        let s: Subscription;
+
+        //Convert the songs to playlistSongs
+        let song: Song;
+        for(let i=0; i<songs.length; i++){
+            song = songs[i];
+            let pls = {
+                "playlistId": pID,
+                "songId": song.songId,
+                "playlist": null,
+                "song": null
+            };
+            
+            //Add the new playlistSong to the api with the playlist as its parent
+            s = this._apiService.postEntity('api/PlaylistSongs', pls).subscribe(
+            ps => ps = ps,
+            err => console.log("Unable to add song to new playlist"),
+            () => {
+                    this._songMap[pID] = songs;
+                    this._storage.setValue('_songMap', this._songMap);
+                    this.updateUser(); //Update the user so we can see the changes without refreshing
+                    s.unsubscribe();
+                }
+            );
+        }
+    }
+
+    /*
+        This method is called after we delete all of the playlistSongs from the given playlist
+        It removes the playlist from the api and from the _songMap
+        @param playlist: Playlist - the now empty playlist to be removed from the api
+    */
+    private finalizeDeletePlaylist(playlist: PlayList){
+        let s: Subscription;
+        let pID: number = playlist.playlistId;
+
+        s = this._apiService.deleteEntity('api/Playlists', pID).subscribe(
+            p => p = p,
+            err => console.log("Unable to delete playlist: " + pID),
+            () => {
+                this._songMap[pID] = [];
+                console.log("Playlist: " + pID + " deleted");
+                this.updateUser(); //Update the user so we can see the changes without refreshing
+                s.unsubscribe();
+            }
+        );
+    }
+
+    /*
         This method is called after we add a song to our playlist (I.E we finished adding it to the backend)
         it updates our _songMap in local storage so all components that use it can view the change
         @param pID: number - the playlistId of the playlist we changed
@@ -172,6 +272,18 @@ export class UserService{
         }
     }
 
+    private updateUser(){
+        let s: Subscription;
+        s = this._apiService.getSingleEntity('api/Users', this._user.userId).subscribe(
+            u => this._user = u,
+            err => console.log("Unable to update user info"),
+            () => {
+                this._storage.setValue('_user', this._user);
+                s.unsubscribe();
+            }
+        );
+    }
+
     /*
         Pulls the songs for the user's playlist from session storage
         @param index: number - the playlistId of the playlist we want to pull
@@ -184,24 +296,6 @@ export class UserService{
 
     public getAllEntity(path: string): Observable<any[]>{
         return this._apiService.getAllEntities(path);
-    }
-
-    public postEntity(path: string, obj: Object){
-        let s: Subscription;
-        s = this._apiService.postEntity(path, obj).subscribe(
-            p => console.log("Posting: " + obj),
-            err => console.log(err),
-            () => s.unsubscribe()
-        );
-    }
-
-    public deleteEntity(path: string, id: number){
-        let s: Subscription;
-        s = this._apiService.deleteEntity(path, id).subscribe(
-            d => console.log("Deleting id: " + id),
-            err => console.log(err),
-            () => s.unsubscribe()
-        );
     }
 
     //Pulls the video ID from the URL with regex, saves it to this.URL

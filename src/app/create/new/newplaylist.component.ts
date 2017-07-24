@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { UserService } from '../../user/user.service';
 
@@ -34,13 +35,12 @@ export class NewPlayListComponent implements OnInit{
     url: string = ''; //Base string to make it so the embeded video looks "nice"
     private videoId;
 
-    constructor(private _userService: UserService){}
+    constructor(private _userService: UserService, private _router: Router){}
 
     /*
         Loads up all the data we need for creating a playlist...might be changed in the future
     */
     ngOnInit(){
-        //this._userService.getAllSongs().subscribe(
         this._userService.getAllEntity('api/Songs').subscribe(
             s => this._songs = s,
             err => console.log("unable to load songs")
@@ -63,22 +63,20 @@ export class NewPlayListComponent implements OnInit{
     }
 
     //NOT IMPLEMENTED YET
-    private createNewPlayList(): void{
-        this.createNew = true;
-    }
-
-    //NOT IMPLEMENTED YET
-    private savePlayList(): void{
-       this.createNew = false;
+    private savePlayList(): void{       
+       //Create a new playlist
+       let newPlaylist = {
+           "active": true,
+           "name": this._playlistName,
+           "userId": this._userService.getUserID()
+       };
+        this._userService.addPlaylist(newPlaylist, this._playlistSongs);
+        this._router.navigate(['./home']);
     }
 
     //NOT IMPLEMENTED YET
     private addLink(name: string, url: string): void{
         
-    }
-
-    //NOT IMPLEMENTED YET
-    private setName(name: string): void{
     }
 
     /*

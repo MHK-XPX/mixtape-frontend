@@ -52,7 +52,7 @@ button:hover{
 
 #more-playlists{
     float:left; 
-    border: 5px solid black;
+    border: 5px solid grey;
     width: 100%;
     height: 500px;
 }

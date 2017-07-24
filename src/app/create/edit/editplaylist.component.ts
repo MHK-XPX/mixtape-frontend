@@ -21,7 +21,6 @@ import 'rxjs/add/operator/concatMap';
 
 export class EditPlayListComponent implements OnInit{
     playlist: PlayList;
-    playlists: PlayList[] = [];
 
     playlistSongs: Song[] = [];
 
@@ -40,8 +39,6 @@ export class EditPlayListComponent implements OnInit{
     constructor(private _userService: UserService){}
 
     ngOnInit(){
-        this.playlists = this._userService.getPlayLists();
-
         this._userService.getAllEntity('api/Songs').subscribe(
             s => this._songs = s,
             err => console.log("unable to load songs")
@@ -59,10 +56,14 @@ export class EditPlayListComponent implements OnInit{
     }
 
     //Below is pretty dirty, working on a fix using AsyncPipe
-    private editClicked(playlist: PlayList, index: number): void{
+    private editClicked(playlist: PlayList): void{
         this.isEditing = !this.isEditing;
         this.playlistToEdit = playlist.playlistId;
         this.playlist = playlist;
+    }
+
+    private deletePlaylist(playlist: PlayList): void{
+        this._userService.deletePlaylist(playlist);   
     }
 
     /*

@@ -1,8 +1,9 @@
 <div *ngIf="!isEditing">
-    <ul class='table' *ngIf='playlists && playlists.length'>
-        <li *ngFor="let pList of playlists; let i = index">
+    <ul class='table' *ngIf='_userService.getPlayLists() && _userService.getPlayLists().length'>
+        <li *ngFor="let pList of _userService.getPlayLists()">
             {{ pList.name }}
-            <button type="button" (click)='editClicked(pList, i)'>Edit</button>
+            <button type="button" (click)='editClicked(pList)'>Edit</button>
+            <button type="button" (click)='deletePlaylist(pList)'>Delete</button>
         </li>
     </ul>
 </div>
