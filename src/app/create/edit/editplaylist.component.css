@@ -1,12 +1,58 @@
+#playlist-container{
+    float:right;
+    border: 5px solid grey; 
+    width: 33.75vw;
+    height: 50vh;
+    overflow: hidden;
+    overflow-y: scroll;
+}
+
+#more-playlists{
+    float:left; 
+    border: 5px solid grey;
+    width: 40vw;
+    height: 50vh;
+}
+
+#playlist-container table{
+    overflow: hidden;
+    overflow-y: scroll;
+    height: 40vh;
+    width: 30vw;
+}
+
+div.tabcontent{
+    overflow: hidden;
+    overflow-y: scroll;
+    height: 40vh;
+    width: 40vw;
+}
+
+div.tab{
+    overflow: hidden;
+    border: 1px solid #ccc;
+    outline: 1px solid #000;
+    background-color: #f1f1f1;
+}
+
+div.tab button{
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    padding: 14px 16px;
+    transition: 0.3s;
+}
+
+div.tab button:hover {
+    background-color: #ddd;
+}
+
 input{
     display: inline-block;
     text-align: center;
     width: 25%;
     position: left;
-}
-
-div{
-    display: inline-block;
 }
 
 ul {

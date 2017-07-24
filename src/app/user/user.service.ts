@@ -58,7 +58,6 @@ export class UserService{
     */
     public getPlayListSongs(index: number, pID: number){
         let pSong: PlaylistSong;
-        let songs: Song[] = [];
 
         //If we already have the songs we can just return, this may be removed later, it depnds how I implement edits on playlists
         if(this._songMap[pID] !== null && this._songMap[pID] !== undefined){
@@ -66,19 +65,110 @@ export class UserService{
             return;
         }else{
             console.log("Creating new PID for: " + pID);
+            this._songMap[pID] = [];
         }
 
         //Loop through each song and add it to _songMap
         for(let i=0; i<this._user.playlist[index].playlistSong.length; i++){
             pSong = this._user.playlist[index].playlistSong[i];
-            this._apiService.getSingleEntity('api/Songs', pSong.songId).subscribe(
-                s => songs.push(s),
-                err => console.log("Unable to load songs"),
+            this.addToSongMap(pID, pSong.songId);
+        }
+    }
+
+    /*
+        This method is called when we add a song to a given playlist
+        it takes a playlist song and adds it to the api. Once it is added to the api,
+        it also adds the json string value to our _songMap in local storage which allows it to be viewed through all of the components
+        @param pls: Object - the playlist song to add to the api
+    */
+    public addSong(pls: Object): void{
+        let s: Subscription;
+        let plSong: PlaylistSong;
+        s = this._apiService.postEntity('api/PlaylistSongs', pls).subscribe(
+            sg => plSong = sg,
+            err => console.log("Unable to add song to playlist"),
+            () => {
+                this.addToSongMap(plSong.playlistId, plSong.songId);
+                s.unsubscribe();
+            }
+        );
+    }
+
+    /*
+        This method is called when we delete a song from our playlist. 
+        It takes a song and playlistID as parameters, it removes the playlist song from the api
+        and updates our _songMap from local storage so that it can be viewed from all components
+        @param song: Song - the song we want to remove from our playlist
+        @param pID: number - the playlistId of the playlist that contains the song to remove
+    */
+    public deleteSong(song: Song, pID: number): void{
+        let s: Subscription;
+        let plSong: PlaylistSong;
+
+        for(let i=0; i<song.playlistSong.length; i++){
+            plSong = song.playlistSong[i];
+            //If the playlist songs Id matches the playlistId we have the playlist song to remove
+            if(plSong.playlistId === pID){
+                break;
+            }else{
+                plSong = null;
+            }
+        }
+
+        //Saftey check and removal of the song
+        if(plSong !== null){
+            s = this._apiService.deleteEntity('api/PlaylistSongs', plSong.playlistSongId).subscribe(
+                s => s = s,
+                err => console.log("Unable to delete song from playlist"),
                 () => {
-                    this._songMap[pID] = songs;
-                    this._storage.setValue('_songMap', this._songMap); //Add it to storage when complete
+                    this.removeFromSongMap(pID, song);
+                    s.unsubscribe();
                 }
             );
+        }
+    }
+
+    /*
+        This method is called after we add a song to our playlist (I.E we finished adding it to the backend)
+        it updates our _songMap in local storage so all components that use it can view the change
+        @param pID: number - the playlistId of the playlist we changed
+        @param songID: number - the id of the song we added to the playlist
+    */
+    private addToSongMap(pID: number, songID: number): void{
+        let s: Subscription;
+        let songs: Song[] = this._songMap[pID]; //Holds all the playlist songs for the given playlist
+
+        //Get song information from the api and close the sub.
+        s = this._apiService.getSingleEntity('api/Songs', songID).subscribe(
+            sg => songs.push(sg),
+            err => console.log("Unable to get song from edited playlist"),
+            () => {
+                this._songMap[pID] = songs;
+                this._storage.setValue('_songMap', this._songMap);
+                s.unsubscribe();
+            } 
+        );
+    }
+
+    /*
+        This method is called after we delete a song from the api,
+        it removes the song from _songMap which allows the changed to be viewed in all connected components
+        @param pID: number - the playlistId of the playlist we edited
+        @param song: Song - The song removed from the playlist
+    */
+    private removeFromSongMap(pID: number, song: Song): void{
+        let songs: Song[];
+        let index = -1;
+        
+        this._songMap = this._storage.getValue('_songMap'); //Make sure we get the newest verison of the _songMap
+        songs = this._songMap[pID];
+
+        //Try to get the index of the song to delete and remove it from our _songMap
+        index = songs.findIndex(obj => obj.songId === song.songId);
+        if(index !== -1){
+            songs.splice(index, 1);
+            this._songMap[pID] = songs;
+            this._storage.setValue('_songMap', this._songMap);
         }
     }
 
@@ -91,9 +181,27 @@ export class UserService{
         this._songMap = this._storage.getValue('_songMap');
         return this._songMap[index];
     }
-    
+
     public getAllEntity(path: string): Observable<any[]>{
         return this._apiService.getAllEntities(path);
+    }
+
+    public postEntity(path: string, obj: Object){
+        let s: Subscription;
+        s = this._apiService.postEntity(path, obj).subscribe(
+            p => console.log("Posting: " + obj),
+            err => console.log(err),
+            () => s.unsubscribe()
+        );
+    }
+
+    public deleteEntity(path: string, id: number){
+        let s: Subscription;
+        s = this._apiService.deleteEntity(path, id).subscribe(
+            d => console.log("Deleting id: " + id),
+            err => console.log(err),
+            () => s.unsubscribe()
+        );
     }
 
     //Pulls the video ID from the URL with regex, saves it to this.URL
