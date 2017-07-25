@@ -1,6 +1,6 @@
 <div *ngIf="!isEditing">
-    <ul class='table' *ngIf='_userService.getPlayLists() && _userService.getPlayLists().length'>
-        <li *ngFor="let pList of _userService.getPlayLists()">
+    <ul class='table' *ngIf='_userService.getPlaylists() && _userService.getPlaylists().length'>
+        <li *ngFor="let pList of _userService.getPlaylists()">
             {{ pList.name }}
             <button type="button" (click)='editClicked(pList)'>Edit</button>
             <button type="button" (click)='deletePlaylist(pList)'>Delete</button>
@@ -61,11 +61,11 @@
 
     <div id="playlist-container">
         <h3 style="text-align: center"> {{ playlist.name }} </h3>
-        <ul class='table' *ngIf='_userService.getSongs(playlistToEdit) && _userService.getSongs(playlistToEdit).length'>
-            <li *ngFor='let song of _userService.getSongs(playlistToEdit); let i = index'>
+        <ul class='table' *ngIf='_userService.getSongs(playlist.playlistId) && _userService.getSongs(playlist.playlistId).length'>
+            <li *ngFor='let song of _userService.getSongs(playlist.playlistId); let i = index'>
                 <img [src]="getUrlImage(song.url)"/>
                 {{ song.name }}
-                <button type="button" (click)='deleteClicked(song)'>Remove</button><br>
+                <button type="button" (click)='deleteClicked(song, i)'>Remove</button><br>
             </li>
         </ul>
     </div>

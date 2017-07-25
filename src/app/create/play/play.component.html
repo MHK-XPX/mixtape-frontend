@@ -1,8 +1,8 @@
 <div *ngIf="!isPlaying">
     <!--<button type="button" (click)='loadPlayLists()'>Load All Playlist</button>-->
     
-    <ul class='table' *ngIf='_userService.getPlayLists() && _userService.getPlayLists()'>
-        <li *ngFor="let pList of _userService.getPlayLists(); let i = index">
+    <ul class='table' *ngIf='_userService.getPlaylists() && _userService.getPlaylists()'>
+        <li *ngFor="let pList of _userService.getPlaylists(); let i = index">
             {{ pList.name }}
             <button type="button" (click)='playPlayList(pList)'>Play</button>
             <ul class="songList">
@@ -39,8 +39,8 @@
     </div>
 
     <div id="more-playlists">
-        <ng-container *ngIf='this._userService.getPlayLists() && this._userService.getPlayLists()'>
-            <ul id="other-playlist-list" *ngFor="let pList of _userService.getPlayLists(); let i = index">
+        <ng-container *ngIf='this._userService.getPlaylists() && this._userService.getPlaylists()'>
+            <ul id="other-playlist-list" *ngFor="let pList of _userService.getPlaylists(); let i = index">
                 <h3>{{ pList.name }}</h3>
                 <button type="button" (click)='appendPlayList(pList)'>Add</button>
                 <button type="button" (click)='loadNewPlayList(pList)'>Play</button>

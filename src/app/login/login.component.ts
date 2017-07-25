@@ -101,36 +101,4 @@ export class LoginComponent implements OnInit{
             );
         }
     }
-
-
-
-/* Below is just to test that post and delete work
-    public createUser(){
-        console.log("Creating entity");
-        let u: User = {
-            userId: 5,
-            firstName: "Ryan",
-            lastName: "Kruse",
-            password: "not yet encrypted",
-            username: "rkruse",
-            albumRating: [],
-            playlist: [],
-            songRating: []
-        }
-
-        this._apiService.postEntity('api/Users', u).subscribe(
-            user => this._user = user,
-            error => console.log("CANNOT CREATE USER"),
-            () => console.log("User created")
-        );
-    }
-
-    public deleteUser(){
-        this._apiService.deleteEntity('api/Users', 5).subscribe(
-            user => this._user = user,
-            error => console.log("CANNOT delete USER"),
-            () => console.log("User deleted")
-        );
-    }
-    */
 }

@@ -9,10 +9,6 @@ import { Artist } from '../../playlist/artist';
 import { Album } from '../../playlist/album';
 import { Song } from '../../playlist/song';
 
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/operator/filter';
-import 'rxjs/add/operator/concatMap';
-
 @Component({
     selector: 'create-editplaylist',
     templateUrl: './editplaylist.component.html',
@@ -31,7 +27,6 @@ export class EditPlayListComponent implements OnInit{
 
     private tabInView: string = 'songs';
     isEditing: boolean = false;
-    playlistToEdit: number = -1;
 
     inputUrl: string = '';
     index: number;
@@ -58,12 +53,11 @@ export class EditPlayListComponent implements OnInit{
     //Below is pretty dirty, working on a fix using AsyncPipe
     private editClicked(playlist: PlayList): void{
         this.isEditing = !this.isEditing;
-        this.playlistToEdit = playlist.playlistId;
         this.playlist = playlist;
     }
 
     private deletePlaylist(playlist: PlayList): void{
-        this._userService.deletePlaylist(playlist);   
+        this._userService.removePlaylist(playlist, playlist.playlistId, 0);   
     }
 
     /*
@@ -78,8 +72,7 @@ export class EditPlayListComponent implements OnInit{
             playlist: null,
             song: null
         };
-        this._userService.addSong(pls);
-        //this._userService.postEntity('api/PlaylistSongs', pls);
+        this._userService.addSong(pls, this.playlist.playlistId);
     }
 
     /*
@@ -87,8 +80,8 @@ export class EditPlayListComponent implements OnInit{
         it calls user service and removes the playlist song from the api and updates _songMap
         @param song: Song - the song we want to delete
     */
-    private deleteClicked(song: Song): void{
-        this._userService.deleteSong(song, this.playlist.playlistId);
+    private deleteClicked(song: Song, index: number): void{
+        this._userService.removeSong(song, this.playlist, index);
     }
 
     private backClicked(){

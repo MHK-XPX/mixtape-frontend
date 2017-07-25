@@ -70,7 +70,7 @@ export class NewPlayListComponent implements OnInit{
            "name": this._playlistName,
            "userId": this._userService.getUserID()
        };
-        this._userService.addPlaylist(newPlaylist, this._playlistSongs);
+        this._userService.addPlaylist(newPlaylist, this._playlistSongs, 0, null);
         this._router.navigate(['./home']);
     }
 
