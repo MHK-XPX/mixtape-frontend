@@ -1,6 +1,6 @@
 <div *ngIf="!isEditing">
-    <ul class='table' *ngIf='_userService.getPlaylists() && _userService.getPlaylists().length'>
-        <li *ngFor="let pList of _userService.getPlaylists()">
+    <ul class='table' *ngIf='_storage.getValue("_playlists") && _storage.getValue("_playlists").length'>
+        <li *ngFor='let pList of _storage.getValue("_playlists")'>
             {{ pList.name }}
             <button type="button" (click)='editClicked(pList)'>Edit</button>
             <button type="button" (click)='deletePlaylist(pList)'>Delete</button>
@@ -18,8 +18,8 @@
         </div>
 
         <div id="songs" class="tabcontent" *ngIf='this.tabInView === "songs"'>
-            <ul id='songs-tab-list' *ngIf='_songs && _songs.length'>
-                <li *ngFor="let song of _songs; let i = index">
+            <ul id='songs-tab-list'>
+                <li *ngFor="let song of _songs | async">
                     <img [src]="getUrlImage(song.url)"/>
                     {{ song.name }}
                     <button type="button" (click)='addSong(song)'>Add Song</button>
@@ -28,8 +28,8 @@
         </div>
 
         <div id="artists" class="tabcontent" *ngIf='this.tabInView === "artists"'>
-            <ul id='artists-tab-list' *ngIf='_artists && _artists.length'>
-                <li *ngFor="let artist of _artists; let i = index">
+            <ul id='artists-tab-list'>
+                <li *ngFor="let artist of _artists | async">
                     <!--<img [src]="getUrlImage(song.url)"/>
                     {{ song.name }}
                     <button type="button" (click)='playSong(song)'>Play Song</button>
@@ -40,8 +40,8 @@
         </div>
 
         <div id="albums" class="tabcontent" *ngIf='this.tabInView === "albums"'>
-            <ul id='albums-tab-list' *ngIf='_albums && _albums.length'>
-                <li *ngFor="let album of _albums; let i = index">
+            <ul id='albums-tab-list'>
+                <li *ngFor="let album of _albums | async">
                     {{ album.name }}
                     <ul id='alumb-songs' *ngIf='album.song && album.song.length'>
                         <li *ngFor="let song of album.song; let i = index">
@@ -54,20 +54,39 @@
             </ul>
         </div>
 
-        <div id="playlist" class="tabcontent" *ngIf='this.tabInView === "playlists"'>
-            <h3> Coming soon! (maybe)</h3>
+        <div id="playlists" class="tabcontent" *ngIf='this.tabInView === "playlists"'>
+            <ul id='playlists-tab-list'>
+                <li *ngFor="let playlist of _otherPlaylists | async">
+                    <!--<img [src]="getUrlImage(song.url)"/>
+                    {{ song.name }}
+                    <button type="button" (click)='playSong(song)'>Play Song</button>
+                    <button type="button" (click)='addSong(song)(song)'>Add Song</button>-->
+                    {{ playlist.name }}
+                </li>
+            </ul>
         </div>
     </div>
 
     <div id="playlist-container">
-        <h3 style="text-align: center"> {{ playlist.name }} </h3>
-        <ul class='table' *ngIf='_userService.getSongs(playlist.playlistId) && _userService.getSongs(playlist.playlistId).length'>
-            <li *ngFor='let song of _userService.getSongs(playlist.playlistId); let i = index'>
+        <h3 style="text-align: center" *ngIf='this.playlist'> {{ this.playlist.name }} </h3>
+        <ul class='table' *ngIf='_userSongs && _userSongs.length'>
+            <li *ngFor="let song of _userSongs; let i=index">
                 <img [src]="getUrlImage(song.url)"/>
                 {{ song.name }}
                 <button type="button" (click)='deleteClicked(song, i)'>Remove</button><br>
             </li>
         </ul>
     </div>
+
+    <!--<div id="playlist-container" *ngFor="let pList of this._userPlaylist | async">
+        <h3 style="text-align: center"> {{ pList.name }} </h3>
+        <ul class='table'>
+            <li *ngFor="let song of pList.playlistSong; let i=index">
+                <img [src]="getUrlImage(song.song.url)"/>
+                {{ song.song.name }}
+                <button type="button" (click)='deleteClicked(song.song, pList, i)'>Remove</button><br>
+            </li>
+        </ul>
+    </div>-->
     <button type="button" (click)='backClicked()'>Back</button>
 </div>

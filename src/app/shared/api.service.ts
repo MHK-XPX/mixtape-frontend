@@ -4,10 +4,8 @@ import { Http, Response, Headers, RequestOptions, RequestMethod } from '@angular
 import { Observable } from 'rxjs/Observable';
 
 import { User } from '../user/user';
-import 'rxjs/add/operator/do';
-import 'rxjs/add/operator/catch';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/observable/throw';
+
+import 'rxjs/Rx';
 
 //import { User } from '../user/user';
 
@@ -34,7 +32,8 @@ export class ApiService{
     getSingleEntity(path: string, id: number): Observable<any>{
         return this._http.get(this._api + path + '/' + id, this._options)
                 .map(this.handleResponse)
-                .catch(this.handleError);
+                .catch(this.handleError)
+                .share();
     }
 
     /*
@@ -49,7 +48,8 @@ export class ApiService{
         //return this._http.get(this._api + 'api/Users');
         return this._http.get(this._api + path)
             .map(this.handleResponse)
-            .catch(this.handleError);
+            .catch(this.handleError)
+            .share();
     }
 
     /*
@@ -63,7 +63,7 @@ export class ApiService{
     */
     putEntity(path: string, obj: Object, id: number){
         let body = JSON.stringify(obj);
-        return this._http.put(this._api + path + id, body)
+        return this._http.put(this._api + path + '/' + id, body, this._options)
                 .map((response: Response) => response.json())
                 .catch(this.handleError);
     }
@@ -83,7 +83,8 @@ export class ApiService{
         console.log("sending: " + body);
         return this._http.post(this._api + path, body, this._options)
                 .map((response: Response) => response.json())
-                .catch(this.handleError);
+                .catch(this.handleError)
+                .share();
         //return this._http.post(this._api + path, body).map((res: Response) => res.json());
     }
 
@@ -98,7 +99,8 @@ export class ApiService{
     deleteEntity(path: string, id: number){
         return this._http.delete(this._api + path + '/' + id)
                 .map((response: Response) => response.json())
-                .catch(this.handleError);
+                .catch(this.handleError)
+                .share();
     }
 
     private handleResponse(res: Response){

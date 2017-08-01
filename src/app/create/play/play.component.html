@@ -1,16 +1,15 @@
 <div *ngIf="!isPlaying">
-    <!--<button type="button" (click)='loadPlayLists()'>Load All Playlist</button>-->
-    
-    <ul class='table' *ngIf='_userService.getPlaylists() && _userService.getPlaylists()'>
-        <li *ngFor="let pList of _userService.getPlaylists(); let i = index">
+    <ul class='table' *ngIf='_storage.getValue("_playlists") && _storage.getValue("_playlists").length'>
+        <li *ngFor='let pList of _storage.getValue("_playlists"); let i = index'>
             {{ pList.name }}
             <button type="button" (click)='playPlayList(pList)'>Play</button>
-            <ul class="songList">
+            <!--WILL FIX LATER
+                <ul class="songList">
                 <li *ngFor="let song of _userService.getSongs(pList.playlistId); let j = index">
                     <img [src]="getUrlImage(song.url)"/>
                     {{ song.name }}
                 </li>
-            </ul>
+            </ul>-->
         </li>
     </ul>
 
@@ -39,17 +38,18 @@
     </div>
 
     <div id="more-playlists">
-        <ng-container *ngIf='this._userService.getPlaylists() && this._userService.getPlaylists()'>
-            <ul id="other-playlist-list" *ngFor="let pList of _userService.getPlaylists(); let i = index">
+        <ng-container *ngIf='_storage.getValue("_playlists") && _storage.getValue("_playlists").length'>
+            <ul id="other-playlist-list" *ngFor='let pList of _storage.getValue("_playlists"); let i = index'>
                 <h3>{{ pList.name }}</h3>
                 <button type="button" (click)='appendPlayList(pList)'>Add</button>
-                <button type="button" (click)='loadNewPlayList(pList)'>Play</button>
-                <ul id="song-list">
+                <button type="button" (click)='playPlayList(pList, false)'>Play</button>
+                <!--WILL FIX LATER
+                    <ul id="song-list">
                     <li *ngFor="let song of _userService.getSongs(pList.playlistId); let j = index">
                         <img [src]="getUrlImage(song.url)"/>
                         {{ song.name }}
                     </li>
-                </ul>
+                </ul>-->
             </ul>
         </ng-container>
     </div>

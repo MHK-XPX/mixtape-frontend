@@ -28,8 +28,8 @@ export class UserService {
         this._user = this._storage.getValue('_user');
         this._loggedIn = this._storage.getValue('loggedIn');
 
+        this._storage.setValue('_playlists', this._user.playlist);
         this._storage.setValue('_songMap', {});
-        this.updatePlaylists();
     }
 
     public logOut(): void{
@@ -49,9 +49,11 @@ export class UserService {
         @param playlistSong: Object - The playlist song to add to the api
         @param pID: number - The playlistId of the playlist we want to add a song to
     */
-    public addSong(playlistSong: Object, pID: number): void{
-        //Update the database, current user, and _songMap in local storage
-        this.performApiEdit(this._apiService.postEntity('api/PlaylistSongs', playlistSong), "Unable to add song");
+    public addSong(playlistSong: Object): void{
+        this.performApiAction(
+            this._apiService.postEntity('api/PlaylistSongs', playlistSong),
+            "Unable to add song"
+        );
     }
 
     /*
@@ -63,8 +65,24 @@ export class UserService {
     public removeSong(song: Song, playlist: PlayList, index: number): void{
         let plsID = playlist.playlistSong[index].playlistSongId;
 
-        //Update the database, current user, and _songMap in local storage
-        this.performApiEdit(this._apiService.deleteEntity('api/PlaylistSongs', plsID), "Unable to remove song");
+        this.performApiAction(
+            this._apiService.deleteEntity('api/PlaylistSongs', plsID),
+            "Unable to remove song"
+        );
+    }
+
+    /*
+        This method is called whenever we perform an action on the api (add, delete, edit, etc something)
+        @param action: Observable<any> - The action to perform on the api
+        @param errorMessage: string - The message to output if the action is invalid
+    */
+    private performApiAction(action: Observable<any>, errorMessage: string): void{
+        let s: Subscription;
+        s = action.subscribe(
+            data => data = data,
+            err => console.log(errorMessage),
+            () => s.unsubscribe()
+        );
     }
 
     /*
@@ -78,7 +96,8 @@ export class UserService {
     public addPlaylist(playlistToCreate: Object, songs: Song[], index=0, createdPlaylist: PlayList): void{
         //Once we have saved the new playlist to the api we update the user and return
         if(index >= songs.length){
-            this.performApiEdit(null, "Failed to update user");
+            //this.performApiEdit(null, "Failed to update user");
+            this.updateUserInfo();
             return;
         }
 
@@ -125,7 +144,9 @@ export class UserService {
     public removePlaylist(playlist: PlayList, pID: number, index = 0): void{
         //Once all of the songs are removed, we can remove the playlist
         if(index >= playlist.playlistSong.length){
-            this.performApiEdit(this._apiService.deleteEntity('api/Playlists', pID), "Unable to remove playlist after deleting songs");
+            //this.performApiEdit(this._apiService.deleteEntity('api/Playlists', pID), "Unable to remove playlist after deleting songs");
+            this.performApiAction(this._apiService.deleteEntity('api/Playlists', pID), "Unable to remove playlist after deleting songs");
+            this.updateUserInfo();
             return;
         }
 
@@ -142,64 +163,14 @@ export class UserService {
         );
     }
 
-    /*
-        This method is called whenver we add or delete something from the user's entities (playlist/ songs)
-        It takes an observable (which will most likely be post or delete) and performs the action then updates the user and _songMap
-        If we have apiAction as null, then it means we only want to update the user's values (for current time UI updates)
-        @param apiAction: Observable<any> - The action to perform to the api
-        @param errorMessage: string - The string to display if the action fails
-    */
-    private performApiEdit(apiAction: Observable<any>, errorMessage: string): void{
-        let s: Subscription;
-
-        //If our action is null, then we only want to update the user
-        if(apiAction !== null){
-            s = apiAction
-            .do(a => a = a) //Ignore the first output
-            .flatMap(u => this._apiService.getSingleEntity('api/Users', this._user.userId))
-            .subscribe(
-                user => this._user = user,
-                err => console.log(errorMessage),
-                () => {
-                    this._storage.setValue('_user', this._user);
-                    this.updatePlaylists();
-                    s.unsubscribe();
-                }
-            );
-        }else{
-            s = this._apiService.getSingleEntity('api/Users', this._user.userId).subscribe(
-                user => this._user = user,
-                err => console.log(errorMessage),
-                () => {
-                    this._storage.setValue('_user', this._user);
-                    this.updatePlaylists();
-                    s.unsubscribe();
-                }
-            );
-        }
-    }
-
-    /*
-        Returns playlist data from user entity
-    */
-    public getPlaylists(): PlayList[]{
-        this._user = this._storage.getValue('_user');
-        return this._user.playlist;
-    }
-
-    /*
-        Loads playlist, song map from local storage and returns songs for a given playlist ID
-        @param pID: number - the playlistId of the playlist to get info for
-    */
-    public getSongs(pID: number){
-        let songMap = this._storage.getValue('_songMap');
-        return songMap[pID];
+    public getSingleEntity(path: string, id: number): Observable<any>{
+        return this._apiService.getSingleEntity(path, id);
     }
 
     /*
         Returns Observable from api for a given path (mainly used in the tab features to display all songs, albums, artists, etc)
     */
-    public getAllEntity(path: string): Observable<any[]>{
+    public getAllEntities(path: string): Observable<any[]>{
         return this._apiService.getAllEntities(path);
     }
 
@@ -228,26 +199,21 @@ export class UserService {
     }
 
     /*
-        Called when we log in, or when we edit a playlist this method parses all of the playlist data from the user entity. 
-        It stores it all in local storage so that it can be easily changed and viewed accross all components
+        This method is called whenever we make a large change to the user. For now, it is only called when we delete
+        an entire playlist or add a new playlist. It updates the stored value of the user and their respective playlists in local storage
     */
-    private updatePlaylists(){
-        let playlists = {}; 
-        let songs: Song[] = [];
-        let playlist: PlayList;
+    private updateUserInfo(){
+        let s: Subscription;
 
-        //Loop through all playlist the user owns
-        for(let i=0; i<this._user.playlist.length; i++){
-            songs = [];
-            playlist = this._user.playlist[i];
-            //Loop through all of the songs in the given playlist and append them
-            for(let j=0; j<playlist.playlistSong.length; j++){
-                songs.push(playlist.playlistSong[j].song);
+        s = this._apiService.getSingleEntity('api/Users', this._user.userId).subscribe(
+            user => this._user = user,
+            err => console.log("Unable to update user information"),
+            () => {
+                this._storage.setValue('_user', this._user);
+                this._storage.setValue('_playlists', this._user.playlist);
+                s.unsubscribe();
             }
-            //Assign the 'hashmap'
-            playlists[playlist.playlistId] = songs;
-        }
-        //Set it in local storage for easy updates
-        this._storage.setValue('_songMap', playlists);
+        );
+
     }
 }

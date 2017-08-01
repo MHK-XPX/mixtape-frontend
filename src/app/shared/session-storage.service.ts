@@ -2,6 +2,7 @@
     What is stored:
         _user - The user that is currently logged in
         _users - A list of all the users (this will probably be removed)
+        _playlists - A list of all the users playlists
         _songMap - A list of all the playlist the user owns containing the song details, <key, value> = <playlistId, Song[]>
         loggedIn - If the user is currently logged in or not
 */

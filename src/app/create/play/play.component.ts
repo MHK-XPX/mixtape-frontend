@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
+import { Subscription } from "rxjs";
 
 import { UserService } from '../../user/user.service';
+import { StorageService } from '../../shared/session-storage.service';
 
 import { PlayList } from '../../playlist/playlist';
 import { Song } from '../../playlist/song'
@@ -12,8 +14,6 @@ import { Song } from '../../playlist/song'
 })
 
 export class PlayComponent{
-    //playLists: PlayList[] = []; //Used for view with playlist selection
-
     playlist: PlayList; //Used to hold the playlist we select
 
     songs: Song[] = [];
@@ -21,12 +21,11 @@ export class PlayComponent{
     private videoId;
 
     urls: string[] = []; //Holds the youtube links of our playlist
-    imgs: string[] = []; //Holds the thumbnail links to our playlists
 
     isPlaying: boolean = false;
     repeat: boolean = false;
 
-    constructor(private _userService: UserService){}
+    constructor(private _userService: UserService, private _storage: StorageService){}
 
     player: YT.Player;
 
@@ -79,57 +78,53 @@ export class PlayComponent{
     }
 
     /*
-        This method is called when we choose the playlist from the playlist display menu
-        It loads all of the links from the playlists and guides us to our page that has the player and
-        the links in a list element
+        This method is called when we initially select a playlist, append a playlist, or load a new playlist.
+        If we are initially selecting a playlist, then we do not need to call playNext since it is already
+        called when we load the youtube player
+        @param playlist: PlayList - The playlist we want to play
+        @param firstLoad: boolean - If we are loading a playlist for the very first time
     */
-    private playPlayList(pList: PlayList): void{
-        let s = this._userService.getSongs(pList.playlistId);
-        
-        //Arrays are pass by reference...so lets only take the values (otherwise its pretty annoying to program around)
-        for(let i=0; i<s.length; i++){
-            this.songs.push(s[i])
-        }
+    private playPlayList(playlist: PlayList, firstLoad: boolean = true): void{
+        let s: Subscription;
+        s = this._userService.getSingleEntity('api/Playlists', playlist.playlistId).subscribe(
+            p => this.playlist = p,
+            err => console.log("Unable to play songs"),
+            () => {
+                this.songs = []; //Clear out songs every time so we can make sure our playlist is always pure
+                for(let i=0; i<this.playlist.playlistSong.length; i++){
+                    this.songs.push(this.playlist.playlistSong[i].song);
+                }
+                this.url = this.songs[0].url;
+                this.parseId(this.url);
+                this.isPlaying = true;
 
-        this.url = this.songs[0].url;
+                if(!firstLoad) //If we already have a playlist loaded, then we can safely call playnext, otherwise we get inf. recursion
+                    this.playNext();
 
-        this.parseId(this.url);
-
-        this.isPlaying = true;
-
-        this.playlist = pList;
+                s.unsubscribe();
+            }
+        );
     }
 
     /*
         This method is called when we click add on a playlist below our viewer. It will add ALL of the songs from
         the given list into our current playlist
-        @param pList: PlayList - The playlist to append to the end of our player
+        @param playlist: PlayList - The playlist to append to the end of our player
     */
-    private appendPlayList(pList: PlayList) : void{
-        let s = this._userService.getSongs(pList.playlistId);
-
-        for(let i=0; i<s.length; i++){
-            this.songs.push(s[i]);
-        }
+    private appendPlayList(playlist: PlayList) : void{
+        let s: Subscription;
+        s = this._userService.getSingleEntity('api/Playlists', playlist.playlistId).subscribe(
+            p => playlist = p,
+            err => console.log("Unable to append playlist"),
+            () => {
+                for(let i=0; i<playlist.playlistSong.length; i++){
+                    this.songs.push(playlist.playlistSong[i].song);
+                }
+                s.unsubscribe();
+            }
+        );
     }
 
-    /*
-        This method is called when when load a new playlist from our play view (when the user clicks on the on the load button below
-        the youtube player). It simply replaces the current playlist with the clicked on
-        @param pList: PlayList - The playlist to load into our player
-    */
-    private loadNewPlayList(pList: PlayList): void{
-        let s = this._userService.getSongs(pList.playlistId);
-        this.songs = [];
-
-        for(let i=0; i<s.length; i++){
-            this.songs.push(s[i]);
-        }
-        this.playlist = pList;
-        
-        //Do we want auto-play always on???
-        this.playNext();
-    }
     /*
         This method is the core to many methods, it is called when we first start the playlist, if we have repeat on,
         or when we click the next song button. 
@@ -145,8 +140,7 @@ export class PlayComponent{
             this.player.playVideo();
         }else{
             if(this.repeat){
-                this.playPlayList(this.playlist);
-                this.playNext();
+                this.playPlayList(this.playlist, false);
             }
         }
     }

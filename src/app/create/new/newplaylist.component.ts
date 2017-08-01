@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { AsyncPipe } from '@angular/common';
+import { Observable } from 'rxjs/Observable';
 
 import { UserService } from '../../user/user.service';
 
@@ -21,10 +23,10 @@ export class NewPlayListComponent implements OnInit{
     private _playlistSongs: Song[] = [];
     
     //Global api data fields
-    private _songs: Song[] = [];
-    private _artists: Artist[] = [];
-    private _albums: Album[] = [];
-    private _otherPlaylists: PlayList[] = [];
+    private _songs: Observable<Song[]>;
+    private _artists: Observable<Artist[]>;
+    private _albums: Observable<Album[]>;
+    private _otherPlaylists: Observable<PlayList[]>;
 
     //Page logic
     private tabInView: string = 'songs';
@@ -41,25 +43,10 @@ export class NewPlayListComponent implements OnInit{
         Loads up all the data we need for creating a playlist...might be changed in the future
     */
     ngOnInit(){
-        this._userService.getAllEntity('api/Songs').subscribe(
-            s => this._songs = s,
-            err => console.log("unable to load songs")
-        );
-
-        this._userService.getAllEntity('api/Artists').subscribe(
-            a => this._artists = a,
-            err => console.log("unable to load songs")
-        );
-
-        this._userService.getAllEntity('api/Albums').subscribe(
-            a => this._albums = a,
-            err => console.log("unable to load all albums")
-        );
-
-        this._userService.getAllEntity('api/Playlists').subscribe(
-            p => this._otherPlaylists = p,
-            err => console.log("unable to load all playlists")
-        );
+        this._songs = this._userService.getAllEntities('api/Songs');
+        this._artists = this._userService.getAllEntities('api/Artists');
+        this._albums = this._userService.getAllEntities('api/Albums');
+        this._otherPlaylists = this._userService.getAllEntities('api/Playlists');
     }
 
     //NOT IMPLEMENTED YET
