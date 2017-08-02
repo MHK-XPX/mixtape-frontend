@@ -1,9 +1,9 @@
 <div *ngIf="!_isPlaying">
-    <ul class='table' *ngIf='this._playlists && this._playlists.length'>
+    <ul *ngIf='this._playlists && this._playlists.length'>
         <li *ngFor='let p of this._playlists'>
             {{ p.name }}
             <button type="button" (click)='playPlaylist(p)'>Play</button>
-            <ul class="songList">
+            <ul>
                 <li *ngFor="let pls of p.playlistSong">
                     <img [src]="getUrlImage(pls.song.url)"/>
                     {{ pls.song.name }}
@@ -26,27 +26,39 @@
                 <button type="button" (click)='repeatPlaylist()'>Repeat:{{ _repeat }}</button>
             </div>
 
-            <ul id='songs-in-playlist'>
-                <li *ngFor="let song of _songs; let i = index">
+            <ol id='current-playlist'>
+                <li *ngFor="let song of _songs; let i = index" [style.background-color]="(_onVideo-1) === i ? '#918A8A' : '#343434'">
                     <img [src]="getUrlImage(song.url)"/>
                     {{ song.name }}
                 </li>
-            </ul>
+            </ol>
     </div>
 
-    <div id="more-playlists" *ngIf='_playlists && _playlists.length'>
-        <ul id="other-playlist-list">
-            <li *ngFor="let p of _playlists">
-                <h3> {{ p.name }} </h3>
-                <button type="button" (click)='appendPlayList(p)'>Add</button>
-                <button type="button" (click)='playPlaylist(p, false)'>Play</button>
-                <ul id="song-list">
-                    <li *ngFor="let pls of p.playlistSong">
-                        <img [src]="getUrlImage(pls.song.url)"/>
-                        {{ pls.song.name }}
-                    </li>
-                </ul>
-            </li>
-        </ul>
+    <div id="extra-playlists-block">
+        <div id="user-playlists" *ngIf='_playlists && _playlists.length'>
+            <h3> Your playlists: </h3>
+            <ul>
+                <li *ngFor="let p of _playlists">
+                    <h3> {{ p.name }} </h3>
+                    <button type="button" (click)='appendPlayList(p)'>Add</button>
+                    <button type="button" (click)='playPlaylist(p, false)'>Play</button>
+                    <ul>
+                        <li *ngFor="let pls of p.playlistSong">
+                            <img [src]="getUrlImage(pls.song.url)"/>
+                            {{ pls.song.name }}
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div id="all-playlists">
+            <h3> Other playlists: </h3>
+            <ul>
+                <li *ngFor="let p of _publicPlaylists | async">
+                    {{ p.name }}
+                </li>
+            </ul>
+        </div>
     </div>
 </div>

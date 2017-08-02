@@ -17,10 +17,12 @@ import { Song } from '../../playlist/song'
 export class PlayComponent implements OnInit{
     private _playlist: PlayList; //Used to hold the playlist we select
     private _playlists: PlayList[] = [];
+    private _publicPlaylists: Observable<any[]>;
 
     private _songs: Song[] = [];
     private _url: string = ''; //Base string to make it so the embeded video looks "nice"
     private _videoId;
+    private _onVideo: number = 0;
 
     private _isPlaying: boolean = false;
     private _repeat: boolean = false;
@@ -40,6 +42,8 @@ export class PlayComponent implements OnInit{
                 err => console.log("Unable to load playlists"),
             );
         }
+
+        this._publicPlaylists = this._userService.getAllEntities('api/Playlists');
     }
 
     /*
@@ -100,6 +104,7 @@ export class PlayComponent implements OnInit{
     private playPlaylist(playlist: PlayList, firstLoad: boolean = true): void{
         this._songs = []
         this._playlist = playlist;
+        this._onVideo = 0;
         
         for(let i=0; i<this._playlist.playlistSong.length; i++){
             this._songs.push(this._playlist.playlistSong[i].song);
@@ -133,14 +138,16 @@ export class PlayComponent implements OnInit{
         repeat on, the method reloads the playlist and restarts the process.
     */
     private playNext(){
-        if(this._songs.length > 0){
-            this._url = this._songs.shift().url;
+        this._onVideo++;
+        if(this._onVideo <= this._songs.length){
+            this._url = this._songs[this._onVideo - 1].url;
             this.parseId(this._url);
             this._player.loadVideoById(this._videoId, 0);
             this._player.playVideo();
         }else{
             if(this._repeat){
-                this.playPlaylist(this._playlist, false);
+                this._onVideo = 0;
+                this.playNext();
             }
         }
     }

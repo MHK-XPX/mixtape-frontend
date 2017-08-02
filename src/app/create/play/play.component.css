@@ -23,44 +23,79 @@ button:hover{
 
 #current-playlist-block{
     float: right; 
-    border: 5px solid grey; 
+    border: 5px solid black; 
     height: 49.75vh; 
-    width: 29.25vw;
+    width: 29.35vw;
     text-align: left;
+    background: #343434;
 }
 
-h3{
-    text-align:center;
+#current-playlist-block h3{
+    text-align: center;
+    color: whitesmoke;
 }
 
-#more-playlists{
-    clear: both;
-    float:left; 
-    border: 5px solid grey;
-    width: 50%; 
-    max-height: 500px;
+#current-playlist-block button{
+    color: whitesmoke;
 }
 
-#other-playlists li{
-    display:inline;
-    list-style-type: none;
-    max-width: 40%;
-}
-
-#song-list{
-    overflow: hidden;
-    overflow-y: scroll;
-}
-
-#songs-in-playlist{
+#current-playlist-block ol{
     overflow: hidden;
     overflow-y: scroll;
     max-height: 35vh;
 }
 
-#other-playlist-list{
+#current-playlist-block ol li{
+    color: whitesmoke;
+    border-bottom: none;
+    font-size: 12px;
+    font-weight: normal;
+}
+
+#current-playlist-block ol li img{
+    width: 75px;
+}
+
+#current-playlist::-webkit-scrollbar-thumb{
+    background-color: #918A8A;
+}
+
+#current-playlist::-webkit-scrollbar-track{
+    background-color: #343434;
+}
+
+#current-playlist::-webkit-scrollbar{ /* need this here to make two above work idk why...*/
+    background: none;
+}
+
+#extra-playlists-block{
+    clear: both;
+    border: 5px solid black;
+    display: inline-block;
+    width: 100%;
+}
+
+#extra-playlists-block h3{
+    text-align: center;
+}
+
+#extra-playlists-block ul{
     overflow: hidden;
     overflow-y: scroll;
+}
+
+#user-playlists{
+    width: 45%;
+    max-height: 500px;
+    height: 500px;
+    float: left;
+}
+
+#all-playlists{
+    width: 45%;
+    max-height: 500px;
+    height: 500px;
+    float: right;
 }
 
 ul {
@@ -80,10 +115,6 @@ ul li {
 ul li:hover {
 	background-color: #f2f2f2;
 	color: #000; 
-}
-
-a{
-    color: #000;
 }
 
 img{
