@@ -1,6 +1,6 @@
 <div>
     <div id="left-player">
-        <youtube-player [videoId]="videoId" [width]="750" [height]="480" (ready)="savePlayer($event)" (change)="onStateChange($event)"></youtube-player> 
+        <youtube-player [videoId]="_videoId" [width]="750" [height]="480" (ready)="savePlayer($event)" (change)="onStateChange($event)"></youtube-player> 
     </div>
 
     <div id="current-playlist-block">
@@ -26,7 +26,7 @@
             <button class="tablinks" (click)="openTab('playlists')">Other Playlists</button>
         </div>
 
-        <div id="songs" class="tabcontent" *ngIf='this.tabInView === "songs"'>
+        <div id="songs" class="tabcontent" *ngIf='this._tabInView === "songs"'>
             <ul id='songs-tab-list'>
                 <li *ngFor="let song of _songs | async">
                     <img [src]="getUrlImage(song.url)"/>
@@ -37,19 +37,28 @@
             </ul>
         </div>
 
-        <div id="artists" class="tabcontent" *ngIf='this.tabInView === "artists"'>
+        <div id="artists" class="tabcontent" *ngIf='this._tabInView === "artists"'>
             <ul id='artists-tab-list'>
                 <li *ngFor="let artist of _artists | async">
-                    <!--<img [src]="getUrlImage(song.url)"/>
-                    {{ song.name }}
-                    <button type="button" (click)='playSong(song)'>Play Song</button>
-                    <button type="button" (click)='addSong(song)(song)'>Add Song</button>-->
                     {{ artist.name }}
+                     <ul id='artists-albums' *ngIf='artist.album && artist.album.length'>
+                        <li *ngFor="let album of artist.album; let i = index">
+                            {{ album.name }}
+                            <ul id='album-songs' *ngIf='album.song && album.song.length'>
+                                <li *ngFor="let song of album.song; let i = index">
+                                    <img [src]="getUrlImage(song.url)"/>
+                                    {{ song.name }}
+                                    <button type="button" (click)='playSong(song)'>Play Song</button>
+                                    <button type="button" (click)='addSong(song)'>Add Song</button>
+                                </li>
+                             </ul>
+                        </li>
+                    </ul>
                 </li>
             </ul>
         </div>
 
-        <div id="albums" class="tabcontent" *ngIf='this.tabInView === "albums"'>
+        <div id="albums" class="tabcontent" *ngIf='this._tabInView === "albums"'>
             <ul id='albums-tab-list'>
                 <li *ngFor="let album of _albums | async">
                     {{ album.name }}
@@ -65,7 +74,7 @@
             </ul>
         </div>
 
-        <div id="playlists" class="tabcontent" *ngIf='this.tabInView === "playlists"'>
+        <div id="playlists" class="tabcontent" *ngIf='this._tabInView === "playlists"'>
             <ul id='playlists-tab-list'>
                 <li *ngFor="let playlist of _otherPlaylists | async">
                     <!--<img [src]="getUrlImage(song.url)"/>

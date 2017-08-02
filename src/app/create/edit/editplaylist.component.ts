@@ -20,7 +20,7 @@ import 'rxjs/Rx';
 })
 
 export class EditPlayListComponent implements OnInit{
-    playlist: PlayList;
+    private _playlist: PlayList;
 
     private _userPlaylist: Observable<PlayList[]>;
     private _userSongs: Song[] = [];
@@ -31,11 +31,10 @@ export class EditPlayListComponent implements OnInit{
     private _albums: Observable<Album[]>;
     private _otherPlaylists: Observable<PlayList[]>;
 
-    private tabInView: string = 'songs';
-    isEditing: boolean = false;
+    private _tabInView: string = 'songs';
+    private _isEditing: boolean = false;
 
-    inputUrl: string = '';
-    index: number;
+    private _inputUrl: string = ''; //not used yet
 
     constructor(private _userService: UserService, private _storage: StorageService){}
 
@@ -48,16 +47,15 @@ export class EditPlayListComponent implements OnInit{
 
     //Below is pretty dirty, working on a fix using AsyncPipe
     private editClicked(playlist: PlayList): void{
-        this.isEditing = !this.isEditing;
-        //this.playlist = playlist;
+        this._isEditing = !this._isEditing;
 
         let pls: PlaylistSong;
         this._userService.getSingleEntity('api/Playlists', playlist.playlistId).subscribe(
-            p => this.playlist = p,
+            p => this._playlist = p,
             err => console.log(("Unable to load playlist")),
             () => {
-                for(let i=0; i<this.playlist.playlistSong.length; i++){
-                    pls = this.playlist.playlistSong[i];
+                for(let i=0; i<this._playlist.playlistSong.length; i++){
+                    pls = this._playlist.playlistSong[i];
                     this._userSongs.push(pls.song);
                 }
             }
@@ -76,7 +74,7 @@ export class EditPlayListComponent implements OnInit{
     private addSong(song: Song){
         this._userSongs.push(song);
         let pls = {
-            playlistId: this.playlist.playlistId,
+            playlistId: this._playlist.playlistId,
             songId: song.songId,
             playlist: null,
             song: null
@@ -92,11 +90,11 @@ export class EditPlayListComponent implements OnInit{
     */
     private deleteClicked(song: Song, index: number): void{
         this._userSongs.splice(index, 1);
-        this._userService.removeSong(song, this.playlist, index);
+        this._userService.removeSong(song, this._playlist, index);
     }
 
     private backClicked(){
-        this.isEditing = false;
+        this._isEditing = false;
         this._userSongs = [];
     }
 
@@ -104,7 +102,7 @@ export class EditPlayListComponent implements OnInit{
         Called when we click on a tab, controls what we see in the view
     */
     private openTab(tabName: string){
-        this.tabInView = tabName;
+        this._tabInView = tabName;
     }
 
     private getUrlImage(url: string): string{

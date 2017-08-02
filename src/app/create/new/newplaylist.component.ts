@@ -29,13 +29,12 @@ export class NewPlayListComponent implements OnInit{
     private _otherPlaylists: Observable<PlayList[]>;
 
     //Page logic
-    private tabInView: string = 'songs';
-    createNew: boolean = false; //If we are currently creating a playlist
+    private _tabInView: string = 'songs';
 
     //Embeded video fields
-    player: YT.Player;
-    url: string = ''; //Base string to make it so the embeded video looks "nice"
-    private videoId;
+    private _player: YT.Player;
+    private _url: string = ''; //Base string to make it so the embeded video looks "nice"
+    private _videoId;
 
     constructor(private _userService: UserService, private _router: Router){}
 
@@ -80,11 +79,16 @@ export class NewPlayListComponent implements OnInit{
         this._playlistSongs.splice(index, 1);
     }
 
+    private getSongs(p: PlayList){
+        //console.log(p.playlistId);
+        return this._userService.getSingleEntity('api/Playlists', p.playlistId);
+    }
+
     /*
         Called when we click on a tab, controls what we see in the view
     */
     private openTab(tabName: string){
-        this.tabInView = tabName;
+        this._tabInView = tabName;
     }
 
     private getUrlImage(url: string): string{
@@ -95,14 +99,14 @@ export class NewPlayListComponent implements OnInit{
 
 
     //Youtube player methods below
-    savePlayer(player){
+    private savePlayer(player){
         var sw, sh;
         sw = window.screen.width;
         sh = window.screen.height;
 
-        this.player = player;
+        this._player = player;
 
-        this.player.setSize(.45 * sw, .45 * sh);
+        this._player.setSize(.45 * sw, .45 * sh);
     }
 
     /*
@@ -118,20 +122,20 @@ export class NewPlayListComponent implements OnInit{
     }
 
     private playSong(song: Song){
-        this.url = song.url;
-        this.parseId(this.url);
-        this.player.loadVideoById(this.videoId, 0);
-        this.player.playVideo();
+        this._url = song.url;
+        this.parseId(this._url);
+        this._player.loadVideoById(this._videoId, 0);
+        this._player.playVideo();
     }
 
      private parseId(url: string){
         if(url !== ''){
             var fixedUrl = url.replace(/(>|<)/gi,'').split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/);
             if(fixedUrl !== undefined){
-                this.videoId = fixedUrl[2].split(/[^0-9a-z_\-]/i);
-                this.videoId = this.videoId[0];
+                this._videoId = fixedUrl[2].split(/[^0-9a-z_\-]/i);
+                this._videoId = this._videoId[0];
             }else{
-                this.videoId = url;
+                this._videoId = url;
             }
         }
     }

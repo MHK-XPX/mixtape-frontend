@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Subscription } from "rxjs";
+import { Observable } from 'rxjs/Observable';
 
 import { UserService } from '../../user/user.service';
 import { StorageService } from '../../shared/session-storage.service';
@@ -13,21 +14,33 @@ import { Song } from '../../playlist/song'
     styleUrls: [ './play.component.css' ]
 })
 
-export class PlayComponent{
-    playlist: PlayList; //Used to hold the playlist we select
+export class PlayComponent implements OnInit{
+    private _playlist: PlayList; //Used to hold the playlist we select
+    private _playlists: PlayList[] = [];
 
-    songs: Song[] = [];
-    url: string = ''; //Base string to make it so the embeded video looks "nice"
-    private videoId;
+    private _songs: Song[] = [];
+    private _url: string = ''; //Base string to make it so the embeded video looks "nice"
+    private _videoId;
 
-    urls: string[] = []; //Holds the youtube links of our playlist
+    private _isPlaying: boolean = false;
+    private _repeat: boolean = false;
 
-    isPlaying: boolean = false;
-    repeat: boolean = false;
+    private _player: YT.Player;
 
     constructor(private _userService: UserService, private _storage: StorageService){}
 
-    player: YT.Player;
+    ngOnInit(){
+        let s: Subscription;
+        let playlists: PlayList[] = this._storage.getValue('_playlists');
+
+        for(let i=0; i<playlists.length; i++){
+            let p = playlists[i];
+            s = this._userService.getSingleEntity('api/Playlists', p.playlistId).subscribe(
+                data => this._playlists.push(data),
+                err => console.log("Unable to load playlists"),
+            );
+        }
+    }
 
     /*
         This method is a callback from the youtube iframe API, it is called once we have loaded the api.
@@ -39,9 +52,9 @@ export class PlayComponent{
         sw = window.screen.width;
         sh = window.screen.height;
 
-        this.player = player;
+        this._player = player;
 
-        this.player.setSize(.45 * sw, .45 * sh);
+        this._player.setSize(.45 * sw, .45 * sh);
         this.playNext();
     }
 
@@ -84,26 +97,21 @@ export class PlayComponent{
         @param playlist: PlayList - The playlist we want to play
         @param firstLoad: boolean - If we are loading a playlist for the very first time
     */
-    private playPlayList(playlist: PlayList, firstLoad: boolean = true): void{
-        let s: Subscription;
-        s = this._userService.getSingleEntity('api/Playlists', playlist.playlistId).subscribe(
-            p => this.playlist = p,
-            err => console.log("Unable to play songs"),
-            () => {
-                this.songs = []; //Clear out songs every time so we can make sure our playlist is always pure
-                for(let i=0; i<this.playlist.playlistSong.length; i++){
-                    this.songs.push(this.playlist.playlistSong[i].song);
-                }
-                this.url = this.songs[0].url;
-                this.parseId(this.url);
-                this.isPlaying = true;
+    private playPlaylist(playlist: PlayList, firstLoad: boolean = true): void{
+        this._songs = []
+        this._playlist = playlist;
+        
+        for(let i=0; i<this._playlist.playlistSong.length; i++){
+            this._songs.push(this._playlist.playlistSong[i].song);
+        }
 
-                if(!firstLoad) //If we already have a playlist loaded, then we can safely call playnext, otherwise we get inf. recursion
-                    this.playNext();
+        this._url = this._songs[0].url;
+        this.parseId(this._url);
+        this._isPlaying = true;
 
-                s.unsubscribe();
-            }
-        );
+        if(!firstLoad){
+            this.playNext();
+        }
     }
 
     /*
@@ -112,17 +120,9 @@ export class PlayComponent{
         @param playlist: PlayList - The playlist to append to the end of our player
     */
     private appendPlayList(playlist: PlayList) : void{
-        let s: Subscription;
-        s = this._userService.getSingleEntity('api/Playlists', playlist.playlistId).subscribe(
-            p => playlist = p,
-            err => console.log("Unable to append playlist"),
-            () => {
-                for(let i=0; i<playlist.playlistSong.length; i++){
-                    this.songs.push(playlist.playlistSong[i].song);
-                }
-                s.unsubscribe();
-            }
-        );
+        for(let i=0; i<playlist.playlistSong.length; i++){
+            this._songs.push(playlist.playlistSong[i].song);
+        }
     }
 
     /*
@@ -133,14 +133,14 @@ export class PlayComponent{
         repeat on, the method reloads the playlist and restarts the process.
     */
     private playNext(){
-        if(this.songs.length > 0){
-            this.url = this.songs.shift().url;
-            this.parseId(this.url);
-            this.player.loadVideoById(this.videoId, 0);
-            this.player.playVideo();
+        if(this._songs.length > 0){
+            this._url = this._songs.shift().url;
+            this.parseId(this._url);
+            this._player.loadVideoById(this._videoId, 0);
+            this._player.playVideo();
         }else{
-            if(this.repeat){
-                this.playPlayList(this.playlist, false);
+            if(this._repeat){
+                this.playPlaylist(this._playlist, false);
             }
         }
     }
@@ -149,20 +149,21 @@ export class PlayComponent{
         This method is called when the repeat button is pressed, it negates its value.
     */
     private repeatPlaylist(){
-        this.repeat = !this.repeat;
+        this._repeat = !this._repeat;
     }
 
     private parseId(url: string){
         if(url !== ''){
             var fixedUrl = url.replace(/(>|<)/gi,'').split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/);
             if(fixedUrl !== undefined){
-                this.videoId = fixedUrl[2].split(/[^0-9a-z_\-]/i);
-                this.videoId = this.videoId[0];
+                this._videoId = fixedUrl[2].split(/[^0-9a-z_\-]/i);
+                this._videoId = this._videoId[0];
             }else{
-                this.videoId = url;
+                this._videoId = url;
             }
         }
     }
+
     /*
         This method is called when we load a playlist, it pulls the image from the youtube api,
         this makes it so we can make our list look "pretty." 

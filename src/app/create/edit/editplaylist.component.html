@@ -1,4 +1,4 @@
-<div *ngIf="!isEditing">
+<div *ngIf="!_isEditing">
     <ul class='table' *ngIf='_storage.getValue("_playlists") && _storage.getValue("_playlists").length'>
         <li *ngFor='let pList of _storage.getValue("_playlists")'>
             {{ pList.name }}
@@ -8,7 +8,7 @@
     </ul>
 </div>
 
-<div *ngIf="isEditing">
+<div *ngIf="_isEditing">
     <div id="more-playlists">
         <div class="tab">
             <button class="tablinks" (click)="openTab('songs')">Songs</button>
@@ -17,7 +17,7 @@
             <button class="tablinks" (click)="openTab('playlists')">Other Playlists</button>
         </div>
 
-        <div id="songs" class="tabcontent" *ngIf='this.tabInView === "songs"'>
+        <div id="songs" class="tabcontent" *ngIf='this._tabInView === "songs"'>
             <ul id='songs-tab-list'>
                 <li *ngFor="let song of _songs | async">
                     <img [src]="getUrlImage(song.url)"/>
@@ -27,7 +27,7 @@
             </ul>
         </div>
 
-        <div id="artists" class="tabcontent" *ngIf='this.tabInView === "artists"'>
+        <div id="artists" class="tabcontent" *ngIf='this._tabInView === "artists"'>
             <ul id='artists-tab-list'>
                 <li *ngFor="let artist of _artists | async">
                     <!--<img [src]="getUrlImage(song.url)"/>
@@ -39,7 +39,7 @@
             </ul>
         </div>
 
-        <div id="albums" class="tabcontent" *ngIf='this.tabInView === "albums"'>
+        <div id="albums" class="tabcontent" *ngIf='this._tabInView === "albums"'>
             <ul id='albums-tab-list'>
                 <li *ngFor="let album of _albums | async">
                     {{ album.name }}
@@ -54,7 +54,7 @@
             </ul>
         </div>
 
-        <div id="playlists" class="tabcontent" *ngIf='this.tabInView === "playlists"'>
+        <div id="playlists" class="tabcontent" *ngIf='this._tabInView === "playlists"'>
             <ul id='playlists-tab-list'>
                 <li *ngFor="let playlist of _otherPlaylists | async">
                     <!--<img [src]="getUrlImage(song.url)"/>
@@ -68,7 +68,7 @@
     </div>
 
     <div id="playlist-container">
-        <h3 style="text-align: center" *ngIf='this.playlist'> {{ this.playlist.name }} </h3>
+        <h3 style="text-align: center" *ngIf='this._playlist'> {{ this._playlist.name }} </h3>
         <ul class='table' *ngIf='_userSongs && _userSongs.length'>
             <li *ngFor="let song of _userSongs; let i=index">
                 <img [src]="getUrlImage(song.url)"/>
