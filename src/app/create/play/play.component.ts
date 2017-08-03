@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { Subscription } from "rxjs";
 import { Observable } from 'rxjs/Observable';
 
@@ -26,10 +26,13 @@ export class PlayComponent implements OnInit{
 
     private _isPlaying: boolean = false;
     private _repeat: boolean = false;
+    private _onTab: string = 'user'; //user || all
 
     private _player: YT.Player;
+    private _width: number = window.innerWidth * .45;
+    private _height: number = window.innerHeight * .45;
 
-    constructor(private _userService: UserService, private _storage: StorageService){}
+    constructor(private _userService: UserService, private _storage: StorageService, private _ngZone: NgZone){}
 
     ngOnInit(){
         let s: Subscription;
@@ -44,6 +47,14 @@ export class PlayComponent implements OnInit{
         }
 
         this._publicPlaylists = this._userService.getAllEntities('api/Playlists');
+        
+        window.onresize = (e) => {
+            this._ngZone.run(() => {
+                this._width = window.innerWidth * .45;
+                this._height = window.innerHeight * .45;
+                this._player.setSize(this._width, this._height);
+            });
+        }
     }
 
     /*
@@ -58,7 +69,7 @@ export class PlayComponent implements OnInit{
 
         this._player = player;
 
-        this._player.setSize(.45 * sw, .45 * sh);
+        //this._player.setSize(.45 * sw, .45 * sh);
         this.playNext();
     }
 
@@ -179,5 +190,9 @@ export class PlayComponent implements OnInit{
         let _img = '';
        _img = this._userService.getThumbnail(url);
        return _img;
+    }
+
+    private openTab(tab: string){
+        this._onTab = tab;
     }
 }

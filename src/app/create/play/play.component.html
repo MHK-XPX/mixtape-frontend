@@ -15,33 +15,37 @@
 
 
 <div *ngIf="_isPlaying">
-    <div id="left-player">
-        <youtube-player [videoId]="_videoId" [width]="854" [height]="480" (ready)="savePlayer($event)" (change)="onStateChange($event)"></youtube-player> 
-    </div>
+    <div id="wrapper" style="height: 45vh">
+        <div id="left-player">
+            <youtube-player [videoId]="_videoId" [width]="this._width" [height]="this._height" (ready)="savePlayer($event)" (change)="onStateChange($event)"></youtube-player> 
+        </div>
 
-    <div id="current-playlist-block">
-        <h3> {{ _playlist.name }}</h3>
-            <div style="margin:auto; text-align:center;">
-                <button type="button" (click)='playNext()'>Play Next</button>
-                <button type="button" (click)='repeatPlaylist()'>Repeat:{{ _repeat }}</button>
-            </div>
-
+        <div id="current-playlist-block">
+            <img class='special-image' id='next-button' src="app/assets/playlist/next_song.png" (click)='playNext()'/>
+            <img class='special-image' id='repeat-button' [src]="_repeat ? 'app/assets/playlist/repeat_song_on.png' : 'app/assets/playlist/repeat_song_off.png'" (click)='repeatPlaylist()'/>
+            <h3> {{ _playlist.name }}</h3>
             <ol id='current-playlist'>
                 <li *ngFor="let song of _songs; let i = index" [style.background-color]="(_onVideo-1) === i ? '#918A8A' : '#343434'">
                     <img [src]="getUrlImage(song.url)"/>
                     {{ song.name }}
                 </li>
             </ol>
+        </div>
     </div>
 
     <div id="extra-playlists-block">
-        <div id="user-playlists" *ngIf='_playlists && _playlists.length'>
-            <h3> Your playlists: </h3>
+        <div class="tab">
+            <button class="tablinks" (click)="openTab('user')">Your playlists</button>
+            <button class="tablinks" (click)="openTab('all')">All playlists</button>
+        </div>
+
+        <div class='tab-content' id="user-playlists" *ngIf='_playlists && _playlists.length && this._onTab === "user"'>
             <ul>
                 <li *ngFor="let p of _playlists">
-                    <h3> {{ p.name }} </h3>
-                    <button type="button" (click)='appendPlayList(p)'>Add</button>
-                    <button type="button" (click)='playPlaylist(p, false)'>Play</button>
+                    <h3> {{ p.name }}
+                    <img class='special-image' id='add-button' src="app/assets/playlist/add_playlist.png" (click)='appendPlayList(p)'/>
+                    <img class='special-image' id='play-button' src="app/assets/playlist/play_playlist.png" (click)='playPlaylist(p, false)'/>
+                    </h3>
                     <ul>
                         <li *ngFor="let pls of p.playlistSong">
                             <img [src]="getUrlImage(pls.song.url)"/>
@@ -52,8 +56,7 @@
             </ul>
         </div>
 
-        <div id="all-playlists">
-            <h3> Other playlists: </h3>
+        <div class='tab-content' id="all-playlists" *ngIf='this._onTab === "all"'>
             <ul>
                 <li *ngFor="let p of _publicPlaylists | async">
                     {{ p.name }}
