@@ -10,7 +10,7 @@
 
 .container {
     overflow: hidden;
-    background-color: #333;
+    background-color: black; /*Was #333 */
     font-family: Arial;
 }
 

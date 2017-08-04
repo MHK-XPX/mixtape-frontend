@@ -58,6 +58,7 @@ export class EditPlayListComponent implements OnInit{
                     pls = this._playlist.playlistSong[i];
                     this._userSongs.push(pls.song);
                 }
+                console.log(this._playlist.name);
             }
         );
     }
@@ -88,7 +89,7 @@ export class EditPlayListComponent implements OnInit{
         it calls user service and removes the playlist song from the api and updates _songMap
         @param song: Song - the song we want to delete
     */
-    private deleteClicked(song: Song, index: number): void{
+    private deleteSong(song: Song, index: number): void{
         this._userSongs.splice(index, 1);
         this._userService.removeSong(song, this._playlist, index);
     }
@@ -109,5 +110,12 @@ export class EditPlayListComponent implements OnInit{
         let _img = '';
         _img = this._userService.getThumbnail(url);
         return _img;
+    }
+
+    /*
+        Used to get the first thumbnail in the playlist to show at the top of the screen (makes it look nice!)
+    */
+    private getFirstImage(): string{
+        return this.getUrlImage(this._userSongs[0].url);
     }
 }
