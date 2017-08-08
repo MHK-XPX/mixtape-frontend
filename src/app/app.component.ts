@@ -1,6 +1,7 @@
-import {Component} from '@angular/core';
+import { Component } from '@angular/core';
 import { UserService } from './user/user.service';
 import { StorageService } from './shared/session-storage.service';
+
 @Component({
   selector: 'app',
   templateUrl: './app.component.html',

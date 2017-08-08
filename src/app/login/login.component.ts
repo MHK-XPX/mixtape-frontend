@@ -7,9 +7,9 @@ import { UserService } from '../user/user.service';
 import { StorageService } from '../shared/session-storage.service';
 
 import { User } from '../user/user';
-import { PlayList } from '../playlist/playlist';
-import { AlbumRating } from '../playlist/albumrating';
-import { SongRating } from '../playlist/songrating';
+import { PlayList } from '../playlist/interfaces/playlist';
+import { AlbumRating } from '../playlist/interfaces/albumrating';
+import { SongRating } from '../playlist/interfaces/songrating';
 
 @Component({
   selector: 'login',

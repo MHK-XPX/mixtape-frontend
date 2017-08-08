@@ -4,10 +4,10 @@ import { Subscription } from "rxjs";
 
 import { User } from './user';
 
-import { PlaylistSong } from '../playlist/playlistsong';
-import { PlayList } from '../playlist/playlist';
-import { Artist } from '../playlist/artist';
-import { Song } from '../playlist/song';
+import { PlaylistSong } from '../playlist/interfaces/playlistsong';
+import { PlayList } from '../playlist/interfaces/playlist';
+import { Artist } from '../playlist/interfaces/artist';
+import { Song } from '../playlist/interfaces/song';
 
 import { ApiService } from '../shared/api.service';
 import { StorageService } from '../shared/session-storage.service';

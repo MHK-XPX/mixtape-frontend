@@ -1,6 +1,6 @@
-import { PlayList } from '../playlist/playlist';
-import { AlbumRating } from '../playlist/albumrating';
-import { SongRating } from '../playlist/songrating';
+import { PlayList } from '../playlist/interfaces/playlist';
+import { AlbumRating } from '../playlist/interfaces/albumrating';
+import { SongRating } from '../playlist/interfaces/songrating';
 
 export interface User{
      /*

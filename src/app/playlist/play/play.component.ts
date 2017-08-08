@@ -5,8 +5,8 @@ import { Observable } from 'rxjs/Observable';
 import { UserService } from '../../user/user.service';
 import { StorageService } from '../../shared/session-storage.service';
 
-import { PlayList } from '../../playlist/playlist';
-import { Song } from '../../playlist/song'
+import { PlayList } from '../../playlist/interfaces/playlist';
+import { Song } from '../../playlist/interfaces/song'
 
 @Component({
     selector: 'create-play',

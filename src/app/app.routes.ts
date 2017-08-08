@@ -1,15 +1,14 @@
 import { Routes } from '@angular/router';
-
 import { SessionGuard } from './shared/session-guard.service';
-import { AboutComponent } from './about/about.component';
+
 import { HomeComponent } from './home/home.component';
 
 import { LoginComponent } from './login/login.component';
 
-import { CreateComponent } from './create/create.component';
-import { NewPlayListComponent } from './create/new/newplaylist.component';
-import { EditPlayListComponent } from './create/edit/editplaylist.component';
-import { PlayComponent } from './create/play/play.component';
+import { CreateComponent } from './playlist/create/create.component';
+import { NewPlayListComponent } from './playlist/create/new/newplaylist.component';
+import { EditPlayListComponent } from './playlist/create/edit/editplaylist.component';
+import { PlayComponent } from './playlist/play/play.component';
 
 export const rootRouterConfig: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -24,4 +23,3 @@ export const rootRouterConfig: Routes = [
   },
   { path: 'login', component: LoginComponent }
 ];
-

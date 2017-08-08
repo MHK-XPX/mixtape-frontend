@@ -3,18 +3,18 @@ import { Router } from '@angular/router';
 import { AsyncPipe } from '@angular/common';
 import { Observable } from 'rxjs/Observable';
 
-import { UserService } from '../../user/user.service';
+import { UserService } from '../../../user/user.service';
 
-import { PlayList } from '../../playlist/playlist';
-import { PlaylistSong } from '../../playlist/playlistsong';
-import { Artist } from '../../playlist/artist';
-import { Album } from '../../playlist/album';
-import { Song } from '../../playlist/song';
+import { PlayList } from '../../../playlist/interfaces/playlist';
+import { PlaylistSong } from '../../../playlist/interfaces/playlistsong';
+import { Artist } from '../../../playlist/interfaces/artist';
+import { Album } from '../../../playlist/interfaces/album';
+import { Song } from '../../../playlist/interfaces/song';
 
 @Component({
     selector: 'create-newplaylist',
     templateUrl: './newplaylist.component.html',
-    styleUrls: [ './newplaylist.component.css', '../shared/playliststyle.css' ]
+    styleUrls: [ './newplaylist.component.css', '../../shared/playliststyle.css' ]
 })
 
 export class NewPlayListComponent implements OnInit{
