@@ -195,6 +195,7 @@ export class UserService {
     }
 
     public getUserID(): number{
+        this._user = this._storage.getValue('_user');
         return this._user.userId;
     }
 

@@ -1,19 +1,7 @@
-#playlist-detail-container{
-    width: 100%;
-    height: 45vh;
-}
-
-#left-info{
-    width: 45vw;
-    height: 100%;
-    overflow: hidden;
+#all-playlist-detail-container{
     border: 5px solid black;
-    float: left;
     box-sizing: border-box;
-}
-
-#left-info img{
-    width: 35%;
+    width: 100%;
 }
 
 #detail-wrapper{
@@ -29,17 +17,29 @@
     display: block;
 }
 
-#right-info{
-    width: 30vw;
-    height: 40vh;
-    float: right;
-    overflow: hidden;
-    border: 5px solid grey;
-    box-sizing: border-box;
-}
-
-#all-playlist-detail-container{
+#left-info{
     border: 5px solid black;
     box-sizing: border-box;
+    float: left;
+    height: 100%;
+    overflow: hidden;
+    width: 45vw;
+}
+
+#left-info img{
+    width: 35%;
+}
+
+#playlist-detail-container{
+    height: 45vh;
     width: 100%;
+}
+
+#right-info{
+    border: 5px solid grey;
+    box-sizing: border-box;
+    float: right;
+    height: 40vh;
+    overflow: hidden;
+    width: 30vw;
 }

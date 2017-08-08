@@ -1,15 +1,8 @@
-input{
-    display: inline-block;
-    text-align: center;
-    width: 25%;
-    position: left;
-}
-
 button{
-    border: 0 none hlsa(0,0%,0%,0);
-    outline: 0 none hlsa(0,0%,0%,0);
-    box-shadow: none;
     background: none;
+    border: 0 none hlsa(0,0%,0%,0);
+    box-shadow: none;
+    outline: 0 none hlsa(0,0%,0%,0);
     -webkit-appearance: none;
 }
 
@@ -20,6 +13,13 @@ button:hover{
 .createButton{
     border: none;
     outline: 1px solid #000;
+}
+
+input{
+    display: inline-block;
+    position: left;
+    text-align: center;
+    width: 25%;
 }
 
 #wrapper{

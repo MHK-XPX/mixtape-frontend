@@ -1,6 +1,6 @@
-#wrapper{
-    display: inline-block;
-    height: 45vh;
+.extra-playlists#minimized{
+    float: right;
+    width: 45vw;
 }
 
 .icon#minimize-button{
@@ -14,23 +14,12 @@
 .left-player#minimized{
     display: block;
 }
+
 .playlist-container h3{
     text-align: center;
 }
 
-.current-playlist-black::-webkit-scrollbar-thumb{
-    background-color: #918A8A;
-}
-
-.current-playlist-black::-webkit-scrollbar-track{
-    background-color: #343434;
-}
-
-.current-playlist-black::-webkit-scrollbar{ /* need this here to make two above work idk why...*/
-    background: none;
-}
-
-.extra-playlists#minimized{
-    width: 45vw;
-    float: right;
+#wrapper{
+    display: inline-block;
+    height: 45vh;
 }

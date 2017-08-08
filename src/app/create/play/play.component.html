@@ -39,7 +39,7 @@
             <button class="tablinks" (click)="openTab('all')">All playlists</button>
         </div>
 
-        <div class='tab-content' id="user-playlists" *ngIf='_playlists && _playlists.length && this._onTab === "user"'>
+        <div class='tabcontent' id="user-playlists" *ngIf='_playlists && _playlists.length && this._onTab === "user"'>
             <ul class="playlist-selection">
                 <li *ngFor="let p of _playlists">
                     <h3> {{ p.name }}
@@ -56,7 +56,7 @@
             </ul>
         </div>
 
-        <div class='tab-content' id="all-playlists" *ngIf='this._onTab === "all"'>
+        <div class='tabcontent' id="all-playlists" *ngIf='this._onTab === "all"'>
             <ul class="playlist-selection">
                 <li *ngFor="let p of _publicPlaylists | async">
                     {{ p.name }}

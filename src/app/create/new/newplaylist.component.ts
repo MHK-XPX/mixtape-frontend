@@ -62,7 +62,6 @@ export class NewPlayListComponent implements OnInit{
         }
     }
 
-    //NOT IMPLEMENTED YET
     private savePlayList(): void{       
        //Create a new playlist
        let newPlaylist = {
@@ -72,11 +71,6 @@ export class NewPlayListComponent implements OnInit{
        };
         this._userService.addPlaylist(newPlaylist, this._playlistSongs, 0, null);
         this._router.navigate(['./home']);
-    }
-
-    //NOT IMPLEMENTED YET
-    private addLink(name: string, url: string): void{
-        
     }
 
     /*
@@ -94,7 +88,6 @@ export class NewPlayListComponent implements OnInit{
     }
 
     private getSongs(p: PlayList){
-        //console.log(p.playlistId);
         return this._userService.getSingleEntity('api/Playlists', p.playlistId);
     }
 
@@ -119,11 +112,12 @@ export class NewPlayListComponent implements OnInit{
 
     /*
         Called when soemthing changes our player state (ie we pause the video or it ends)
-        -1 - not started
-        0 - ended
-        1 - playing
-        2 - paused
-        3 - loading
+        event values:
+            -1 - not started
+            0 - ended
+            1 - playing
+            2 - paused
+            3 - loading
     */
     onStateChange(event){
         

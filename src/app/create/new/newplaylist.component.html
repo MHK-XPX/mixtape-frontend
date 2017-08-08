@@ -6,12 +6,12 @@
     <div id="wrapper">
         <div class="playlist-container playlist-container-black">
             <input [value]="_playlistName" (input)="_playlistName = $event.target.value" type="text" id="_playlistName" name="_playlistName">
-            <button class="createButton" type="button" (click)='savePlayList()'>Save Playlist</button><br>
-                <ol class="current-playlist current-playlist-black" *ngIf='_playlistSongs && _playlistSongs.length'>
-                    <li *ngFor="let song of _playlistSongs; let i = index">
-                        <img id="playlist-img" [src]="getUrlImage(song.url)"/>
-                        {{ song.name }}
-                        <img class='icon icon-sml' id='delete-button' [src]="_deleteButton" (click)='removeSong(i)'/>
+            <button class="createButton" type="button" style="border: 3px solid darkslategrey; background: whitesmoke" (click)='savePlayList()'>Save Playlist</button><br>
+            <ol class="current-playlist current-playlist-black" *ngIf='_playlistSongs && _playlistSongs.length'>
+                <li *ngFor="let song of _playlistSongs; let i = index">
+                    <img id="playlist-img" [src]="getUrlImage(song.url)"/>
+                    {{ song.name }}
+                    <img class='icon icon-sml' id='delete-button' [src]="_deleteButton" (click)='removeSong(i)'/>
                 </li>
             </ol>
         </div>

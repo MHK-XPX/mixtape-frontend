@@ -25,13 +25,13 @@
                 <li *ngFor="let song of _userSongs; let i=index">
                     <img id="playlist-img" [src]="getUrlImage(song.url)"/>
                     {{ song.name }}
-                    <img class='icon icon-sml' id='delete-button' src="app/assets/playlist/delete_song.png" (click)='deleteSong(song, i)'/>
+                    <img class='icon icon-sml' id='delete-button' src="app/assets/playlist/delete_song_black.png" (click)='deleteSong(song, i)'/>
                 </li>
             </ol>
         </div>
     </div>
 
-    <div class="extra-playlist" id='all-playlist-detail-container'>
+    <div class="extra-playlists" id='all-playlist-detail-container'>
        <div class="tab">
             <button class="tablinks" (click)="openTab('songs')">Songs</button>
             <button class="tablinks" (click)="openTab('artists')">Artists</button>
