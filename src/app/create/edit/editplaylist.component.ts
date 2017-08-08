@@ -16,7 +16,7 @@ import 'rxjs/Rx';
 @Component({
     selector: 'create-editplaylist',
     templateUrl: './editplaylist.component.html',
-    styleUrls: [ './editplaylist.component.css' ]
+    styleUrls: [ './editplaylist.component.css', '../shared/playliststyle.css' ]
 })
 
 export class EditPlayListComponent implements OnInit{
@@ -58,7 +58,6 @@ export class EditPlayListComponent implements OnInit{
                     pls = this._playlist.playlistSong[i];
                     this._userSongs.push(pls.song);
                 }
-                console.log(this._playlist.name);
             }
         );
     }

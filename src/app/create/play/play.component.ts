@@ -11,7 +11,7 @@ import { Song } from '../../playlist/song'
 @Component({
     selector: 'create-play',
     templateUrl: './play.component.html',
-    styleUrls: [ './play.component.css' ]
+    styleUrls: [ './play.component.css', '../shared/playliststyle.css' ]
 })
 
 export class PlayComponent implements OnInit{
@@ -27,6 +27,10 @@ export class PlayComponent implements OnInit{
     private _isPlaying: boolean = false;
     private _repeat: boolean = false;
     private _onTab: string = 'user'; //user || all
+    private _minimized: boolean = false;
+    private _paused: boolean = false;
+    private _playlistImgPath: string = "/app/assets/playlist";
+    private _boundId: string = "maximized"; //Switches between 'minimized' and 'maximized' for css property control
 
     private _player: YT.Player;
     private _width: number = window.innerWidth * .45;
@@ -46,12 +50,19 @@ export class PlayComponent implements OnInit{
             );
         }
 
+        //Used for async pipe
         this._publicPlaylists = this._userService.getAllEntities('api/Playlists');
         
+        //This is called whenever we resize the window, keeps the video ratio accurate 
         window.onresize = (e) => {
             this._ngZone.run(() => {
-                this._width = window.innerWidth * .45;
-                this._height = window.innerHeight * .45;
+                if(!this._minimized){
+                    this._width = window.innerWidth * .45;
+                    this._height = window.innerHeight * .45;
+                }else{
+                    this._width = window.innerWidth * .30; 
+                    this._height = this._height * .10;
+                }
                 this._player.setSize(this._width, this._height);
             });
         }
@@ -63,13 +74,7 @@ export class PlayComponent implements OnInit{
         next song on our playlist.
     */
     savePlayer(player){
-        var sw, sh;
-        sw = window.screen.width;
-        sh = window.screen.height;
-
         this._player = player;
-
-        //this._player.setSize(.45 * sw, .45 * sh);
         this.playNext();
     }
 
@@ -82,23 +87,19 @@ export class PlayComponent implements OnInit{
         3 - loading
     */
     onStateChange(event){
-        console.log("player state:", event.data);
         switch(event.data){
             case -1:
-                console.log("Not started");
                 break;
             case 0:
-                console.log("Ended");
                 this.playNext();
                 break;
             case 1:
-                console.log("Playing");
+                this._paused = false;
                 break;
             case 2:
-                console.log("Paused");
+                this._paused = true;
                 break;
             case 3:
-                console.log("Loading");
                 break;
             default:
                 console.log("DEFAULT");
@@ -163,6 +164,26 @@ export class PlayComponent implements OnInit{
         }
     }
     
+    private pauseVideo(){
+        if(this._paused){
+            this._player.playVideo();
+        }else{
+            this._player.pauseVideo();
+        }
+    }
+
+    private changePlayerSize(){
+        this._minimized = !this._minimized;
+        
+        if(this._minimized){
+            this._player.setSize(window.innerWidth * .30, this._height * .10);
+            this._boundId = "minimized";
+        }else{
+            this._player.setSize(this._width, this._height);
+            this._boundId = "maximized";
+        }
+    }
+
     /*
         This method is called when the repeat button is pressed, it negates its value.
     */

@@ -1,144 +1,36 @@
-.special-image{
-    vertical-align: middle;
+#wrapper{
+    display: inline-block;
+    height: 45vh;
 }
 
-.special-image#next-button{
-    float: left;
+.icon#minimize-button{
+    padding-top: 10px;
 }
 
-.special-image#repeat-button{
-    float: right;
-}
-
-.special-image#add-button{
-    display: inline;
-}
-
-.special-image#play-button{
-    display: inline;
-}
-
-.special-image:hover{
+.icon:hover{
     background-color: rgba(255,255,255,.5);
-    cursor: pointer;
 }
 
-#left-player{
-    float: left;
+.left-player#minimized{
+    display: block;
 }
-
-#current-playlist-block{
-    height: 100%;
-    width: 30vw;
-    float: right;
-    overflow: hidden;
-    background: #343434;
-}
-
-#current-playlist-block h3{
+.playlist-container h3{
     text-align: center;
-    color: whitesmoke;
 }
 
-#current-playlist-block button{
-    color: whitesmoke;
-}
-
-#current-playlist-block ol{
-    overflow: hidden;
-    overflow-y: scroll;
-    height: 75%;
-}
-
-#current-playlist-block ol li{
-    color: whitesmoke;
-    border-bottom: none;
-    font-size: 12px;
-    font-weight: normal;
-}
-
-#current-playlist-block ol li img{
-    width: 75px;
-}
-
-#current-playlist::-webkit-scrollbar-thumb{
+.current-playlist-black::-webkit-scrollbar-thumb{
     background-color: #918A8A;
 }
 
-#current-playlist::-webkit-scrollbar-track{
+.current-playlist-black::-webkit-scrollbar-track{
     background-color: #343434;
 }
 
-#current-playlist::-webkit-scrollbar{ /* need this here to make two above work idk why...*/
+.current-playlist-black::-webkit-scrollbar{ /* need this here to make two above work idk why...*/
     background: none;
 }
 
-#extra-playlists-block{
-    clear: both;
-    border: 5px solid black;
-    display: inline-block;
-    width: 100%;
-    box-sizing: border-box;
+.extra-playlists#minimized{
+    width: 45vw;
+    float: right;
 }
-
-#extra-playlists-block ul{
-    overflow: hidden;
-    overflow-y: scroll;
-}
-
-div.tab{
-    overflow: hidden;
-    border: 1px solid #ccc;
-    outline: 1px solid #000;
-    background-color: #f1f1f1;
-}
-
-div.tab button{
-    background-color: inherit;
-    float: left;
-    border: none;
-    outline: none;
-    padding: 14px 16px;
-    transition: 0.3s;
-}
-
-div.tab button:hover {
-    background-color: #ddd;
-}
-
-.tab-content{
-    width: 100%;
-    max-height: 500px;
-    height: 500px;
-    float:left;
-}
-
-ul {
-	margin: 1.5em; 
-    overflow:hidden;
-    overflow-y:scroll;
-    max-height: 390px;
-}
-
-ul li {
-	border-bottom: 1px solid #ccc;
-	padding: .2em 0 .2em .5em;
-	font-weight: bold;
-	color: #666; 
-}
-
-ul li:hover {
-	background-color: #f2f2f2;
-	color: #000; 
-}
-
-img{
-    width: 50px;
-    margin: 2;
-}
-
-/* Even row cells are one color */
-tr:nth-child(even) td { background: #F1F1F1; }
-
-/* Odd row cells are one color */
-tr:nth-child(odd) td { background: #FEFEFE; }

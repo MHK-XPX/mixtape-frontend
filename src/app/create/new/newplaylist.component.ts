@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { AsyncPipe } from '@angular/common';
 import { Observable } from 'rxjs/Observable';
@@ -14,7 +14,7 @@ import { Song } from '../../playlist/song';
 @Component({
     selector: 'create-newplaylist',
     templateUrl: './newplaylist.component.html',
-    styleUrls: [ './newplaylist.component.css' ]
+    styleUrls: [ './newplaylist.component.css', '../shared/playliststyle.css' ]
 })
 
 export class NewPlayListComponent implements OnInit{
@@ -35,8 +35,13 @@ export class NewPlayListComponent implements OnInit{
     private _player: YT.Player;
     private _url: string = ''; //Base string to make it so the embeded video looks "nice"
     private _videoId;
+    private _width: number = window.innerWidth * .45;
+    private _height: number = window.innerHeight * .45;
 
-    constructor(private _userService: UserService, private _router: Router){}
+    //Bound img fields:
+    private _deleteButton: string = "app/assets/playlist/delete_song_white.png"; //temp (still debating on hardcoding values in ts rather than html)
+
+    constructor(private _userService: UserService, private _router: Router, private _ngZone: NgZone){}
 
     /*
         Loads up all the data we need for creating a playlist...might be changed in the future
@@ -46,6 +51,15 @@ export class NewPlayListComponent implements OnInit{
         this._artists = this._userService.getAllEntities('api/Artists');
         this._albums = this._userService.getAllEntities('api/Albums');
         this._otherPlaylists = this._userService.getAllEntities('api/Playlists');
+
+        //This is called whenever we resize the window, keeps the video ratio accurate 
+        window.onresize = (e) => {
+            this._ngZone.run(() => {
+                this._width = window.innerWidth * .45;
+                this._height = window.innerHeight * .45;
+                this._player.setSize(this._width, this._height);
+            });
+        }
     }
 
     //NOT IMPLEMENTED YET
@@ -100,13 +114,7 @@ export class NewPlayListComponent implements OnInit{
 
     //Youtube player methods below
     private savePlayer(player){
-        var sw, sh;
-        sw = window.screen.width;
-        sh = window.screen.height;
-
         this._player = player;
-
-        this._player.setSize(.45 * sw, .45 * sh);
     }
 
     /*

@@ -1,0 +1,132 @@
+.current-playlist{
+   overflow: hidden;
+   overflow-y: scroll;
+   height: 75%; 
+}
+
+.current-playlist li{
+    border-bottom: none;
+    font-size: 12px;
+    font-weight: normal;
+}
+
+.current-playlist-black li{
+    color: whitesmoke;
+}
+
+.current-playlist-white li{
+    color: black;
+}
+
+.playlist-container{
+    border: 5px solid black;
+    box-sizing: border-box;
+    float: right;
+    height: 100%;
+    overflow: hidden;
+    width: 30vw;
+}
+
+.playlist-container-black{
+    background: #343434;
+    color: whitesmoke; /* play */
+}
+
+.extra-playlists{
+    clear: both;
+    border: 5px solid black;
+    box-sizing: border-box;
+}
+
+.left-player{
+    display: inline;
+}
+
+.playlist-selection{ /* ul */
+    margin: 1.5em; 
+    overflow:hidden;
+    overflow-y:scroll;
+    max-height: 390px;
+}
+
+.playlist-selection li{ /* ul li */
+    border-bottom: 1px solid #ccc;
+	padding: .2em 0 .2em .5em;
+	font-weight: bold;
+	color: #666;
+}
+
+.extra-playlist ul{
+    overflow: hidden;
+    overflow-y: scroll;
+}
+
+ul li:hover {
+	background-color: #f2f2f2;
+	color: #000; 
+}
+
+div.tabcontent{
+    overflow: hidden;
+    height: 40vh;
+}
+
+div.tab{
+    overflow: hidden;
+    border: 1px solid #ccc;
+    outline: 1px solid #000;
+    background-color: #f1f1f1;
+}
+
+div.tab button{
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    padding: 14px 16px;
+    transition: 0.3s;
+}
+
+div.tab button:hover {
+    background-color: #ddd;
+}
+
+img{
+    width: 50px;
+}
+
+img#playlist-img{
+    width: 75px;
+}
+
+.img-left{
+    float: left;
+}
+
+.img-right{
+    float: right;
+}
+
+.icon:hover{
+    cursor: pointer;
+}
+
+.icon{
+    display: inline;
+}
+
+.icon-middle{
+    vertical-align: middle;
+}
+
+.icon-sml{
+    width: 20px;
+}
+
+.icon-med{
+    width: 30px;
+}
+
+.icon-lrg{
+    width: 35px;
+}
