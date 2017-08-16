@@ -29,7 +29,6 @@ export class UserService {
         this._loggedIn = this._storage.getValue('loggedIn');
 
         this._storage.setValue('_playlists', this._user.playlist);
-        this._storage.setValue('_songMap', {});
     }
 
     public logOut(): void{
@@ -42,6 +41,15 @@ export class UserService {
 
         //Set local storage
         this._storage.setValue('loggedIn', this._loggedIn);
+        this._storage.setValue('_playlists', {});
+        this._storage.setPlaylist('_playlist', {});
+    }
+
+    public addSong(song: Object): void{
+        this.performApiAction(
+            this._apiService.postEntity('api/Songs', song),
+            "Unable to add song to database"
+        )
     }
 
     /*
@@ -49,10 +57,10 @@ export class UserService {
         @param playlistSong: Object - The playlist song to add to the api
         @param pID: number - The playlistId of the playlist we want to add a song to
     */
-    public addSong(playlistSong: Object): void{
-        this.performApiAction(
+    public addPlaylistSong(playlistSong: Object): void{
+        return this.performApiAction(
             this._apiService.postEntity('api/PlaylistSongs', playlistSong),
-            "Unable to add song"
+            "Unable to add song to playlist"
         );
     }
 
@@ -62,77 +70,36 @@ export class UserService {
         @param playlist: PlayList - the playlist to remove the song from
         @param index: number - the index of the song in the playlist
     */
-    public removeSong(song: Song, playlist: PlayList, index: number): void{
+    public removePlaylistSong(song: Song, playlist: PlayList, index: number): void{
         let plsID = playlist.playlistSong[index].playlistSongId;
 
         this.performApiAction(
             this._apiService.deleteEntity('api/PlaylistSongs', plsID),
-            "Unable to remove song"
+            "Unable to remove song from playlist"
         );
     }
 
     /*
-        This method is called whenever we perform an action on the api (add, delete, edit, etc something)
-        @param action: Observable<any> - The action to perform on the api
-        @param errorMessage: string - The message to output if the action is invalid
+        The method adds a playlist to the DB and returns the newly created entity 
+        @param playlist: Object - The playlist to add to the database
+        @return playlist: any (really PlayList) - The newly created playlist returned from the backend
     */
-    private performApiAction(action: Observable<any>, errorMessage: string): void{
+    public addPlaylist(playlist: Object): any{
+        let playlists: PlayList[] = this._storage.getValue('_playlists');
+        let newPlaylist: PlayList;
         let s: Subscription;
-        s = action.subscribe(
-            data => data = data,
-            err => console.log(errorMessage),
-            () => s.unsubscribe()
+
+        s = this._apiService.postEntity('api/Playlists', playlist).subscribe(
+            p => newPlaylist = p,
+            err => console.log("Unable to create playlist"),
+            () => {
+                s.unsubscribe();
+                this._storage.setPlaylist('_playlist', newPlaylist);
+                playlists.push(newPlaylist);
+                this._storage.setValue('_playlists', playlists);
+                return newPlaylist
+            }
         );
-    }
-
-    /*
-        This method is called when we create a playlist. It adds the playlist to the api then recursively
-        adds each of the songs to the newly created playlist
-        @param playlistToCreate: Object - The layout of the playlist to send to the api (since it's missing fields it is an object not a playlist)
-        @param songs: Song[] - A list of songs to add to the new playlist
-        @param index: number - Index to keep track of which song we are adding and when to break
-        @param createdPlaylist: PlayList - The playlist returned from the api that we aim our songs at
-    */
-    public addPlaylist(playlistToCreate: Object, songs: Song[], index=0, createdPlaylist: PlayList): void{
-        //Once we have saved the new playlist to the api we update the user and return
-        if(index >= songs.length){
-            //this.performApiEdit(null, "Failed to update user");
-            this.updateUserInfo();
-            return;
-        }
-
-        let s: Subscription;
-        let p: PlayList;
-        let song: Song;
-
-        //Create the playlist first
-        if(createdPlaylist === null){
-            s = this._apiService.postEntity('api/Playlists', playlistToCreate).subscribe(
-                pl => p = pl,
-                err => console.log("Unable to create playlist"),
-                () => {
-                    this.addPlaylist(null, songs, 0, p);
-                    s.unsubscribe();
-                }
-            );
-        }else{ //Then add the songs to it when the subscription is complete
-            song = songs[index];
-            let pls = {
-                "playlistId": createdPlaylist.playlistId,
-                "songId": song.songId,
-                "playlist": null,
-                "song": null
-            };
-
-            s = this._apiService.postEntity('api/PlaylistSongs', pls).subscribe(
-                data => data = data,
-                err => console.log("Unable to load songs into new playlist"),
-                () => {
-                    this.addPlaylist(null, songs, index + 1, createdPlaylist);
-                    s.unsubscribe();
-                }
-            );
-        }
     }
 
     /*
@@ -144,9 +111,7 @@ export class UserService {
     public removePlaylist(playlist: PlayList, pID: number, index = 0): void{
         //Once all of the songs are removed, we can remove the playlist
         if(index >= playlist.playlistSong.length){
-            //this.performApiEdit(this._apiService.deleteEntity('api/Playlists', pID), "Unable to remove playlist after deleting songs");
             this.performApiAction(this._apiService.deleteEntity('api/Playlists', pID), "Unable to remove playlist after deleting songs");
-            this.updateUserInfo();
             return;
         }
 
@@ -163,6 +128,30 @@ export class UserService {
         );
     }
 
+    /*
+        This method is called whenever we perform an action on the api (add, delete, edit, etc something)
+        @param action: Observable<any> - The action to perform on the api
+        @param errorMessage: string - The message to output if the action is invalid
+    */
+    private performApiAction(action: Observable<any>, errorMessage: string): any{
+        let s: Subscription;
+        let d: any;
+        s = action.subscribe(
+            data => d = data,
+            err => console.log(errorMessage),
+            () => {
+                s.unsubscribe()
+                return d;
+            }
+        );
+    }
+
+    /*
+        This method returns a single entity of any type from the DB
+        @param path: string - The api path
+        @param id: number - The ID of the single entity to fetch
+        @return Observable<any> - The returned value from the DB (not subscribed)
+    */
     public getSingleEntity(path: string, id: number): Observable<any>{
         return this._apiService.getSingleEntity(path, id);
     }
@@ -197,24 +186,5 @@ export class UserService {
     public getUserID(): number{
         this._user = this._storage.getValue('_user');
         return this._user.userId;
-    }
-
-    /*
-        This method is called whenever we make a large change to the user. For now, it is only called when we delete
-        an entire playlist or add a new playlist. It updates the stored value of the user and their respective playlists in local storage
-    */
-    private updateUserInfo(){
-        let s: Subscription;
-
-        s = this._apiService.getSingleEntity('api/Users', this._user.userId).subscribe(
-            user => this._user = user,
-            err => console.log("Unable to update user information"),
-            () => {
-                this._storage.setValue('_user', this._user);
-                this._storage.setValue('_playlists', this._user.playlist);
-                s.unsubscribe();
-            }
-        );
-
     }
 }

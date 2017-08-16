@@ -3,11 +3,37 @@
         _user - The user that is currently logged in
         _users - A list of all the users (this will probably be removed)
         _playlists - A list of all the users playlists
-        _songMap - A list of all the playlist the user owns containing the song details, <key, value> = <playlistId, Song[]>
+        _playlist - The current playlist selected by the user
+        _onVideo - The index of the current video we are on
         loggedIn - If the user is currently logged in or not
 */
+import { PlayList } from '../playlist/interfaces/playlist';
+
+import {Observable} from 'rxjs/Observable';
+import 'rxjs/add/operator/share';
+
 export class StorageService{
-    constructor(){}
+    //Used to allow dynamic updates on our playlist
+    public playlistObservable: Observable<any>;
+    private _playlistObserver: any;
+    private _playlist: PlayList;
+
+    constructor(){
+        this.playlistObservable = new Observable(observer => {
+            this._playlistObserver = observer;
+        }).share();
+    }
+
+    /*
+        Sets the playlist to a new value and notifies all subscribers
+        @param key: string - '_playlist'
+        @param value: any - The value to set it to 
+    */
+    public setPlaylist(key: string, value: any){
+        this.setValue(key, value);
+        this._playlist = this.getValue(key);
+        this._playlistObserver.next(this._playlist);
+    }
 
     /*
         Sets a key in session storage to a given key

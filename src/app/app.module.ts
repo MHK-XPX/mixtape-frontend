@@ -13,14 +13,14 @@ import { UserService } from './user/user.service';
 
 import { LoginComponent } from './login/login.component';
 
+import { CreateEntityComponent } from './create/create.component';
+import { CreateNewSongComponent } from './create/song/newsong.component';
+
 import { ApiService } from './shared/api.service';
 import { StorageService } from './shared/session-storage.service';
 import { SessionGuard } from './shared/session-guard.service';
 
-import { CreateComponent } from './playlist/create/create.component';
-import { NewPlayListComponent } from './playlist/create/new/newplaylist.component';
-import { EditPlayListComponent } from './playlist/create/edit/editplaylist.component';
-import { PlayComponent } from './playlist/play/play.component';
+import { PlaylistComponent } from './playlist/playlist.component';
 import { YoutubePlayerModule } from './youtube/youtube-player.module';
 
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
@@ -29,11 +29,10 @@ import { LocationStrategy, HashLocationStrategy } from '@angular/common';
   declarations: [
     AppComponent,
     HomeComponent,
-    CreateComponent,
-    NewPlayListComponent,
-    EditPlayListComponent,
-    PlayComponent,
-    LoginComponent
+    PlaylistComponent,
+    LoginComponent,
+    CreateEntityComponent,
+    CreateNewSongComponent
   ],
   imports: [
     BrowserModule,

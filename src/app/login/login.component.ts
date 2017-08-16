@@ -20,7 +20,7 @@ import { SongRating } from '../playlist/interfaces/songrating';
 export class LoginComponent implements OnInit{
     //init both username and password for two way binding
     private _username: string = "jshaw";
-    private _password: string = "not yet encrypted"; //store this for testing purposes (we have two way binding)
+    private _password: string = "not yet encrypted";
     private _saveLogin: boolean;
     private _creatingAccount: boolean = false;
 
@@ -29,10 +29,12 @@ export class LoginComponent implements OnInit{
     constructor(private _apiService: ApiService, private _userService: UserService, private _storage: StorageService, private _router: Router){}
 
     ngOnInit(){
-        this._apiService.getAllEntities('api/Users').subscribe(
-            users => this._users = users,
-            error => console.log("Could not load all users"),
-            () => this._storage.setValue('_users', this._users));
+        let s: Subscription;
+        s = this._apiService.getAllEntities('api/Users').subscribe(
+                users => this._users = users,
+                error => console.log("Could not load all users"),
+                () => s.unsubscribe()
+            );
     }
         
     public createNewUserView(){

@@ -1,20 +1,42 @@
-.app-container{
-    position: fixed;
-    top: 0;
+#audio-player-container{
+    display: flex;
+    height: 100%;
+    align-items: center;
+    float: right;
+    width: 40vw;
+}
+
+.audio-progress{
+    height: 2.5vh;
+    width: 100%;
+    background: #C0C0C0;
+}
+
+.audio-progress .bar{
+    height: 100%;
+    background-color: #E95F74;
+}
+
+.control-bar{
+    background: black;
+    color: white;
+    font-size: 16px;
+    height: 10vh;
     left: 0;
-    bottom: 0;
-    right: 0;
-    overflow: auto;
-    background: #F9F9F9;
+    position: fixed;
+    text-align: center;
+    text-decoration: none;
+    top: 0;
+    width: 100%;
 }
 
-.container {
-    overflow: hidden;
-    background-color: black; /*Was #333 */
-    font-family: Arial;
+.control-bar h1{
+    color: white;
+    float: left;
+    text-align: middle;
 }
 
-.container a {
+.control-bar a {
     float: left;
     font-size: 16px;
     color: white;
@@ -23,46 +45,108 @@
     text-decoration: none;
 }
 
-.dropdown {
-    float: left;
-    overflow: hidden;
-}
-
-.dropdown .dropbtn {
-    font-size: 16px;    
-    border: none;
-    outline: none;
-    color: white;
-    padding: 14px 16px;
-    background-color: inherit;
-}
-
-.container a:hover, .dropdown:hover .dropbtn {
+.control-bar a:hover, .dropdown:hover .dropbtn {
     background-color: red;
 }
 
-.dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #f9f9f9;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
+.current-playlist{
+    height: auto;
+    max-height: 75%;
+    overflow: hidden;
+    overflow-y: scroll;
 }
 
-.dropdown-content a {
-    float: none;
-    color: black;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
+.current-playlist li{
+    border-bottom: none;
+    font-size: 12px;
+    font-weight: normal;
+}
+
+.current-playlist-black li{
+    color: whitesmoke;
+}
+
+.current-playlist-black::-webkit-scrollbar-thumb{
+    background-color: #918A8A;
+}
+
+.current-playlist-black::-webkit-scrollbar-track{
+    background-color: #343434;
+}
+
+.current-playlist-black::-webkit-scrollbar{ /* need this here to make two above work idk why...*/
+    background: none;
+}
+
+.image-holder{
+    display: flex;
+    height: 100%;
+    align-items: center;
+    float: right;
+}
+
+.left-panel{
+    background: #333333;
+    height: 95vh;
+    left: 0;
+    position: fixed;
+    top: 10vh;
+    width: 15vw;
+}
+
+.menu{
+    display: inline-block;
+    margin: 20px 0;
+    width: 12vw;
+}
+
+.menu li:hover{
+    cursor: pointer;
+}
+
+.menu h3{
+    text-align: center
+}
+
+.menu img.icon-sml{
+    margin-top: 8%;
+}
+
+.menu-playlist{
+    color: white;
+}
+
+.page-content{
+    margin-top: 10vh;
+    margin-left: 15vw;
+}
+
+.playlist-container{
+    background: #343434;
+    border: 5px solid black;
+    box-sizing: border-box;
+    height: 40vh;
+    max-height: 40vh;
+    margin: 0px auto 0px auto;
+    overflow: hidden;
+    width: 67%;
+}
+
+.playlist-container h3{
+    text-align: center;
+    color: whitesmoke;
+}
+
+.playlist-list{
+    float: left;
+    margin: inherit;
+    max-height: 25vh;
+    overflow-y: scroll;
     text-align: left;
+    width: 100%;
 }
 
-.dropdown-content a:hover {
-    background-color: #ddd;
-}
-
-.dropdown:hover .dropdown-content {
-    display: block;
+.YT-player{
+    margin: 8% auto 0px auto;
+    width: 65%;
 }

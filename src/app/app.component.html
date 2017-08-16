@@ -1,21 +1,85 @@
 <div class="app-container">
-  <div style="max-width: 75vw; margin: auto" class="container">
-    <a [routerLink]="['/']">Home</a>
-    <a [routerLink]="['/listen']">Listen</a>
-    <div class="dropdown">
-      <button class="dropbtn">Create</button>
-      <div class="dropdown-content">
-        <a [routerLink]="['/create/newplaylist']">New Playlist</a>
-        <a [routerLink]="['/create/editplaylist']">Edit Playlist</a>
-      </div>
-    </div>
+  <div class="control-bar">
+      <a [routerLink]="['/']"><h1>Mixtape|</h1></a>
+      <!--<a [routerLink]="['/create']">Add New Song</a>-->
+
       <a *ngIf="!_storage.getValue('loggedIn')" style="float: right" [routerLink]="['/login']">Sign in</a>
-      <a *ngIf="_storage.getValue('loggedIn')" style="float: right" [routerLink]="['/login']" (click)="logOut()">Sign out</a>
+      <a *ngIf="_storage.getValue('loggedIn')" style="float: right" [routerLink]="['/login']" (click)="this._userService.logOut()">Sign out</a>
+      
+      <div class="image-holder">
+        <img class='icon icon-middle img-right' id='next-button' [src]="_playlistImgPath + '/next_song.png'" (click)='playNext()'/>
+        <img class='icon icon-middle img-right' id='repeat-button' [src]="_repeat ? 'app/assets/playlist/repeat_song_on.png' : 'app/assets/playlist/repeat_song_off.png'" (click)='_repeat = !_repeat'/>
+      </div>
+
+      <div id="audio-player-container">
+        <div class="audio-progress" id="audio-progress">
+          <div id="audio-progrress-bar" class="bar" [style.width.%]="songProgress()"></div>
+        </div>
+      </div>
+
+      <div class="image-holder">
+        <img class='icon icon-middle img-right' id='pause-button' [src]="_paused ? 'app/assets/playlist/play_button.png' : 'app/assets/playlist/pause_button.png'" (click)='pauseVideo()'/>
+        <img class='icon icon-middle img-right' id='next-button' [src]="_playlistImgPath + '/last_song.png'" (click)='playLast()'/>
+      </div>
   </div>
 
-  <div style="max-width: 75vw; margin: auto"> <!-- was 1024px -->
-      <main>
-        <router-outlet></router-outlet>
-      </main>
+  <div class="left-panel">
+    <div style="text-align: center" class="menu menu-playlist">
+      <img class='img-left' id='playlist-icon' src="app/assets/shared/playlist_white.png"/>
+      <img class='icon icon-sml icon-middle img-right' id='expand-button' src="app/assets/shared/plus_white.png" (click)='showPlaylists("user")'/>
+      <h3 (click)='showPlaylists("user")'>Your Playlists</h3>
+
+      <ul class="playlist-list current-playlist-black" *ngIf="_storage.getValue('_playlists') && _storage.getValue('_playlists').length && _displayUserPlaylists">
+        <li *ngFor="let playlist of this._storage.getValue('_playlists')"  (click)="playlistSelected(playlist)">
+          {{ playlist.name }}
+        </li>
+        <li (click)="playlistSelected(null)">New Playlist...</li>
+      </ul>
+    </div>
+
+    <div style="text-align: center" class="menu menu-playlist">
+      <img class='img-left' id='playlist-icon' src="app/assets/shared/playlist_white.png"/>
+      <img class='icon icon-sml icon-middle img-right' id='expand-button' src="app/assets/shared/plus_white.png" (click)='showPlaylists("global")'/>
+      <h3 (click)='showPlaylists("global")'>All Playlists</h3>
+      <ul class="playlist-list current-playlist-black" *ngIf="_displayGlobalPlaylists">
+        <li *ngFor="let playlist of _globalPlaylists | async"  (click)="playlistSelected(playlist)">
+          {{ playlist.name }}
+        </li>
+      </ul>
+    </div>
+
+    <div style="text-align: center" class="menu menu-playlist">
+      <img class='img-left' id='playlist-icon' src="app/assets/shared/playlist_white.png"/>
+      <img class='icon icon-sml icon-middle img-right' id='expand-button' src="app/assets/shared/plus_white.png" (click)='showPlaylists("history")'/>
+      <h3 (click)='showPlaylists("history")'>History</h3>
+      <ul class="playlist-list current-playlist-black" *ngIf="_displayHistory">
+        <li *ngFor="let song of getHistory()">
+          {{ song.name }}
+        </li>
+      </ul>
+    </div>
+  </div> 
+
+  <div class="page-content">
+    <div class="YT-player">
+      <youtube-player [videoId]="_videoId" [width]="this._width" [height]="this._height" (ready)="savePlayer($event)" (change)="onStateChange($event)"></youtube-player> 
+    </div>
+
+    <div class="playlist-container playlist-container-black" *ngIf="this._playlist && this._playlist.playlistSong && this._playlist.playlistSong.length">
+      <h3 (click)="editName()"> {{ _playlist.name }}
+      <img class='icon icon-med img-right' id='delete-playlist-button' src="app/assets/playlist/delete_song_white.png" (click)='deletePlaylist()'/>
+      </h3>
+      <ol class='current-playlist current-playlist-black'>
+        <li *ngFor="let song of this.loadSongs(); let i = index" [style.background-color]="(_onVideo-1) === i ? '#918A8A' : '#343434'">
+          <img id="playlist-img" [src]="getUrlImage(song.url)"/>
+          {{ song.name }}
+          <div class="icon" *ngIf="this._playlist.userId === this._userService.getUserID()">
+            <img class='icon icon-sml' id='delete-button' src="app/assets/playlist/delete_song_white.png" (click)='removeSong(song, i)'/>
+          </div>
+        </li>
+      </ol>
+    </div>
+
+    <router-outlet></router-outlet>
   </div>
 </div>
