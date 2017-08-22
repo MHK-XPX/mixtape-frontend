@@ -5,10 +5,12 @@ import { AppComponent } from './app.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-import { HttpModule } from '@angular/http';
+
+import { BrowserXhr, HttpModule } from '@angular/http';
 
 import { HomeComponent } from './home/home.component';
 
+import { NgProgressModule, NgProgressCustomBrowserXhr } from 'ng2-progressbar'; //https://github.com/MurhafSousli/ngx-progressbar
 import { UserService } from './user/user.service';
 
 import { LoginComponent } from './login/login.component';
@@ -40,13 +42,15 @@ import { LocationStrategy, HashLocationStrategy } from '@angular/common';
     ReactiveFormsModule,
     YoutubePlayerModule,
     HttpModule,
+    NgProgressModule,
     RouterModule.forRoot(rootRouterConfig, { useHash: true })
   ],
   providers: [
     UserService,
     ApiService,
     StorageService,
-    SessionGuard
+    SessionGuard,
+    { provide: BrowserXhr, useClass: NgProgressCustomBrowserXhr }
   ],
   bootstrap: [ AppComponent ]
 })

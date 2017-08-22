@@ -58,7 +58,7 @@ export class PlaylistComponent implements OnInit, OnDestroy {
     private addSong(song: Song) {
         let updatedPlaylist: PlayList;
         let s: Subscription;
-
+        
         let pls = {
             playlistId: this._playlist.playlistId,
             songId: song.songId,

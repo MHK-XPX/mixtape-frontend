@@ -1,26 +1,28 @@
 <div class="app-container">
+  <ng-progress [thick]="true" [color]="'#F5F5F5'"></ng-progress>
+
   <div class="control-bar">
-      <a [routerLink]="['/']"><h1>Mixtape|</h1></a>
-      <!--<a [routerLink]="['/create']">Add New Song</a>-->
+    <a [routerLink]="['/']"><h1>Mixtape|</h1></a>
+    <!--<a [routerLink]="['/create']">Add New Song</a>-->
 
-      <a *ngIf="!_storage.getValue('loggedIn')" style="float: right" [routerLink]="['/login']">Sign in</a>
-      <a *ngIf="_storage.getValue('loggedIn')" style="float: right" [routerLink]="['/login']" (click)="this._userService.logOut()">Sign out</a>
-      
-      <div class="image-holder">
-        <img class='icon icon-middle img-right' id='next-button' [src]="_playlistImgPath + '/next_song.png'" (click)='playNext()'/>
-        <img class='icon icon-middle img-right' id='repeat-button' [src]="_repeat ? 'app/assets/playlist/repeat_song_on.png' : 'app/assets/playlist/repeat_song_off.png'" (click)='_repeat = !_repeat'/>
-      </div>
+    <a *ngIf="!_storage.getValue('loggedIn')" style="float: right" [routerLink]="['/login']">Sign in</a>
+    <a *ngIf="_storage.getValue('loggedIn')" style="float: right" [routerLink]="['/login']" (click)="this._userService.logOut()">Sign out</a>
+    
+    <div class="image-holder">
+      <img class='icon icon-middle img-right' id='next-button' [src]="_playlistImgPath + '/next_song.png'" (click)='playNext()'/>
+      <img class='icon icon-middle img-right' id='repeat-button' [src]="_repeat ? 'app/assets/playlist/repeat_song_on.png' : 'app/assets/playlist/repeat_song_off.png'" (click)='_repeat = !_repeat'/>
+    </div>
 
-      <div id="audio-player-container">
-        <div class="audio-progress" id="audio-progress">
-          <div id="audio-progrress-bar" class="bar" [style.width.%]="songProgress()"></div>
-        </div>
+    <div id="audio-player-container">
+      <div class="audio-progress" id="audio-progress">
+        <div id="audio-progrress-bar" class="p-bar" [style.width.%]="songProgress()"></div>
       </div>
+    </div>
 
-      <div class="image-holder">
-        <img class='icon icon-middle img-right' id='pause-button' [src]="_paused ? 'app/assets/playlist/play_button.png' : 'app/assets/playlist/pause_button.png'" (click)='pauseVideo()'/>
-        <img class='icon icon-middle img-right' id='next-button' [src]="_playlistImgPath + '/last_song.png'" (click)='playLast()'/>
-      </div>
+    <div class="image-holder">
+      <img class='icon icon-middle img-right' id='pause-button' [src]="_paused ? 'app/assets/playlist/play_button.png' : 'app/assets/playlist/pause_button.png'" (click)='pauseVideo()'/>
+      <img class='icon icon-middle img-right' id='next-button' [src]="_playlistImgPath + '/last_song.png'" (click)='playLast()'/>
+    </div>
   </div>
 
   <div class="left-panel">

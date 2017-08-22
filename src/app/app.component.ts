@@ -123,7 +123,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
     //If we want to create a new playlist, move to the page and return
     if (playlist === null) {
-      //this._router.navigate(['./playlist/newplaylist']);
       this._storage.setPlaylist('_playlist', {});
       this._playlistName = 'New Playlist ' + this._storage.getValue('_playlists').length;
 
