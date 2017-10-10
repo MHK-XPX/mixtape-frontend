@@ -35,8 +35,6 @@ export class PlaylistComponent implements OnInit, OnDestroy {
     private _albums: Observable<Album[]>;
     private _otherPlaylists: Observable<PlayList[]>;
 
-    private _tabInView: string = 'songs';
-
     constructor(private _userService: UserService, private _storage: StorageService) { }
 
     ngOnInit() {
@@ -76,13 +74,6 @@ export class PlaylistComponent implements OnInit, OnDestroy {
                 s.unsubscribe();
             }
         );
-    }
-
-    /*
-       Called when we click on a tab, controls what we see in the view
-   */
-    private openTab(tabName: string) {
-        this._tabInView = tabName;
     }
 
     private getUrlImage(url: string): string {

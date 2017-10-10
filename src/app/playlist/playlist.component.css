@@ -1,62 +1,30 @@
-div.tabcontent{
+md-tab-group{
     height: 100%;
+}
+
+/deep/ .mat-tab-label{
+    color: black;
+}
+
+md-list md-list-item{
+    color: black;
+}
+
+md-tab-label{
+    color: black;
+}
+
+.extra-playlists md-list{
     overflow: hidden;
-}
-
-div.tab{
-    background-color: #f1f1f1;
-    border: 1px solid #ccc;
-    outline: 1px solid #000;
-    overflow: hidden;
-}
-
-div.tab button{
-    background-color: inherit;
-    border: none;
-    float: left;
-    padding: 14px 16px;
-    transition: 0.3s;
-    outline: none;
-}
-
-div.tab button:hover {
-    background-color: #ddd;
 }
 
 .extra-playlists{
     border: 5px solid black;
     box-sizing: border-box;
     clear: both;
-    height: 45vh;
+    height: 50vh;
     margin: 2% auto 5% 10%; /*top right bottom left */
     max-height: 45vh;
     max-width: 70vw;
     width: 70vw;
-}
-
-.extra-playlists ul{
-    overflow: hidden;
-    overflow-y: scroll;
-}
-
-.extra-playlists ul ul{
-    overflow: hidden;
-}
-
-.playlist-selection{ /* ul */
-    margin: 1.5em; 
-    max-height: 75%;
-    overflow: hidden;
-}
-
-.playlist-selection li{ /* ul li */
-    border-bottom: 1px solid #ccc;
-    color: #666;
-    font-weight: bold;
-	padding: .2em 0 .2em .5em;
-}
-
-ul li:hover {
-	background-color: #f2f2f2;
-	color: #000; 
 }

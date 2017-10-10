@@ -44,9 +44,11 @@ export class AppComponent implements OnInit, OnDestroy {
   private _globalPlaylists: Observable<PlayList[]>;
 
   //Youtube fields
+  private _widthScaler: number = .48;
+  private _heightScaler: number = .48;
   private _player: YT.Player;
-  private _width: number = window.innerWidth * .55;
-  private _height: number = window.innerHeight * .55;
+  private _width: number = window.innerWidth * this._widthScaler;
+  private _height: number = window.innerHeight * this._heightScaler
 
   constructor(private _userService: UserService, private _storage: StorageService, private _router: Router, private _ngZone: NgZone) { }
 
@@ -56,8 +58,8 @@ export class AppComponent implements OnInit, OnDestroy {
     //This allows the youtube player resize when we resize the screen
     window.onresize = (e) => {
       this._ngZone.run(() => {
-        this._width = window.innerWidth * .55;
-        this._height = window.innerHeight * .55;
+        this._width = window.innerWidth * this._widthScaler;
+        this._height = window.innerHeight * this._heightScaler;
         this._player.setSize(this._width, this._height);
       });
     }
@@ -86,6 +88,14 @@ export class AppComponent implements OnInit, OnDestroy {
       default:
         console.log("Invalid");
     }
+  }
+
+  /*
+    This method is called when we change the playlists name, it updates the storage and the backend with the new values
+  */
+  private changePlaylistName(){
+    this._userService.updatePlaylist(this._playlist, this._playlist.playlistId);
+    this._storage.updatePlaylists(this._playlist);
   }
 
   /*

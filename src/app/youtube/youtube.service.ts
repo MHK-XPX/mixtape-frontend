@@ -82,7 +82,7 @@ export class YoutubePlayerService {
     };
     return new YoutubePlayerService.Player(elementId, Object.assign({}, playerSize, {
       events: {
-          onReady: (ev: YT.EventArgs) => { //changed from PlayerEvent
+          onReady: (ev: YT.PlayerEvent) => { //changed from PlayerEvent
             this.zone.run(() => outputs.ready && outputs.ready.next(ev.target));
           },
           onStateChange: (ev: YT.Events) => { //changed from PlayerEvent

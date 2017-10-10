@@ -36,6 +36,23 @@ export class StorageService{
     }
 
     /*
+        This method is called when we update any information in the playlist, it allows for visual updates
+        @playlist: PlayList - The playlist we updated
+    */
+    public updatePlaylists(playlist: PlayList){
+        let playlists: PlayList[] = this.getValue('_playlists');
+
+        this.setPlaylist('_playlist', playlist);
+        for(let i=0; i<playlists.length; i++){
+            if(playlists[i].playlistId === playlist.playlistId){
+                playlists[i] = playlist;
+                this.setValue('_playlists', playlists);
+                break;
+            }
+        }
+    } 
+
+    /*
         Sets a key in session storage to a given key
         @param key: string = the key of the object
         @param value: any - the value we want to set the key to

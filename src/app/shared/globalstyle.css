@@ -26,6 +26,10 @@ img#playlist-img{
     vertical-align: bottom;
 }
 
+.icon-ex-sml{
+    width: 17px;
+}
+
 .icon-sml{
     width: 20px;
 }

@@ -128,6 +128,10 @@ export class UserService {
         );
     }
 
+    public updatePlaylist(playlist: PlayList, pID: number): void{
+        this.performApiAction(this._apiService.putEntity('api/Playlists', playlist, pID), "Unable to update playlist info");
+    }
+
     /*
         This method is called whenever we perform an action on the api (add, delete, edit, etc something)
         @param action: Observable<any> - The action to perform on the api

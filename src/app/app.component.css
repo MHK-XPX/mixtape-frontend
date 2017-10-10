@@ -2,19 +2,6 @@
     display: flex;
     height: 100%;
     align-items: center;
-    float: right;
-    width: 40vw;
-}
-
-.audio-progress{
-    height: 2.5vh;
-    width: 100%;
-    background: #C0C0C0;
-}
-
-.audio-progress .p-bar{
-    height: 100%;
-    background-color: #E95F74;
 }
 
 .control-bar{
@@ -51,7 +38,7 @@
 
 .current-playlist{
     height: auto;
-    max-height: 75%;
+    max-height: 65%;
     overflow: hidden;
     overflow-y: scroll;
 }
@@ -79,6 +66,19 @@
 }
 
 .image-holder{
+    display: flex;
+    height: 100%;
+    align-items: center;
+}
+
+.image-holder-left{
+    display: flex;
+    height: 100%;
+    align-items: center;
+    float: left;
+}
+
+.image-holder-right{
     display: flex;
     height: 100%;
     align-items: center;
@@ -125,16 +125,27 @@
     background: #343434;
     border: 5px solid black;
     box-sizing: border-box;
-    height: 40vh;
-    max-height: 40vh;
-    margin: 0px auto 0px auto;
+    float: right;
+    height: 48vh;
+    max-height: 48vh;
+    margin: 2% auto 0px auto;
     overflow: hidden;
-    width: 67%;
+    width: 42%;
 }
 
 .playlist-container h3{
     text-align: center;
     color: whitesmoke;
+}
+
+.playlist-name{
+    color: whitesmoke;
+    display: inline;
+    text-align: center;
+}
+
+.playlist-name-input{
+    text-align: center;
 }
 
 .playlist-list{
@@ -147,6 +158,7 @@
 }
 
 .YT-player{
-    margin: 8% auto 0px auto;
-    width: 65%;
+    float: left;
+    margin: 2% auto 0px auto;
+    width: 42%;
 }
