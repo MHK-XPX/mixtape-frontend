@@ -1,3 +1,4 @@
+
 /*
     What is stored:
         _user - The user that is currently logged in
@@ -7,7 +8,7 @@
         _onVideo - The index of the current video we are on
         loggedIn - If the user is currently logged in or not
 */
-import { PlayList } from '../playlist/interfaces/playlist';
+//import { PlayList } from '../playlist/interfaces/playlist';
 
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/share';
@@ -16,7 +17,7 @@ export class StorageService{
     //Used to allow dynamic updates on our playlist
     public playlistObservable: Observable<any>;
     private _playlistObserver: any;
-    private _playlist: PlayList;
+    //private _playlist: PlayList;
 
     constructor(){
         this.playlistObservable = new Observable(observer => {
@@ -31,15 +32,15 @@ export class StorageService{
     */
     public setPlaylist(key: string, value: any){
         this.setValue(key, value);
-        this._playlist = this.getValue(key);
-        this._playlistObserver.next(this._playlist);
+        //this._playlist = this.getValue(key);
+       // this._playlistObserver.next(this._playlist);
     }
 
     /*
         This method is called when we update any information in the playlist, it allows for visual updates
         @playlist: PlayList - The playlist we updated
     */
-    public updatePlaylists(playlist: PlayList){
+    /*public updatePlaylists(playlist: PlayList){
         let playlists: PlayList[] = this.getValue('_playlists');
 
         this.setPlaylist('_playlist', playlist);
@@ -50,7 +51,7 @@ export class StorageService{
                 break;
             }
         }
-    } 
+    }*/
 
     /*
         Sets a key in session storage to a given key
@@ -101,5 +102,26 @@ export class StorageService{
     */
     public clearAll(): void{
         sessionStorage.clear();
+    }
+
+    public saveToLocal(key: string, value: any): void{
+        if(value){
+            value = JSON.stringify(value);
+        }
+        localStorage.setItem(key, value);
+    }
+
+    public getFromLocal(key: string): any{
+        let value = localStorage.getItem(key);
+
+        if(value && value != "undefined" && value != "null"){
+            return JSON.parse(value);
+        }
+
+        return null;
+    }
+
+    public removeFromLocal(key: string): void{
+        localStorage.removeItem(key);
     }
 }

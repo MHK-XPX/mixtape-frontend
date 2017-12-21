@@ -1,92 +1,34 @@
-<div class="app-container">
-  <ng-progress [thick]="true" [color]="'#F5F5F5'"></ng-progress>
+<link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.grey-red.min.css">
+<script src="/node_modules/material-design-lite/material.min.js"></script>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-  <div class="control-bar">
-    <a [routerLink]="['/']"><h1>Mixtape|</h1></a>
-    <!--<a [routerLink]="['/create']">Add New Song</a>-->
+<ng-progress [thick]="true" color="red" [spinner]="false"></ng-progress>
 
-    <a *ngIf="!_storage.getValue('loggedIn')" style="float: right" [routerLink]="['/login']">Sign in</a>
-    <a *ngIf="_storage.getValue('loggedIn')" style="float: right" [routerLink]="['/login']" (click)="this._userService.logOut()">Sign out</a>
-    
-    <div style="width: 50%; height: 100%; margin: 0 auto;">
-      <div class="image-holder image-holder-left">
-        <img class='icon icon-middle img-left' id='pause-button' [src]="_paused ? 'app/assets/playlist/play_button.png' : 'app/assets/playlist/pause_button.png'" (click)='pauseVideo()'/>
-        <img class='icon icon-middle img-left' id='next-button' [src]="_playlistImgPath + '/last_song.png'" (click)='playLast()'/>
-      </div>
-
-      <div class="image-holder image-holder-right">
-        <img class='icon icon-middle img-right' id='next-button' [src]="_playlistImgPath + '/next_song.png'" (click)='playNext()'/>
-        <img class='icon icon-middle img-right' id='repeat-button' [src]="_repeat ? 'app/assets/playlist/repeat_song_on.png' : 'app/assets/playlist/repeat_song_off.png'" (click)='_repeat = !_repeat'/>
-      </div>
-      
-      <div id="audio-player-container">
-        <md-progress-bar color="warn" mode="determinate" [value]="songProgress()"></md-progress-bar>
-      </div>
+<!-- Always shows a header, even in smaller screens-->
+<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+  <header class="mdl-layout__header">
+    <div class="mdl-layout__header-row">
+      <!-- Title -->
+      <span class="mdl-layout-title">
+          <a class="mdl-navigation__link mdl-layout-title" [routerLink]="['/home']">Mixtape</a>
+        </span>
+      <!-- Add spacer, to align navigation to the right -->
+      <div class="mdl-layout-spacer"></div>
+      <!-- Navigation. We hide it in small screens. -->
+      <nav class="mdl-navigation mdl-layout--large-screen-only">
+        <a class="mdl-navigation__link" *ngIf="!this._storage.getValue('loggedIn')" [routerLink]="['/login']">Sign In</a>
+        <a class="mdl-navigation__link" *ngIf="this._storage.getValue('loggedIn')" [routerLink]="['/login']" (click)="this._userService.logOut()">Logout</a>
+      </nav>
     </div>
+  </header>
+  <div class="mdl-layout__drawer">
+    <span class="mdl-layout-title">Mixtape</span>
+    <nav class="mdl-navigation">
+      <a class="mdl-navigation__link" *ngIf="!this._storage.getValue('loggedIn')" [routerLink]="['/login']">Sign In</a>
+      <a class="mdl-navigation__link" *ngIf="this._storage.getValue('loggedIn')" [routerLink]="['/login']" (click)="this._userService.logOut()">Logout</a>
+    </nav>
   </div>
-
-  <div class="left-panel">
-    <div style="text-align: center" class="menu menu-playlist">
-      <img class='img-left' id='playlist-icon' src="app/assets/shared/playlist_white.png"/>
-      <img class='icon icon-sml icon-middle img-right' id='expand-button' src="app/assets/shared/plus_white.png" (click)='showPlaylists("user")'/>
-      <h3 (click)='showPlaylists("user")'>Your Playlists</h3>
-
-      <ul class="playlist-list current-playlist-black" *ngIf="_storage.getValue('_playlists') && _storage.getValue('_playlists').length && _displayUserPlaylists">
-        <li *ngFor="let playlist of this._storage.getValue('_playlists')"  (click)="playlistSelected(playlist)">
-          {{ playlist.name }}
-          <img class='icon icon-ex-sml' id='delete-button' src="app/assets/playlist/delete_song_white.png" (click)='deletePlaylist(playlist)'/>
-        </li>
-        <li (click)="playlistSelected(null)">New Playlist...</li>
-      </ul>
-    </div>
-
-    <div style="text-align: center" class="menu menu-playlist">
-      <img class='img-left' id='playlist-icon' src="app/assets/shared/playlist_white.png"/>
-      <img class='icon icon-sml icon-middle img-right' id='expand-button' src="app/assets/shared/plus_white.png" (click)='showPlaylists("global")'/>
-      <h3 (click)='showPlaylists("global")'>All Playlists</h3>
-      <ul class="playlist-list current-playlist-black" *ngIf="_displayGlobalPlaylists">
-        <li *ngFor="let playlist of _globalPlaylists | async"  (click)="playlistSelected(playlist)">
-          {{ playlist.name }}
-        </li>
-      </ul>
-    </div>
-
-    <div style="text-align: center" class="menu menu-playlist">
-      <img class='img-left' id='playlist-icon' src="app/assets/shared/playlist_white.png"/>
-      <img class='icon icon-sml icon-middle img-right' id='expand-button' src="app/assets/shared/plus_white.png" (click)='showPlaylists("history")'/>
-      <h3 (click)='showPlaylists("history")'>History</h3>
-      <ul class="playlist-list current-playlist-black" *ngIf="_displayHistory">
-        <li *ngFor="let song of getHistory()">
-          {{ song.name }}
-        </li>
-      </ul>
-    </div>
-  </div> 
-
-  <div class="page-content">
-    <div class="static-container">
-      <div class="YT-player">
-        <youtube-player [videoId]="_videoId" [width]="this._width" [height]="this._height" (ready)="savePlayer($event)" (change)="onStateChange($event)"></youtube-player> 
-      </div>
-
-      <div class="playlist-container playlist-container-black" *ngIf="this._playlist && this._playlist.playlistSong && this._playlist.playlistSong.length">
-        <md-input-container class="playlist-name" (change)="changePlaylistName()">
-          <label>Playlist Name: </label>
-          <input class="playlist-name-input" mdInput [(ngModel)]="_playlist.name">
-        </md-input-container>
-
-        <ol class='current-playlist current-playlist-black'>
-          <li *ngFor="let song of this.loadSongs(); let i = index" [style.background-color]="(_onVideo-1) === i ? '#918A8A' : '#343434'">
-            <img id="playlist-img" [src]="getUrlImage(song.url)"/>
-            {{ song.name }}
-            <div class="icon" *ngIf="this._playlist.userId === this._userService.getUserID()">
-              <img class='icon icon-sml' id='delete-button' src="app/assets/playlist/delete_song_white.png" (click)='removeSong(song, i)'/>
-            </div>
-          </li>
-        </ol>
-      </div>
-    </div>
-
-    <router-outlet></router-outlet>
-  </div>
+    <main class="mdl-layout_content">
+      <router-outlet></router-outlet>
+  </main>
 </div>

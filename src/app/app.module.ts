@@ -1,65 +1,55 @@
-import { NgModule } from '@angular/core'
+import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { rootRouterConfig } from './app.routes';
-import { AppComponent } from './app.component';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { BrowserModule } from '@angular/platform-browser';
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-
-import { BrowserXhr, HttpModule } from '@angular/http';
+import { NgModule } from '@angular/core';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { NgProgressModule, NgProgressBrowserXhr } from 'ngx-progressbar';
 
-import { HomeComponent } from './home/home.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
-import { UserService } from './user/user.service';
+//import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+//import { TooltipModule } from 'ngx-bootstrap/tooltip';
+//import { ModalModule } from 'ngx-bootstrap/modal';
+//import { AlertModule } from 'ngx-bootstrap';
 
-import { LoginComponent } from './login/login.component';
+import { NgProgressModule } from '@ngx-progressbar/core';
+import { NgProgressHttpClientModule } from '@ngx-progressbar/http-client';
 
-import { CreateEntityComponent } from './create/create.component';
-import { CreateNewSongComponent } from './create/song/newsong.component';
+import { YoutubePlayerModule } from 'ngx-youtube-player';
 
-import { MaterialModule } from './shared/material.module';
-import { ApiService } from './shared/api.service';
+import { AppComponent } from './app.component';
+import { LoginComponent } from './login/login.component'
+import { HomeComponent } from './home/home.component'
+
+
 import { StorageService } from './shared/session-storage.service';
-import { SessionGuard } from './shared/session-guard.service';
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+import { SessionGuard } from './shared/session-guard.service'
+import { UserResolver } from './shared/user-resolver.service';
+import { ApiService } from './shared/api.service';
+import { UserService } from './shared/user.service';
 
-import { PlaylistComponent } from './playlist/playlist.component';
-import { YoutubePlayerModule } from './youtube/youtube-player.module';
 
-import { LocationStrategy, HashLocationStrategy } from '@angular/common';
- 
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent,
-    PlaylistComponent,
     LoginComponent,
-    CreateEntityComponent,
-    CreateNewSongComponent
+    HomeComponent,
   ],
   imports: [
     BrowserModule,
-    FormsModule,
-    ReactiveFormsModule,
-    YoutubePlayerModule,
-    HttpModule,
-    MaterialModule,
-    BrowserAnimationsModule,
     HttpClientModule,
-    NgProgressModule,
-    RouterModule.forRoot(rootRouterConfig, { useHash: true })
+    NgbModule.forRoot(),
+    NgProgressModule.forRoot(),
+    NgProgressHttpClientModule,
+    YoutubePlayerModule,
+    RouterModule.forRoot(rootRouterConfig, { useHash: true })    
   ],
   providers: [
-    UserService,
-    ApiService,
     StorageService,
     SessionGuard,
-    { provide: BrowserXhr, useClass: NgProgressBrowserXhr}
+    ApiService,
+    UserService,
+    UserResolver
   ],
-  bootstrap: [ AppComponent ]
+  bootstrap: [AppComponent]
 })
-export class AppModule {
-
-}
+export class AppModule { }
