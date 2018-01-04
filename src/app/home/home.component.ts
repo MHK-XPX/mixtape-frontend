@@ -30,14 +30,14 @@ import 'rxjs/add/operator/switchMap';
 export class HomeComponent implements OnInit{
     private user: User;
 
-    private userPlaylists: Playlist[] = [];
+    userPlaylists: Playlist[] = [];
 
-    private globalPlaylists: Playlist[] = [];
+    globalPlaylists: Playlist[] = [];
 
-    private selectedPlaylist: Playlist;
-    private viewedPlaylist: Playlist;
+    selectedPlaylist: Playlist;
+    viewedPlaylist: Playlist;
 
-    private creatingPlaylist: boolean = false;
+    creatingPlaylist: boolean = false;
     private newPlaylistName: string = "Playlist ";
 
     constructor(private _apiService: ApiService, private _storage: StorageService, private _route: ActivatedRoute, private _router: Router){}
@@ -103,7 +103,7 @@ export class HomeComponent implements OnInit{
     /*
         Called when the user creates a new playlist. It creates the playlist and adds it to the backend DB
     */
-    private newPlaylist(){
+    newPlaylist(){
         let s: Subscription;
         this.creatingPlaylist = true;
         this.newPlaylistName += this.userPlaylists.length+1;

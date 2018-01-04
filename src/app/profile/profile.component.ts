@@ -26,19 +26,19 @@ import { Song } from '../interfaces/song';
   styleUrls: ['./profile.component.css']
 })
 export class ProfileComponent implements OnInit {
-  private user: User;
+  user: User;
 
-  private playlists: Observable<Playlist[]>;
+  playlists: Observable<Playlist[]>;
 
-  private playlist: Playlist;
+  playlist: Playlist;
 
   private newPlaylistName: string = "";
 
   private firstName: string = "";
   private lastName: string = "";
   private displayName: string = "";
-  private newPassword: string = "";
-  private confirmPassword: string = "";
+  newPassword: string = "";
+  confirmPassword: string = "";
 
   constructor(private _apiService: ApiService, private _storage: StorageService, private _ngZone: NgZone, 
               private _route: ActivatedRoute, private _router: Router, private _modalService: NgbModal){}
@@ -96,7 +96,7 @@ export class ProfileComponent implements OnInit {
     the problem is that if we don't update our password, the backend will set it to null => the user can never login
     Other than that, the user updates perfectly
   */
-  private updateAccount(){
+  updateAccount(){
     let s: Subscription;
 
     let newUser;
@@ -129,7 +129,7 @@ export class ProfileComponent implements OnInit {
     Called when updating passwords returns if they match or not
     @return boolean - if the user's passwords match
   */
-  private passwordsMatch(): boolean{
+  passwordsMatch(): boolean{
       return this.newPassword.toLocaleLowerCase() === this.confirmPassword.toLocaleLowerCase();
   }
 }

@@ -25,12 +25,12 @@ export class YoutubeComponent implements OnInit {
 
   private player: YT.Player;
   private url: string =  "";
-  private videoId;
+  videoId;
 
   private _widthScaler: number = .48;
   private _heightScaler: number = .48;
   private _width: number = window.innerWidth * this._widthScaler;
-  private _height: number = window.innerHeight * this._heightScaler;
+  _height: number = window.innerHeight * this._heightScaler;
 
   private onSong: number = this._storage.getValue('onSong') ? this._storage.getValue('onSong') : -1;
   private repeat: boolean = false;
@@ -71,7 +71,7 @@ export class YoutubeComponent implements OnInit {
     this.nextSong();
   }
 
-  private savePlayer(player){
+  savePlayer(player){
     this.player = player;
     this.player.setSize(this._width, this._height);
   }
@@ -84,7 +84,7 @@ export class YoutubeComponent implements OnInit {
       2 - paused
       3 - loading
     */
-  private onStateChange(event){
+  onStateChange(event){
     switch(event.data){
       case -1:
         break;
