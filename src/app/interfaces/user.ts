@@ -4,11 +4,11 @@ import { SongRating } from './songrating';
 
 export interface User{
     userId: number;
-    FirstName: string;
-    LastName: string;
-    Password: string;
-    Username: string;
-    AlbumRating: AlbumRating[];
-    Playlist: Playlist[];
-    SongRating: SongRating[];
+    firstName: string;
+    lastName: string;
+    password: string;
+    username: string;
+    albumRating: AlbumRating[];
+    playlist: Playlist[];
+    songRating: SongRating[];
 }

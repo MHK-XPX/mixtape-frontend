@@ -1,0 +1,14 @@
+.no-padding{
+    padding: 0;
+}
+
+.static-size-card{
+    height: 45vh;
+    max-height: 45vh;
+}
+
+.static-size-list{
+    height: 85%;
+    max-height: 85%;
+    overflow-y: auto; 
+}

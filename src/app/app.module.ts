@@ -26,13 +26,20 @@ import { SessionGuard } from './shared/session-guard.service'
 import { UserResolver } from './shared/user-resolver.service';
 import { ApiService } from './shared/api.service';
 import { UserService } from './shared/user.service';
-
+import { ProfileComponent } from './profile/profile.component';
+import { NgEnterDirective } from './ng-enter.directive';
+import { SearchComponent } from './shared/components/search/search.component';
+import { YoutubeComponent } from './youtube/youtube.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     HomeComponent,
+    ProfileComponent,
+    NgEnterDirective,
+    SearchComponent,
+    YoutubeComponent,
   ],
   imports: [
     BrowserModule,

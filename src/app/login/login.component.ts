@@ -19,7 +19,6 @@ declare var window: any;
 })
 
 export class LoginComponent implements OnInit{
-
     private invalidLogin: boolean = false;
     private username: string = "";
     private password: string = "not yet encrypted"; //will remove 
@@ -28,13 +27,15 @@ export class LoginComponent implements OnInit{
     private createUser: boolean = false;
 
     private usernameTaken: boolean = false;
+    private hasClickedOff: boolean = false;
+
     private firstName: string = "";
     private lastName: string = "";
     private displayName: string = "";
     private newPassword: string = "";
     private confirmPassword: string = "";
 
-    constructor(private _apiService: ApiService, private _storage: StorageService, private _router: Router, private _userService: UserService){}
+    constructor(private _apiService: ApiService, private _storage: StorageService,private _router: Router, private _userService: UserService){}
 
     /*
         If we click remember me, load the last username sent into our box
@@ -51,6 +52,9 @@ export class LoginComponent implements OnInit{
     }
 
     private loginClicked(){
+        if(!this.allFieldsFilled())
+            return;
+        
         let s: Subscription;
 
         let loginCred = {
@@ -63,7 +67,7 @@ export class LoginComponent implements OnInit{
 
         s = this._apiService.getLoginToken(cred).subscribe(
             d => user = d,
-            err => this.invalidLogin = true,
+            err => {this.invalidLogin = true; this.password = ""},
             () => {
                 this._storage.setValue("token", user["token"]);
                 this.validateLogin();
@@ -91,6 +95,24 @@ export class LoginComponent implements OnInit{
                 this._router.navigate(['./home']);
             }
         );
+    }
+
+    private validateUsername(){
+        if(this.displayName.length <= 0)
+            return;
+
+        let s: Subscription;
+        console.log(this.displayName);
+        s = this._apiService.validateUsername(this.displayName).subscribe(
+            d => d = d,
+            err => {
+                if(err['error']['Error']){
+                    this.usernameTaken = true;
+                }else{
+                    this.hasClickedOff = true;
+                }   
+            }
+        )
     }
 
     private createUserClicked(){

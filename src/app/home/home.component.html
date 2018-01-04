@@ -3,7 +3,7 @@
         <!--Sidebar-->
         <div class="side-bar col-sm-2 col-md-2 border border-dark no-padding fixed">
             <div class="card w-100">
-                <div class="card-header">Your Playlists:</div>
+                <div class="card-header font-weight-bold">Your Playlists:</div>
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item list-group-item-action" ngbDropdown placement="bottom-right" *ngFor="let playlist of userPlaylists index as i">
                         <div ngbDropdownToggle [id]="i" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
@@ -19,7 +19,7 @@
                 </ul>
             </div>
             <div class="card w-100">
-                <div class="card-header">Global Playlists:</div>
+                <div class="card-header font-weight-bold">Global Playlists:</div>
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item list-group-item-action" ngbDropdown placement="bottom-right" *ngFor="let playlist of this.globalPlaylists index as i">
                         <div ngbDropdownToggle [id]="i" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -40,28 +40,8 @@
 
             <div class="row flex-grow">
                 <!--Youtube-->
-                <div class="col-8 no-padding">
-                    <youtube-player [videoId]="this.videoId"  [height]="this._height" (ready)="savePlayer($event)" (change)="onStateChange($event)"></youtube-player>
-                </div>
-
-                <!--Current playlist-->
-                <div class="col-4 playlist-container playlist-song-list border border-dark">
-                    <div class="card" *ngIf="this.selectedPlaylist">
-                        <div class="card-header text-center current-playlist-holder">                        
-                            <img class='icon icon-middle icon-md' src="assets/playlist/last_song_black.png" (click)='lastSong()'/>
-                            <h5 style="display: inline-block;">{{this.selectedPlaylist.name}}</h5>
-                            <img class='icon icon-middle icon-md' src="assets/playlist/next_song_black.png" (click)='nextSong()'/>
-                            
-                            <img class="icon icon-middle icon-md" [src]="this.paused ? 'assets/playlist/play_button_black.png' : 'assets/playlist/pause_button_black.png'" (click)="pauseClicked()"/>                    
-                            <img class="icon icon-middle icon-md" [src]="this.repeat ? 'assets/playlist/repeat_song_on_black.png' : 'assets/playlist/repeat_song_off_black.png'" (click)="repeatClicked()"/>
-                        </div>
-                        <ol class="list-group list-group-flush" *ngFor="let pls of this.selectedPlaylist.playlistSong index as i">
-                            <li class="list-group-item"  [style.background-color]="this.onSong === i ? '#918A8A' : '#BEBEBE'">
-                                <img [src]="this.getThumbnail(pls.song.url)"/>
-                                {{i+1}}. {{pls.song.name}}
-                            </li>
-                        </ol>
-                    </div>
+                <div class="col-12">
+                    <app-youtube [playlist]="this.selectedPlaylist"></app-youtube>
                 </div>
 
                 <!--Viewing/Editing Playlist-->
@@ -69,7 +49,7 @@
                     <div class="card viewer-container">
                         <div class="card-header text-center">
                             <img class="icon icon-middle icon-md float-right" placement="left" ngbTooltip="Delete Playlist" *ngIf="this.viewedPlaylist.userId === this.user.userId" src='assets/playlist/delete_song_black.png' (click)="deletePlaylist()"/>
-                            <h5>{{this.viewedPlaylist.name}}</h5>
+                            <h5 class="font-weight-bold">{{this.viewedPlaylist.name}}</h5>
                         </div>
                         <div class="static-size-list">
                             <ol class="list-group" *ngFor="let pls of this.viewedPlaylist.playlistSong index as i">
@@ -78,71 +58,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-6 no-padding border border-dark" *ngIf="this.viewedPlaylist && !this.creatingPlaylist">
-                    <ngb-tabset justify="fill">
-                        <ngb-tab title="Artists">
-                            <ng-template ngbTabContent>
-                                <ul class="list-group list-group-flush static-size-list">
-                                    <li class="list-group-item list-group-item-action" *ngFor="let artist of artists | async">
-                                        {{artist.name}}
-                                    </li>
-                                </ul>
-                            </ng-template>
-                        </ngb-tab>
-                        <ngb-tab title="Albums">
-                            <ng-template ngbTabContent>
-                                <ul class="list-group list-group-flush static-size-list">
-                                    <li class="list-group-item list-group-item-action" *ngFor="let album of albums | async">
-                                        {{album.name}}
-                                    </li>
-                                </ul>
-                            </ng-template>
-                        </ngb-tab>
-                        <ngb-tab title="Songs">
-                            <ng-template ngbTabContent>
-                                <ul class="list-group list-group-flush static-size-list">
-                                    <li class="list-group-item list-group-item-action" *ngFor="let song of songs | async">
-                                        {{song.name}}
-                                    </li>
-                                </ul>
-                            </ng-template>
-                        </ngb-tab>
-                    </ngb-tabset>
-                    <!--<ul class="nav nav-tabs nav-fill">
-                        <li class="nav-item"><a class="nav-link active" href="#artists" data-toggle="tab">Artists</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#albums" data-toggle="tab">Albums</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#songs" data-toggle="tab">Songs</a></li>
-                    </ul>
-
-                    <div class="tab-content">
-                        <div class="tab-pane fade show active" id="artists">
-                            <div class="card">
-                                <ul class="list-group list-group-flush static-size-list">
-                                    <li class="list-group-item list-group-item-action" *ngFor="let artist of artists | async">
-                                        {{artist.name}}
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade" id="albums">
-                            <div class="card">
-                                <ul class="list-group list-group-flush static-size-list">
-                                    <li class="list-group-item list-group-item-action" *ngFor="let album of albums | async">
-                                        {{album.name}}
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade" id="songs">
-                            <div class="card">
-                                <ul class="list-group list-group-flush static-size-list">
-                                    <li class="list-group-item list-group-item-action" *ngFor="let song of songs | async">
-                                        {{song.name}}
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>-->
+                <div class="col-6 no-padding border border-dark"  *ngIf="this.viewedPlaylist && !this.creatingPlaylist">
+                    <app-search [user] = this.user (change)="addSong($event)"></app-search>
                 </div>
             </div>
         </div>

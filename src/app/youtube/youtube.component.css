@@ -1,0 +1,61 @@
+.current-playlist-holder{
+    background: darkgrey !important;
+}
+
+.no-padding{
+    padding: 0;
+}
+
+.playlist-container{
+    padding: 0;
+    height: 48vh;
+    overflow-y: auto;
+}
+
+.playlist-song-list{
+    background: lightgrey !important;
+}
+
+img{
+    width: 50px;
+}
+
+.img-left{
+    float: left;
+}
+
+.img-right{
+    float: right;
+}
+
+img#playlist-img{
+    width: 75px;
+}
+
+.icon{
+    display: inline;
+}
+
+.icon:hover{
+    cursor: pointer;
+}
+
+.icon-middle{
+    vertical-align: bottom;
+}
+
+.icon-ex-sm{
+    width: 17px;
+}
+
+.icon-sm{
+    width: 20px;
+}
+
+.icon-med{
+    width: 30px;
+}
+
+.icon-lrg{
+    width: 35px;
+}
