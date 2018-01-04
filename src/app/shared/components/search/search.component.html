@@ -23,7 +23,7 @@
   <ngb-tab title="Songs">
     <ng-template ngbTabContent>
       <ul class="list-group list-group-flush static-size-list">
-        <li class="list-group-item list-group-item-action" *ngFor="let song of songs | async">
+        <li class="list-group-item list-group-item-action" (click)="addSong(song)" *ngFor="let song of songs | async">
           {{song.name}}
         </li>
       </ul>

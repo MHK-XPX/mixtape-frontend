@@ -1,3 +1,7 @@
+/*
+    Writtne by: Ryan Kruse
+    This component is the main view of the app. It controls the sidebar, loading bar, video viewer and playlist editor
+*/
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { ActivatedRoute, Router} from "@angular/router";
@@ -58,6 +62,12 @@ export class HomeComponent implements OnInit{
         });
     }
 
+    /*
+        Called when we click on a playlist to view it (or edit it)
+        @param p: Playlist - The playlist to view
+        @param which: string - A string indicating if it is a user playist ("user") or global playlist ("global")
+        @POST: Sets this.creatingPlaylist to input p
+    */
     private viewPlaylist(p: Playlist, which: string){
         this.creatingPlaylist = false;
 
@@ -72,6 +82,12 @@ export class HomeComponent implements OnInit{
         }
     }
 
+    /*
+        Called when the user selects a playlist to play
+        @param p: Playlist - The playlist to play
+        @param which: string - A string indicating if it is a user playist ("user") or global playlist ("global")
+        @POST: Sets this.selectedPlaylist to p
+    */
     private selectPlaylist(p: Playlist, which: string){
         if(which === "user"){
             this.selectedPlaylist = p;
@@ -84,6 +100,9 @@ export class HomeComponent implements OnInit{
         }
     }
 
+    /*
+        Called when the user creates a new playlist. It creates the playlist and adds it to the backend DB
+    */
     private newPlaylist(){
         let s: Subscription;
         this.creatingPlaylist = true;
@@ -108,6 +127,10 @@ export class HomeComponent implements OnInit{
         );
     }
 
+    /*
+        Called when we add a song from the search component, it adds the song to the playlist in the DB
+        @event - The song to add given from the search component
+    */
     private addSong(event){
         console.log(event);
     }
@@ -125,9 +148,5 @@ export class HomeComponent implements OnInit{
                 s.unsubscribe();
             }
         )
-    }
-
-    private getArtistAlbums(artist: Artist){
-        console.log(artist);
     }
 }

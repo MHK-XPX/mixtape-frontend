@@ -1,3 +1,7 @@
+/*
+  Written by: Ryan Kruse
+  This component controls the embded youtube player and the currently playing playlist. It allows the user to play, pause, skip and repeat songs
+*/
 import { Component, OnInit, NgZone, Input } from '@angular/core';
 
 import { StorageService } from '../shared/session-storage.service';
@@ -49,7 +53,7 @@ export class YoutubeComponent implements OnInit {
   }
 
   /*
-  This is called on load or when we select a new playlist to view
+    This is called on load or when we select a new playlist to view
   */
   ngOnChanges(){
     //If we do not have a playlist selected, there is nothing to do
@@ -73,12 +77,12 @@ export class YoutubeComponent implements OnInit {
   }
 
     /*
-    Called when soemthing changes our player state (ie we pause the video or it ends)
-    -1 - not started
-    0 - ended
-    1 - playing
-    2 - paused
-    3 - loading
+      Called when soemthing changes our player state (ie we pause the video or it ends)
+      -1 - not started
+      0 - ended
+      1 - playing
+      2 - paused
+      3 - loading
     */
   private onStateChange(event){
     switch(event.data){
@@ -100,6 +104,10 @@ export class YoutubeComponent implements OnInit {
     }
   }
 
+  /*
+    If the user clicks the next button we move to the next song, if repeat is 
+    enabled we restart the playlist (if on the last song)
+  */
   private nextSong(){
     if(this.onSong + 1>= this.playlist.playlistSong.length){
       if(this.repeat)
@@ -113,6 +121,10 @@ export class YoutubeComponent implements OnInit {
     this.playVideo()
   }
 
+  /*
+    If the user clicks the last button we move to the last song, if repeat is 
+    enabled we move to the last song (if on the first song)
+  */
   private lastSong(){
     if(this.onSong - 1 < 0){
       this.onSong = this.playlist.playlistSong.length - 1;
@@ -123,6 +135,10 @@ export class YoutubeComponent implements OnInit {
     this.playVideo();
   }
 
+  /*
+    This method is called when we move to a new song or load a new playlist
+    it sets what song we are on in the session storage and loads then plays the video
+  */
   private playVideo(){
     this._storage.setValue('onSong', this.onSong);
     this.parseId(this.playlist.playlistSong[this.onSong].song.url);
@@ -143,14 +159,12 @@ export class YoutubeComponent implements OnInit {
     else
       this.player.playVideo();
   }
-  
-  private getProgress(){
-    var start = this.player.getCurrentTime();
-    var end = this.player.getDuration();
 
-    console.log((start/end) * 100);
-  }
-
+  /*
+    This method is called when we load a video, it parses the video ID from the youtube link
+    @Input url: string - The url to parse
+    @POST: sets this.videoId to the parsed string
+  */
   private parseId(url: string){
     if(url !== ''){
       var fixedUrl = url.replace(/(>|<)/gi, '').split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/);
@@ -163,7 +177,12 @@ export class YoutubeComponent implements OnInit {
     }
   }
 
-  //Pulls the video ID from the URL with regex, saves it to this.URL
+  /*
+    This method is called everytime we display a song on the DOM, it requests the thumbnail saved via youtube's api
+    and returns the source string to load the image from
+    @Input url: string - The video url to get the thumbnail for
+    @Output string - The thumbnail source link from the youtube api
+  */
   private getThumbnail(url: string): string{ 
     var prefixImgUrl: string = "http://img.youtube.com/vi/"; 
     var suffixImgUrl: string = "/default.jpg";   
@@ -181,6 +200,6 @@ export class YoutubeComponent implements OnInit {
         imgURL = prefixImgUrl + ID + suffixImgUrl;
     }
     return imgURL;
-}
+  }
 
 }

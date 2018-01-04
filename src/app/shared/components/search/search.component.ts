@@ -1,3 +1,7 @@
+/*
+  Written by: Ryan Kruse
+  This component controls the song search feature
+*/
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 import { Observable } from 'rxjs/Observable';
@@ -19,9 +23,9 @@ import { Song } from '../../../interfaces/song';
 
 export class SearchComponent implements OnInit {
 
-  @Input() user: User;
+  @Input() user: User; //When created, it takes a user as input (might be removed later)
   
-  @Output() toAdd: EventEmitter<Song> = new EventEmitter<Song>();
+  @Output() added: EventEmitter<Song> = new EventEmitter<Song>(); //Outputs a song to add on click
 
   private songs: Observable<Song[]> = this._apiService.getAllEntities<Song>('Songs');
   private albums: Observable<Album[]> = this._apiService.getAllEntities<Album>('Albums');
@@ -30,6 +34,13 @@ export class SearchComponent implements OnInit {
   constructor(private _apiService: ApiService) { }
 
   ngOnInit() {
+  }
+
+  /*
+    Called when the user selects a specifc song, it emits the song to any component listening to it
+  */
+  private addSong(s: Song){
+    this.added.emit(s);
   }
 
 }

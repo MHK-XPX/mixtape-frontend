@@ -59,7 +59,7 @@
                     </div>
                 </div>
                 <div class="col-6 no-padding border border-dark"  *ngIf="this.viewedPlaylist && !this.creatingPlaylist">
-                    <app-search [user] = this.user (change)="addSong($event)"></app-search>
+                    <app-search [user] = this.user (added)="addSong($event)"></app-search>
                 </div>
             </div>
         </div>

@@ -1,3 +1,8 @@
+/*
+    Written by: Ryan Kruse
+    This component controls the login and signup features. It either auths. a user with the backend
+    or adds them to the backend with proper account creds.
+*/
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
@@ -9,8 +14,6 @@ import { StorageService } from '../shared/session-storage.service';
 import { UserService } from '../shared/user.service';
 
 import { User } from '../interfaces/user';
-
-declare var window: any;
 
 @Component({
   selector: 'login',
@@ -47,10 +50,10 @@ export class LoginComponent implements OnInit{
             this.username = usrName;
     }
 
-    ngAfterViewInit(){
-        window.componentHandler.upgradeAllRegistered();
-    }
-
+    /*
+        Called when the user clicks login. Only able to if all the fields are filled in
+        It first gets a token from the API then validates the token
+    */
     private loginClicked(){
         if(!this.allFieldsFilled())
             return;
@@ -76,6 +79,10 @@ export class LoginComponent implements OnInit{
         );
     }
 
+    /*
+        Called after the user attempts to login. The method validates if the token is correct
+        or not. If it is, the DOM is moved to the homepage
+    */
     private validateLogin(){
         let user: User;
         let s: Subscription = this._apiService.validateToken().subscribe(
@@ -97,6 +104,10 @@ export class LoginComponent implements OnInit{
         );
     }
 
+    /*
+        Called after the user leaves the username box. It checks with the API to see if
+        the given username has been taken or not, if so it alerts the user with the error
+    */
     private validateUsername(){
         if(this.displayName.length <= 0)
             return;
@@ -115,6 +126,9 @@ export class LoginComponent implements OnInit{
         )
     }
 
+    /*
+        When the user clicks create an account, we clear all of the values
+    */
     private createUserClicked(){
         this.createUser = true;
         this.displayName = "";
@@ -124,6 +138,11 @@ export class LoginComponent implements OnInit{
         this.confirmPassword = "";
     }
     
+    /*
+        Called when the user creates their account. It validates that all off the fields are correct
+        if not, it alerts the user of the error. If they are valid, we add them to the backend
+        and then call the login method
+    */
     private createAccount(){
         let s: Subscription;
 
@@ -151,12 +170,20 @@ export class LoginComponent implements OnInit{
             }
         );
     }
-
+    
+    /*
+        Called when entering passwords, returns if they match or not
+        @return boolean - If the passwords are matching
+    */
     private passwordsMatch(): boolean{
         return this.newPassword.toLocaleLowerCase() === this.confirmPassword.toLocaleLowerCase()
                 && this.newPassword.length > 0 && this.confirmPassword.length > 0;
     }
 
+    /*
+        Called when disabling buttons or attempting to login/create user
+        @return boolean - Returns if all the fields are filled in
+    */
     private allFieldsFilled(): boolean{
         if(this.createUser)
             return this.passwordsMatch() && !this.usernameTaken && this.displayName.length > 0 && this.firstName.length > 0 && this.lastName.length > 0;

@@ -1,3 +1,7 @@
+/*
+  Written by: Ryan Kruse
+  This directive is used with any input field, it allows the user to hit enter to submit their field
+*/
 import { Directive, ElementRef, HostListener, Output, EventEmitter } from'@angular/core';
 
 @Directive({

@@ -1,14 +1,13 @@
 
 /*
-    What is stored:
-        _user - The user that is currently logged in
-        _users - A list of all the users (this will probably be removed)
-        _playlists - A list of all the users playlists
-        _playlist - The current playlist selected by the user
-        _onVideo - The index of the current video we are on
+    What is stored (session storage):
+        onSong - The index of the song the user is current listening to 
         loggedIn - If the user is currently logged in or not
+        token - the auth token given to the user on login
+    What is stored (local storage):
+        _history - The history of songs the user has listened to 
+        savedUsername - The username of the user if they clicked remember me
 */
-//import { PlayList } from '../playlist/interfaces/playlist';
 
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/share';
@@ -17,8 +16,6 @@ export class StorageService{
     //Used to allow dynamic updates on our playlist
     public playlistObservable: Observable<any>;
     private _playlistObserver: any;
-    //private _playlist: PlayList;
-
     constructor(){
         this.playlistObservable = new Observable(observer => {
             this._playlistObserver = observer;
@@ -32,26 +29,7 @@ export class StorageService{
     */
     public setPlaylist(key: string, value: any){
         this.setValue(key, value);
-        //this._playlist = this.getValue(key);
-       // this._playlistObserver.next(this._playlist);
     }
-
-    /*
-        This method is called when we update any information in the playlist, it allows for visual updates
-        @playlist: PlayList - The playlist we updated
-    */
-    /*public updatePlaylists(playlist: PlayList){
-        let playlists: PlayList[] = this.getValue('_playlists');
-
-        this.setPlaylist('_playlist', playlist);
-        for(let i=0; i<playlists.length; i++){
-            if(playlists[i].playlistId === playlist.playlistId){
-                playlists[i] = playlist;
-                this.setValue('_playlists', playlists);
-                break;
-            }
-        }
-    }*/
 
     /*
         Sets a key in session storage to a given key
