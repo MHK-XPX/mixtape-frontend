@@ -23,8 +23,10 @@
   <ngb-tab title="Songs">
     <ng-template ngbTabContent>
       <ul class="list-group list-group-flush static-size-list">
-        <li class="list-group-item list-group-item-action" (click)="addSong(song)" *ngFor="let song of songs | async">
+        <!--<li class="list-group-item list-group-item-action" [style.width]="this.selectedSong === song.songId ? '70%' : '100%'" (click)="selectSong(song)" *ngFor="let song of songs | async" trackBy:trackBySongId [@slideState]="song">-->
+        <li class="list-group-item list-group-item-action" (click)="selectSong(song)" *ngFor="let song of songs | async">
           {{song.name}}
+          <button type="button" class="btn btn-success float-right" [@slideState]="this.selectedSong === song.songId ? 'full' : 'buttonShrink'" (click)="addSong(song)">Add</button>
         </li>
       </ul>
     </ng-template>

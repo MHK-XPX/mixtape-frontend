@@ -5,11 +5,7 @@ import { NgModule } from '@angular/core';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-
-//import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
-//import { TooltipModule } from 'ngx-bootstrap/tooltip';
-//import { ModalModule } from 'ngx-bootstrap/modal';
-//import { AlertModule } from 'ngx-bootstrap';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { NgProgressModule } from '@ngx-progressbar/core';
 import { NgProgressHttpClientModule } from '@ngx-progressbar/http-client';
@@ -43,6 +39,7 @@ import { YoutubeComponent } from './youtube/youtube.component';
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     HttpClientModule,
     NgbModule.forRoot(),
     NgProgressModule.forRoot(),

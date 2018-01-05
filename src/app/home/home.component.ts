@@ -3,12 +3,16 @@
     This component is the main view of the app. It controls the sidebar, loading bar, video viewer and playlist editor
 */
 import { Component, OnInit } from '@angular/core';
+import { trigger, state, animate, transition, style, sequence } from '@angular/animations';
 import { Observable } from 'rxjs/Observable';
 import { ActivatedRoute, Router} from "@angular/router";
 import { Subscription } from "rxjs";
 
 import { ApiService } from '../shared/api.service';
 import { StorageService } from '../shared/session-storage.service';
+
+import {NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
+
 
 import { User } from '../interfaces/user';
 import { Playlist } from '../interfaces/playlist';
@@ -19,12 +23,28 @@ import { Song } from '../interfaces/song';
 import 'rxjs/add/observable/forkJoin';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/switchMap';
+import { PlaylistSong } from '../interfaces/playlistsong';
 
 
 @Component({
   selector: 'home',
   styleUrls: ['./home.component.css'],
-  templateUrl: './home.component.html'
+  templateUrl: './home.component.html',
+  animations: [
+    trigger(
+      'slideState', [
+        state('full', style({
+          width: '20%'
+        })),
+        state('shrink', style({
+          width: '0',
+          visibility: 'hidden'
+        })),
+        transition('full => *', animate('300ms')),
+        transition('shrink => full', animate('300ms')),
+      ]
+    )
+  ]
 })
 
 export class HomeComponent implements OnInit{
@@ -35,12 +55,16 @@ export class HomeComponent implements OnInit{
     private globalPlaylists: Playlist[] = [];
 
     private selectedPlaylist: Playlist;
+
     private viewedPlaylist: Playlist;
+    selectedSong: number = -1;
+    playlistRename: string = "";
 
     private creatingPlaylist: boolean = false;
     private newPlaylistName: string = "Playlist ";
 
-    constructor(private _apiService: ApiService, private _storage: StorageService, private _route: ActivatedRoute, private _router: Router){}
+    constructor(private _apiService: ApiService, private _storage: StorageService, 
+                private _route: ActivatedRoute, private _router: Router, private _modalService: NgbModal){}
 
     ngOnInit(){
         this._route.data.subscribe((data: { user: User }) => {
@@ -65,39 +89,29 @@ export class HomeComponent implements OnInit{
     /*
         Called when we click on a playlist to view it (or edit it)
         @param p: Playlist - The playlist to view
-        @param which: string - A string indicating if it is a user playist ("user") or global playlist ("global")
         @POST: Sets this.creatingPlaylist to input p
     */
-    private viewPlaylist(p: Playlist, which: string){
+    private viewPlaylist(p: Playlist){
         this.creatingPlaylist = false;
 
-        if(which === "user"){
-            this.viewedPlaylist = p;
-        }else{
-            let s: Subscription = this._apiService.getSingleEntity<Playlist>("Playlists", p.playlistId).subscribe(
-                data => this.viewedPlaylist = data,
-                err => console.log("Unable to load playlist", err),
-                () => s.unsubscribe()
-            );
-        }
+        let s: Subscription = this._apiService.getSingleEntity<Playlist>("Playlists", p.playlistId).subscribe(
+            data => this.viewedPlaylist = data,
+            err => console.log("Unable to load playlist", err),
+            () => s.unsubscribe()
+        );
     }
 
     /*
         Called when the user selects a playlist to play
         @param p: Playlist - The playlist to play
-        @param which: string - A string indicating if it is a user playist ("user") or global playlist ("global")
         @POST: Sets this.selectedPlaylist to p
     */
-    private selectPlaylist(p: Playlist, which: string){
-        if(which === "user"){
-            this.selectedPlaylist = p;
-        }else{
-            let s: Subscription = this._apiService.getSingleEntity<Playlist>("Playlists", p.playlistId).subscribe(
-                data => this.selectedPlaylist = data,
-                err => console.log("Unable to load playlist", err),
-                () => s.unsubscribe()
-            );
-        }
+    private selectPlaylist(p: Playlist){
+        let s: Subscription = this._apiService.getSingleEntity<Playlist>("Playlists", p.playlistId).subscribe(
+            data => this.selectedPlaylist = data,
+            err => console.log("Unable to load playlist", err),
+            () => s.unsubscribe()
+        );
     }
 
     /*
@@ -132,14 +146,60 @@ export class HomeComponent implements OnInit{
         @event - The song to add given from the search component
     */
     private addSong(event){
-        console.log(event);
+        let s: Subscription;
+        let song: Song = event;
+
+        let sentPLS = {
+            playlistId: this.viewedPlaylist.playlistId,
+            songId: song.songId
+        }
+
+        let returnedPLS: PlaylistSong; 
+        s = this._apiService.postEntity<PlaylistSong>("PlaylistSongs", sentPLS).subscribe(
+            d => returnedPLS = d,
+            err => console.log("Unable to add song", err),
+            () => {
+                s.unsubscribe();
+                this.viewPlaylist(this.viewedPlaylist);
+            }
+        )
+    }
+
+    /*
+        Called when the delete button is clicked. It removes the song from the DB and the local Playlist for dynamic DOM updates
+        @param pls: PlaylistSong - The song to delete
+        @param index: number - The index of the song in the playlist
+    */
+    private deleteSong(pls: PlaylistSong, index: number){
+        let s: Subscription;
+
+        s = this._apiService.deleteEntity<PlaylistSong>("PlaylistSongs", pls.playlistSongId).subscribe(
+            d => d = d,
+            err => console.log("Unable to delete song", err),
+            () => {
+                s.unsubscribe();
+                this.viewedPlaylist.playlistSong.splice(index, 1);
+            }
+        )
+    }
+
+    /*
+        Called when we click a list item, this method allows us to control the animations (same as the one in search component)
+        @param s: Song - The clicked song
+    */
+    private selectSong(s: Song){
+        if(this.selectedSong === s.songId){
+            this.selectedSong = -1;
+            return;
+        }
+        this.selectedSong = s.songId;
     }
 
     //TODO: Make the backend (or here) also delete the playlist songs else we won't be able to delete the playlist!
     private deletePlaylist(){
         let s: Subscription;
 
-        s = this._apiService.deleteEntity("Playlists", this.viewedPlaylist.playlistId).subscribe(
+        s = this._apiService.deleteEntity<Playlist>("Playlists", this.viewedPlaylist.playlistId).subscribe(
             d => d = d,
             err => console.log("Unable to delete playlist", err),
             () => {
@@ -148,5 +208,41 @@ export class HomeComponent implements OnInit{
                 s.unsubscribe();
             }
         )
+    }
+    
+    /*
+        This method is called after we close the modal, it changes the name in the backend and in the local user playlist array for dynamic updates
+    */
+    private renamePlaylist(){
+        let s: Subscription;
+
+        for(let i=0; i<this.userPlaylists.length; i++){
+            if(this.userPlaylists[i].playlistId === this.viewedPlaylist.playlistId)
+                this.userPlaylists[i].name = this.viewedPlaylist.name;
+        }
+
+        s = this._apiService.putEntity<Playlist>("Playlists", this.viewedPlaylist.playlistId, this.viewedPlaylist).subscribe(
+            d => d = d,
+            err => console.log("Unable to update playlist", err),
+            () => { 
+                s.unsubscribe(); 
+                this.viewPlaylist(this.viewedPlaylist);
+            }
+        )
+    }
+
+    isUserPlaylist(): boolean{
+        return(this.userPlaylists.some(x => x.playlistId == this.viewedPlaylist.playlistId));
+    }
+    
+    openModal(content){
+        this._modalService.open(content).result.then((result) => {
+            if(this.playlistRename.length > 0) //On close via the save button we check if we changed anything, if so we update it
+                this.viewedPlaylist.name = this.playlistRename;
+                this.renamePlaylist();
+        this.playlistRename = "";
+        }, (reason) => { //On close via clicking away we clear anything the user might have typed
+            this.playlistRename = "";
+        });
     }
 }

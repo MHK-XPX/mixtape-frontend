@@ -10,9 +10,9 @@
                             {{ playlist.name }}
                         </div>
                         <div ngbDropdownMenu [attr.aria-labelledby]="i">
-                            <button class="dropdown-item" type="button" (click)="viewPlaylist(playlist, 'user')">View/Edit</button>
+                            <button class="dropdown-item" type="button" (click)="viewPlaylist(playlist)">View/Edit</button>
                             <div class="dropdown-divider"></div>
-                            <button class="dropdown-item" type="button" (click)="selectPlaylist(playlist, 'user')">Play</button>
+                            <button class="dropdown-item" type="button" (click)="selectPlaylist(playlist)">Play</button>
                         </div>
                     </li>
                     <li class="list-group-item list-group-item-action" (click)="newPlaylist()">New Playlist...</li>
@@ -26,9 +26,9 @@
                             {{ playlist.name }}
                         </div>
                         <div ngbDropdownMenu [attr.aria-labelledby]="i">
-                            <button class="dropdown-item" type="button" (click)="viewPlaylist(playlist, 'global')">View/Edit</button>
+                            <button class="dropdown-item" type="button" (click)="viewPlaylist(playlist)">View/Edit</button>
                             <div class="dropdown-divider"></div>
-                            <button class="dropdown-item" type="button" (click)="selectPlaylist(playlist, 'global')">Play</button>
+                            <button class="dropdown-item" type="button" (click)="selectPlaylist(playlist)">Play</button>
                         </div>
                     </li>
                 </ul>
@@ -49,19 +49,34 @@
                     <div class="card viewer-container">
                         <div class="card-header text-center">
                             <img class="icon icon-middle icon-md float-right" placement="left" ngbTooltip="Delete Playlist" *ngIf="this.viewedPlaylist.userId === this.user.userId" src='assets/playlist/delete_song_black.png' (click)="deletePlaylist()"/>
-                            <h5 class="font-weight-bold">{{this.viewedPlaylist.name}}</h5>
+                            <h5 class="font-weight-bold" (click)="openModal(content)">{{this.viewedPlaylist.name}}</h5>
                         </div>
                         <div class="static-size-list">
                             <ol class="list-group" *ngFor="let pls of this.viewedPlaylist.playlistSong index as i">
-                                <li class="list-group-item list-group-item-action text-left">{{i+1}}. {{pls.song.name}}</li>
+                                <li class="list-group-item list-group-item-action text-left" (click)="selectSong(pls.song)">
+                                    {{i+1}}. {{pls.song.name}}
+                                    <button type="button" class="btn btn-danger float-right" [@slideState]="this.selectedSong === pls.song.songId ? 'full' : 'shrink'" (click)="deleteSong(pls, i)" [disabled]="!isUserPlaylist()">Delete</button>
+                                </li>
                             </ol>
                         </div>
                     </div>
                 </div>
                 <div class="col-6 no-padding border border-dark"  *ngIf="this.viewedPlaylist && !this.creatingPlaylist">
-                    <app-search [user] = this.user (added)="addSong($event)"></app-search>
+                    <app-search [user] = this.user [playlist] = this.viewedPlaylist (added)="addSong($event)"></app-search>
                 </div>
             </div>
         </div>
     </div> <!--END OF TOP ROW-->
 </div>
+
+<ng-template #content let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">Change Playlist Name</h4>
+  </div>
+  <div class="modal-body">
+    <input [value]="playlistRename" (input)="playlistRename = $event.target.value" type="text" class="form-control col-12" placeholder="Playlist Name" (ngEnter)="c($event)" autofocus="autofocus">    
+  </div>
+  <div class="modal-footer">
+      <button type="button" class="btn btn-success col-2" (click)="c()" [disabled]="this.viewedPlaylist.length <= 0">Save</button>
+  </div>
+</ng-template>

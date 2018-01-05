@@ -22,6 +22,7 @@ ngb-accordion ngb-panel {
 .static-size-list{
     height: 44vh;
     overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .viewer-container{

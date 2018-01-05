@@ -81,7 +81,12 @@
 
 <ng-template #content let-c="close" let-d="dismiss">
   <div class="modal-header">
-    <input [value]="newPlaylistName" (input)="newPlaylistName = $event.target.value" type="text" class="form-control col-10" placeholder="Playlist Name" (ngEnter)="c($event)">    
-    <button type="button" class="btn btn-success col-2" (click)="c()" [disabled]="this.newPlaylistName.length <= 0">Save</button>
+    <h4 class="modal-title">Change Playlist Name</h4>
+  </div>
+  <div class="modal-body">
+    <input [value]="newPlaylistName" (input)="newPlaylistName = $event.target.value" type="text" class="form-control col-12" placeholder="Playlist Name" (ngEnter)="c($event)">    
+  </div>
+  <div class="modal-footer">
+      <button type="button" class="btn btn-success col-2" (click)="c()" [disabled]="this.newPlaylistName.length <= 0">Save</button>
   </div>
 </ng-template>
