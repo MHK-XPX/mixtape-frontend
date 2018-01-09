@@ -33,7 +33,8 @@
                     </li>
                 </ul>
             </div>
-        </div><!--END OF SIDE BAR -->
+        </div>
+        <!--END OF SIDE BAR -->
 
         <!--main content-->
         <div class="col-10 fluid d-flex flex-column">
@@ -48,35 +49,39 @@
                 <div class="col-6 no-padding border border-dark" *ngIf="this.viewedPlaylist && !this.creatingPlaylist">
                     <div class="card viewer-container">
                         <div class="card-header text-center">
-                            <img class="icon icon-middle icon-md float-right" placement="left" ngbTooltip="Delete Playlist" *ngIf="this.viewedPlaylist.userId === this.user.userId" src='assets/playlist/delete_song_black.png' (click)="deletePlaylist()"/>
+                            <img class="icon icon-middle icon-md float-right" placement="left" ngbTooltip="Delete Playlist" *ngIf="this.viewedPlaylist.userId === this.user.userId"
+                                src='assets/playlist/delete_song_black.png' (click)="deletePlaylist()" />
                             <h5 class="font-weight-bold" (click)="openModal(content)">{{this.viewedPlaylist.name}}</h5>
                         </div>
                         <div class="static-size-list">
                             <ol class="list-group" *ngFor="let pls of this.viewedPlaylist.playlistSong index as i">
                                 <li class="list-group-item list-group-item-action text-left" (click)="selectSong(pls.song)">
                                     {{i+1}}. {{pls.song.name}}
-                                    <button type="button" class="btn btn-danger float-right" [@slideState]="this.selectedSong === pls.song.songId ? 'full' : 'shrink'" (click)="deleteSong(pls, i)" [disabled]="!isUserPlaylist()">Delete</button>
+                                    <button type="button" class="btn btn-danger float-right" [@slideState]="this.selectedSong === pls.song.songId ? 'full' : 'shrink'"
+                                        (click)="deleteSong(pls, i)" [disabled]="!isUserPlaylist()">Delete</button>
                                 </li>
                             </ol>
                         </div>
                     </div>
                 </div>
-                <div class="col-6 no-padding border border-dark"  *ngIf="this.viewedPlaylist && !this.creatingPlaylist">
-                    <app-search [user] = this.user [playlist] = this.viewedPlaylist (added)="addSong($event)"></app-search>
+                <div class="col-6 no-padding border border-dark" *ngIf="this.viewedPlaylist && !this.creatingPlaylist">
+                    <app-search [user]=t his.user [playlist]=t his.viewedPlaylist (added)="addSong($event)"></app-search>
                 </div>
             </div>
         </div>
-    </div> <!--END OF TOP ROW-->
+    </div>
+    <!--END OF TOP ROW-->
 </div>
 
 <ng-template #content let-c="close" let-d="dismiss">
-  <div class="modal-header">
-    <h4 class="modal-title">Change Playlist Name</h4>
-  </div>
-  <div class="modal-body">
-    <input [value]="playlistRename" (input)="playlistRename = $event.target.value" type="text" class="form-control col-12" placeholder="Playlist Name" (ngEnter)="c($event)" autofocus="autofocus">    
-  </div>
-  <div class="modal-footer">
-      <button type="button" class="btn btn-success col-2" (click)="c()" [disabled]="this.viewedPlaylist.length <= 0">Save</button>
-  </div>
+    <div class="modal-header">
+        <h4 class="modal-title">Change Playlist Name</h4>
+    </div>
+    <div class="modal-body">
+        <input [value]="playlistRename" (input)="playlistRename = $event.target.value" type="text" class="form-control col-12" placeholder="Playlist Name"
+            (ngEnter)="c($event)" autofocus="autofocus">
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-success col-2" (click)="c()" [disabled]="this.viewedPlaylist.length <= 0">Save</button>
+    </div>
 </ng-template>

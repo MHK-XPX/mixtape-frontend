@@ -29,12 +29,8 @@ import { Song } from '../../../interfaces/song';
           width: '0',
           visibility: 'hidden'
         })),
-        state('listShrink', style({
-          width: '60%'
-        })),
         transition('full => *', animate('300ms')),
         transition('buttonShrink => full', animate('300ms')),
-        transition('listShrink => full', animate('300ms'))
       ]
     )
   ]
@@ -51,11 +47,55 @@ export class SearchComponent implements OnInit {
   private albums: Observable<Album[]> = this._apiService.getAllEntities<Album>('Albums');
   private artists: Observable<Artist[]> = this._apiService.getAllEntities<Artist>('Artists');
 
+  selectedArtist: Artist = null;
+  selectedArtistIndex: number = -1;
+
+  selectedAlbum: Album = null;
+  selectedAlbumIndex: number = -1;
+
   selectedSong: number = -1;
 
+  searchString: string = "";
   constructor(private _apiService: ApiService) { }
 
   ngOnInit() {
+  }
+
+  private selectArtist(a: Artist){
+    let s: Subscription;
+    let newArt: Artist;
+
+    if(this.selectedArtistIndex === a.artistId){
+      this.selectedArtistIndex = -1;
+      this.selectedAlbumIndex = -1;
+      this.selectedSong = -1;
+      return;
+    }
+
+    //Have the artist end point return the album containing its name and ID, from there we will call selectAlbum with the given id
+  }
+
+  private selectAlbum(a: Album){
+    let s: Subscription;
+    let newAlb: Album;
+
+    if(this.selectedAlbumIndex === a.albumId){
+      this.selectedAlbumIndex = -1;
+      this.selectedSong = -1;
+      return;
+    }
+
+    s = this._apiService.getSingleEntity<Album>("Albums", a.albumId).subscribe(
+      d => newAlb = d,
+      err => console.log("Unable to find album", err),
+      () => {
+        console.log(newAlb);
+        this.selectedAlbum = newAlb;
+        this.selectedAlbumIndex = newAlb.albumId;
+        s.unsubscribe();
+      }
+    );
+
   }
 
   /*

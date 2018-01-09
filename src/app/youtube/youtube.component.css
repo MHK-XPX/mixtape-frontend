@@ -10,6 +10,7 @@
     padding: 0;
     height: 48vh;
     overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .playlist-song-list{

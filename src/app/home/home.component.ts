@@ -11,7 +11,7 @@ import { Subscription } from "rxjs";
 import { ApiService } from '../shared/api.service';
 import { StorageService } from '../shared/session-storage.service';
 
-import {NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 
 
 import { User } from '../interfaces/user';

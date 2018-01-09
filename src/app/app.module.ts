@@ -26,6 +26,7 @@ import { ProfileComponent } from './profile/profile.component';
 import { NgEnterDirective } from './ng-enter.directive';
 import { SearchComponent } from './shared/components/search/search.component';
 import { YoutubeComponent } from './youtube/youtube.component';
+import { FilterPipe } from './filter-pipe.pipe';
 
 @NgModule({
   declarations: [
@@ -36,6 +37,7 @@ import { YoutubeComponent } from './youtube/youtube.component';
     NgEnterDirective,
     SearchComponent,
     YoutubeComponent,
+    FilterPipe,
   ],
   imports: [
     BrowserModule,
