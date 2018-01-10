@@ -48,19 +48,19 @@ import 'rxjs/add/operator/switchMap';
 })
 
 export class HomeComponent implements OnInit {
-    private user: User;
+    user: User;
 
-    private userPlaylists: Playlist[] = [];
+    userPlaylists: Playlist[] = [];
 
-    private globalPlaylists: Playlist[] = [];
+    globalPlaylists: Playlist[] = [];
 
-    private selectedPlaylist: Playlist;
+    selectedPlaylist: Playlist;
 
-    private viewedPlaylist: Playlist;
+    viewedPlaylist: Playlist;
     selectedSong: number = -1;
     playlistRename: string = "";
 
-    private creatingPlaylist: boolean = false;
+    creatingPlaylist: boolean = false;
     private newPlaylistName: string = "Playlist ";
 
     constructor(private _apiService: ApiService, private _storage: StorageService,
@@ -197,7 +197,6 @@ export class HomeComponent implements OnInit {
        event[2] --> The newly created playlist
    */
     getSelectedPlaylists(event: Playlist[]) {
-        console.log(event);
         if (event[0] !== null) {
             this.viewPlaylist(event[0]);
             this.creatingPlaylist = false;

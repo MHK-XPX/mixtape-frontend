@@ -77,7 +77,6 @@ export class SearchComponent implements OnInit {
       err => console.log("Unable to find album", err),
       () => {
         this.selectedArtistIndex = this.selectedArtist.artistId;
-        console.log(this.selectedArtist);
         s.unsubscribe();
       }
     );

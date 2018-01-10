@@ -22,14 +22,14 @@ import { User } from '../interfaces/user';
 })
 
 export class LoginComponent implements OnInit{
-    private invalidLogin: boolean = false;
+    invalidLogin: boolean = false;
     private username: string = "";
-    private password: string = "not yet encrypted"; //will remove 
+    private password: string = ""; //will remove 
     private rememberMe: boolean = true;
 
-    private createUser: boolean = false;
+    createUser: boolean = false;
 
-    private usernameTaken: boolean = false;
+    usernameTaken: boolean = false;
     private hasClickedOff: boolean = false;
 
     private firstName: string = "";
@@ -38,7 +38,7 @@ export class LoginComponent implements OnInit{
     private newPassword: string = "";
     private confirmPassword: string = "";
 
-    constructor(private _apiService: ApiService, private _storage: StorageService,private _router: Router, private _userService: UserService){}
+    constructor(private _apiService: ApiService, public _storage: StorageService,private _router: Router, private _userService: UserService){}
 
     /*
         If we click remember me, load the last username sent into our box

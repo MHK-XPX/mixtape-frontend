@@ -20,7 +20,8 @@
                         <div class="card-header text-center">
                             <img class="icon icon-middle icon-md float-right" placement="left" ngbTooltip="Delete Playlist" *ngIf="this.viewedPlaylist.userId === this.user.userId"
                                 src='assets/playlist/delete_song_black.png' (click)="deletePlaylist()" />
-                            <h5 class="font-weight-bold" placement="top" ngbTooltip="Edit name" (click)="openModal(content)">{{this.viewedPlaylist.name}}</h5>
+                            <h5 class="font-weight-bold" placement="top" ngbTooltip="Edit name" (click)="openModal(content)" *ngIf="this.viewedPlaylist.userId === this.user.userId">{{this.viewedPlaylist.name}}</h5>
+                            <h5 class="font-weight-bold" *ngIf="this.viewedPlaylist.userId !== this.user.userId">{{this.viewedPlaylist.name}}</h5>
                         </div>
                         <div class="static-size-list">
                             <ol class="list-group" *ngFor="let pls of this.viewedPlaylist.playlistSong index as i">

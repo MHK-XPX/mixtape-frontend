@@ -30,7 +30,6 @@ export class SidebarComponent implements OnInit {
   }
 
   ngOnChanges(){
-    console.log("CHANGED", this.userPlaylists);
   }
 
   viewPlaylist(p: Playlist) {
@@ -50,7 +49,7 @@ export class SidebarComponent implements OnInit {
     );
   }
 
-  private newPlaylist() {
+  newPlaylist() {
     let s: Subscription;
     let name = "Playlist: " + (this.userPlaylists.length + 1);
 
@@ -65,7 +64,6 @@ export class SidebarComponent implements OnInit {
       d => this.createdPlaylist = d,
       err => console.log("Unable to create playlist", err),
       () => {
-        console.log("created", this.createdPlaylist);
         s.unsubscribe();
         this.emitPlaylists();
       }

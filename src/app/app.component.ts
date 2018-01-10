@@ -16,7 +16,7 @@ declare var window: any;
 export class AppComponent {
   title = 'app';
 
-  constructor(private _storage: StorageService, private _userService: UserService){}
+  constructor(public _storage: StorageService, private _userService: UserService){}
 
   ngAfterViewInit(){
     window.componentHandler.upgradeAllRegistered();

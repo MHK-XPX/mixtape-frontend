@@ -87,7 +87,6 @@ export class ApiService{
         let headers: HttpHeaders = new HttpHeaders(
             {"Authorization": "Bearer " + this._storage.getValue("token")}
         );
-        console.log("Sending", obj);
         return this._http.post(this._api + path, obj, {headers}) as Observable<T>;
     }
 
@@ -102,7 +101,6 @@ export class ApiService{
         let headers: HttpHeaders = new HttpHeaders(
             {"Authorization": "Bearer " + this._storage.getValue("token")}
         );
-        console.log("Sending", obj);
         return this._http.put(this._api + path + "/" + id, obj, {headers}) as Observable<T>;
     }
 
