@@ -72,7 +72,15 @@ export class SearchComponent implements OnInit {
       return;
     }
 
-    //Have the artist end point return the album containing its name and ID, from there we will call selectAlbum with the given id
+    s = this._apiService.getSingleEntity<Artist>("Artists", a.artistId).subscribe(
+      d => this.selectedArtist = d,
+      err => console.log("Unable to find album", err),
+      () => {
+        this.selectedArtistIndex = this.selectedArtist.artistId;
+        console.log(this.selectedArtist);
+        s.unsubscribe();
+      }
+    );
   }
 
   private selectAlbum(a: Album){
@@ -89,7 +97,6 @@ export class SearchComponent implements OnInit {
       d => newAlb = d,
       err => console.log("Unable to find album", err),
       () => {
-        console.log(newAlb);
         this.selectedAlbum = newAlb;
         this.selectedAlbumIndex = newAlb.albumId;
         s.unsubscribe();

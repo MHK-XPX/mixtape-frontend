@@ -2,9 +2,14 @@
   <ngb-tab title="Artists">
     <ng-template ngbTabContent>
       <input [value]="searchString" (input)="searchString = $event.target.value" type="text" placeholder="Search" />
+
       <ul class="list-group list-group-flush static-size-list">
-        <li class="list-group-item list-group-item-action" *ngFor="let artist of artists | async | filterPipe : searchString">
-          {{artist.name}}
+        <li class="list-group-item list-group-item-action" [ngClass]="{
+          'list-group-item-action':selectedArtist && artist.artistId !== selectedArtistIndex,
+          'list-group-item-success':selectedArtist && artist.artistId === selectedArtistIndex}" *ngFor="let artist of artists | async | filterPipe : searchString">
+          <div (click)="selectArtist(artist)">
+              {{artist.name}}
+          </div>
         </li>
       </ul>
     </ng-template>

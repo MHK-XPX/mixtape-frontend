@@ -1,38 +1,7 @@
 <div class="main-container container-fluid">
     <div class="row">
-        <!--Sidebar-->
-        <div class="side-bar col-sm-2 col-md-2 border border-dark no-padding fixed">
-            <div class="card w-100">
-                <div class="card-header font-weight-bold">Your Playlists:</div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item list-group-item-action" ngbDropdown placement="bottom-right" *ngFor="let playlist of userPlaylists index as i">
-                        <div ngbDropdownToggle [id]="i" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                            {{ playlist.name }}
-                        </div>
-                        <div ngbDropdownMenu [attr.aria-labelledby]="i">
-                            <button class="dropdown-item" type="button" (click)="viewPlaylist(playlist)">View/Edit</button>
-                            <div class="dropdown-divider"></div>
-                            <button class="dropdown-item" type="button" (click)="selectPlaylist(playlist)">Play</button>
-                        </div>
-                    </li>
-                    <li class="list-group-item list-group-item-action" (click)="newPlaylist()">New Playlist...</li>
-                </ul>
-            </div>
-            <div class="card w-100">
-                <div class="card-header font-weight-bold">Global Playlists:</div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item list-group-item-action" ngbDropdown placement="bottom-right" *ngFor="let playlist of this.globalPlaylists index as i">
-                        <div ngbDropdownToggle [id]="i" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            {{ playlist.name }}
-                        </div>
-                        <div ngbDropdownMenu [attr.aria-labelledby]="i">
-                            <button class="dropdown-item" type="button" (click)="viewPlaylist(playlist)">View/Edit</button>
-                            <div class="dropdown-divider"></div>
-                            <button class="dropdown-item" type="button" (click)="selectPlaylist(playlist)">Play</button>
-                        </div>
-                    </li>
-                </ul>
-            </div>
+        <div class="col-2 no-padding">
+            <app-sidebar [user]="this.user" [userPlaylists]="this.userPlaylists" [globalPlaylists]="this.globalPlaylists" (playlists)="getSelectedPlaylists($event)"></app-sidebar>
         </div>
         <!--END OF SIDE BAR -->
 
@@ -51,7 +20,7 @@
                         <div class="card-header text-center">
                             <img class="icon icon-middle icon-md float-right" placement="left" ngbTooltip="Delete Playlist" *ngIf="this.viewedPlaylist.userId === this.user.userId"
                                 src='assets/playlist/delete_song_black.png' (click)="deletePlaylist()" />
-                            <h5 class="font-weight-bold" (click)="openModal(content)">{{this.viewedPlaylist.name}}</h5>
+                            <h5 class="font-weight-bold" placement="top" ngbTooltip="Edit name" (click)="openModal(content)">{{this.viewedPlaylist.name}}</h5>
                         </div>
                         <div class="static-size-list">
                             <ol class="list-group" *ngFor="let pls of this.viewedPlaylist.playlistSong index as i">
@@ -65,7 +34,7 @@
                     </div>
                 </div>
                 <div class="col-6 no-padding border border-dark" *ngIf="this.viewedPlaylist && !this.creatingPlaylist">
-                    <app-search [user]=t his.user [playlist]=t his.viewedPlaylist (added)="addSong($event)"></app-search>
+                    <app-search [user]=this.user [playlist]=this.viewedPlaylist (added)="addSong($event)"></app-search>
                 </div>
             </div>
         </div>

@@ -2,13 +2,6 @@
     background: darkgrey !important;
 }
 
-ngb-tabset ngb-tab{
-    color: blue !important;
-}
-
-ngb-accordion ngb-panel {
-    color: darkgrey;
-}
 .playlist-container{
     padding: 0;
     height: 48vh;

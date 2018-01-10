@@ -27,6 +27,8 @@ import { NgEnterDirective } from './ng-enter.directive';
 import { SearchComponent } from './shared/components/search/search.component';
 import { YoutubeComponent } from './youtube/youtube.component';
 import { FilterPipe } from './filter-pipe.pipe';
+import { SidebarComponent } from './sidebar/sidebar.component';
+import { EditComponent } from './edit/edit.component';
 
 @NgModule({
   declarations: [
@@ -38,6 +40,8 @@ import { FilterPipe } from './filter-pipe.pipe';
     SearchComponent,
     YoutubeComponent,
     FilterPipe,
+    SidebarComponent,
+    EditComponent,
   ],
   imports: [
     BrowserModule,

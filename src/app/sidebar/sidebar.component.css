@@ -1,0 +1,8 @@
+.no-padding{
+    padding: 0;
+}
+
+.side-bar{
+    height: 96.25vh;
+    overflow-y: auto;
+}

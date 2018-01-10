@@ -16,6 +16,7 @@
       <div class="mdl-layout-spacer"></div>
       <!-- Navigation. We hide it in small screens. -->
       <nav class="mdl-navigation mdl-layout--large-screen-only">
+          <a class="mdl-navigation__link" [routerLink]="['/edit']">Edit</a>
         <a class="mdl-navigation__link" [routerLink]="['/profile']">Profile</a>
         <a class="mdl-navigation__link" *ngIf="!this._storage.getValue('loggedIn')" [routerLink]="['/login']">Sign In</a>
         <a class="mdl-navigation__link" *ngIf="this._storage.getValue('loggedIn')" [routerLink]="['/login']" (click)="this._userService.logOut()">Logout</a>
@@ -25,6 +26,7 @@
   <div class="mdl-layout__drawer">
     <span class="mdl-layout-title">Mixtape</span>
     <nav class="mdl-navigation">
+      <a class="mdl-navigation__link" [routerLink]="['/edit']">Edit</a>
       <a class="mdl-navigation__link" [routerLink]="['/profile']">Profile</a>
       <a class="mdl-navigation__link" *ngIf="!this._storage.getValue('loggedIn')" [routerLink]="['/login']">Sign In</a>
       <a class="mdl-navigation__link" *ngIf="this._storage.getValue('loggedIn')" [routerLink]="['/login']" (click)="this._userService.logOut()">Logout</a>
