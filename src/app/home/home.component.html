@@ -1,20 +1,20 @@
-<div class="main-container container-fluid">
+<!--<div class="main-container container-fluid">
     <div class="row">
         <div class="col-2 no-padding">
             <app-sidebar [user]="this.user" [userPlaylists]="this.userPlaylists" [globalPlaylists]="this.globalPlaylists" (playlists)="getSelectedPlaylists($event)"></app-sidebar>
         </div>
-        <!--END OF SIDE BAR -->
+        <!--END OF SIDE BAR 
 
-        <!--main content-->
+        <!--main content
         <div class="col-10 fluid d-flex flex-column">
 
             <div class="row flex-grow">
-                <!--Youtube-->
+                <!--Youtube
                 <div class="col-12">
                     <app-youtube [playlist]="this.selectedPlaylist"></app-youtube>
                 </div>
 
-                <!--Viewing/Editing Playlist-->
+                <!--Viewing/Editing Playlist
                 <div class="col-6 no-padding border border-dark" *ngIf="this.viewedPlaylist && !this.creatingPlaylist">
                     <div class="card viewer-container">
                         <div class="card-header text-center">
@@ -40,7 +40,7 @@
             </div>
         </div>
     </div>
-    <!--END OF TOP ROW-->
+    <!--END OF TOP ROW
 </div>
 
 <ng-template #content let-c="close" let-d="dismiss">
@@ -55,3 +55,15 @@
         <button type="button" class="btn btn-success col-2" (click)="c()" [disabled]="this.viewedPlaylist.length <= 0">Save</button>
     </div>
 </ng-template>
+-->
+
+<!--<ngb-alert class="text-center" *ngIf="successMessage" type="success" (close)="successMessage = null" [dismissible]="false">{{ successMessage }}</ngb-alert>-->
+<div class="main-container container-fluid shadow no-padding">
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item list-group-item-action" (mouseover)="this.mouseOver = i" (mouseout)="this.mouseOver = -1" *ngFor="let song of songs | async | filterPipe : searchString index as i">
+            {{ song.name }}
+            <app-mouseover-menu [@showState]="this.mouseOver === i ? 'show' : 'hide'" [addToPL]="true" [addToQ]="true" [deleteFromPL]="false" [selectedSong] = "song" (successMessageOutput)="triggerMessage($event)"></app-mouseover-menu>
+        </li>
+    </ul>
+    <div id="snackbar" [@showState]="successMessage ? 'show' : 'hide'">{{ successMessage }}</div>
+</div>

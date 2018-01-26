@@ -26,11 +26,11 @@ import { Song } from '../../../interfaces/song';
           width: '20%'
         })),
         state('buttonShrink', style({
-          width: '0',
-          visibility: 'hidden'
+          opacity: 0,
+          width: '0'
         })),
-        transition('full => *', animate('300ms')),
-        transition('buttonShrink => full', animate('300ms')),
+        transition('full => *', animate('200ms')),
+        transition('buttonShrink => full', animate('200ms')),
       ]
     )
   ]

@@ -4,35 +4,65 @@
 
 <ng-progress [thick]="true" color="red" [spinner]="false"></ng-progress>
 
-<!-- Always shows a header, even in smaller screens-->
-<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
-  <header class="mdl-layout__header">
-    <div class="mdl-layout__header-row">
-      <!-- Title -->
-      <span class="mdl-layout-title">
-          <a class="mdl-navigation__link mdl-layout-title" [routerLink]="['/home']">Mixtape</a>
-        </span>
-      <!-- Add spacer, to align navigation to the right -->
-      <div class="mdl-layout-spacer"></div>
-      <!-- Navigation. We hide it in small screens. -->
-      <nav class="mdl-navigation mdl-layout--large-screen-only">
-          <a class="mdl-navigation__link" [routerLink]="['/edit']">Edit</a>
-        <a class="mdl-navigation__link" [routerLink]="['/profile']">Profile</a>
-        <a class="mdl-navigation__link" *ngIf="!this._storage.getValue('loggedIn')" [routerLink]="['/login']">Sign In</a>
-        <a class="mdl-navigation__link" *ngIf="this._storage.getValue('loggedIn')" [routerLink]="['/login']" (click)="this._userService.logOut()">Logout</a>
-      </nav>
+<nav class="navbar sticky-top navbar-expand-sm navbar-dark">
+  <a class="navbar-brand" [routerLink]="['/home']">
+    <img src="favicon.ico" width="30" height="30">Mixtape
+  </a>
+  <button class="navbar-toggler hidden-sm-up" type="button" (click)="isNavbarCollapsed = !isNavbarCollapsed" aria-controls="navbarSupportedContent"
+    aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div [ngbCollapse]="isNavbarCollapsed" class="collapse navbar-collapse" id="navbarSupportedContent">
+    <input class="nav-item form-control md-input" [value]="searchValue" (input)="searchValue = $event.target.value" type="text"
+      placeholder="Search..." (ngEnter)="search()" />
+
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" [routerLink]="['/edit']">Edit</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" [routerLink]="['/profile']">Profile</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" *ngIf="!this._storage.getValue('loggedIn')" [routerLink]="['/login']">Sign In</a>
+        <a class="nav-link" *ngIf="this._storage.getValue('loggedIn')" [routerLink]="['/login']" (click)="this._userService.logOut()">Logout</a>
+      </li>
+    </ul>
+    <div class="nav-item" *ngIf="this.selectedPlaylist">
+      <img class='icon icon-middle icon-md float-left' src="assets/playlist/last_song.png" (click)='this.YT.lastSong()' />
+      <img class="icon icon-middle icon-md" [src]="this.YT.paused ? 'assets/playlist/play_button.png' : 'assets/playlist/pause_button.png'"
+        (click)="this.YT.pauseClicked()" />
+      <img class='icon icon-middle icon-md' src="assets/playlist/next_song.png" (click)='this.YT.nextSong()' />
+      <img class="icon icon-middle icon-md" [src]="this.YT.repeat ? 'assets/playlist/repeat_song_on.png' : 'assets/playlist/repeat_song_off.png'"
+        (click)="this.YT.repeatClicked()" />
+
+      <button type="button" class="btn btn-success icon-middle" (click)="enablePlaylist()">Show Playlist</button>
+
     </div>
-  </header>
-  <div class="mdl-layout__drawer">
-    <span class="mdl-layout-title">Mixtape</span>
-    <nav class="mdl-navigation">
-      <a class="mdl-navigation__link" [routerLink]="['/edit']">Edit</a>
-      <a class="mdl-navigation__link" [routerLink]="['/profile']">Profile</a>
-      <a class="mdl-navigation__link" *ngIf="!this._storage.getValue('loggedIn')" [routerLink]="['/login']">Sign In</a>
-      <a class="mdl-navigation__link" *ngIf="this._storage.getValue('loggedIn')" [routerLink]="['/login']" (click)="this._userService.logOut()">Logout</a>
-    </nav>
+
   </div>
-    <main class="mdl-layout_content">
-      <router-outlet></router-outlet>
-  </main>
+</nav>
+
+<div class="main-container container-fluid">
+  <div class="row" *ngIf="!this.isLoggedIn()">
+    <div class="col-12">
+      <login></login>
+    </div>
+  </div>
+
+  <div class="row" *ngIf="this.isLoggedIn()">
+
+    <div class="col-2 shadow no-padding">
+      <app-sidebar (playlist)="selectPlaylist($event)" *ngIf="this.getUser()"></app-sidebar>
+    </div>
+
+    <div class="col-7 mx-auto margin-top margin-bottom">
+      <div class="col-9 no-padding mx-auto shadow">
+        <app-youtube [playlist]="this.selectedPlaylist" [showPlaylist]="this.showPlaylist"></app-youtube>
+      </div>
+      <div class="col-12 margin-top mx-auto" style="margin-top: 5%" *ngIf="!this.showPlaylist">
+        <home [searchString]="this.searchString"></home>
+      </div>
+    </div>
+  </div>
 </div>

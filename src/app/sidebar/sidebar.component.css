@@ -3,6 +3,5 @@
 }
 
 .side-bar{
-    height: 96.25vh;
-    overflow-y: auto;
+    height: 100vh;
 }

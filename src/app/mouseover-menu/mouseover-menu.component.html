@@ -1,0 +1,15 @@
+<div class="icon-menu">
+  <div *ngIf="addToQ">
+    <img class="icon icon-middle icon-sm float-right img-margin" placement="top" ngbTooltip="Add to queue" src='assets/playlist/add_playlist.png' (click)="addToQueue()"/>
+  </div>
+  <div ngbDropdown placement="top" *ngIf="addToPL">
+    <img ngbDropdownToggle class="icon icon-middle icon-sm float-right img-margin" placement="left" ngbTooltip="Add to a playlist" src='assets/playlist/add_playlist_2.png' />
+    <div ngbDropdownMenu aria-labelledby="addToPlaylists">
+      <ul class="list-group list-group-flush" *ngIf="this.playlists">
+        <li class="list-group-item list-group-item-action" *ngFor="let playlist of this.playlists index as i" (click)="addToPlaylist(playlist, i)">
+          {{ playlist.name }}
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

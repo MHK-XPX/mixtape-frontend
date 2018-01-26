@@ -1,24 +1,23 @@
-<div class="row flex-grow">
-  <div class="col-8 no-padding">
-    <youtube-player [videoId]="this.videoId"  [height]="this._height" (ready)="savePlayer($event)" (change)="onStateChange($event)"></youtube-player>
-  </div>
-
-  <div class="col-4 playlist-container playlist-song-list border border-dark">
-    <div class="card" *ngIf="this.playlist">
-      <div class="card-headeer text-center current-playlist-holder">
-        <img class='icon icon-middle icon-md' src="assets/playlist/last_song_black.png" (click)='lastSong()'/>
-        <h5 style="display: inline-block;">{{this.playlist.name}}</h5>
-        <img class='icon icon-middle icon-md' src="assets/playlist/next_song_black.png" (click)='nextSong()'/>
-
-        <img class="icon icon-middle icon-md" [src]="this.paused ? 'assets/playlist/play_button_black.png' : 'assets/playlist/pause_button_black.png'" (click)="pauseClicked()"/>                    
-        <img class="icon icon-middle icon-md" [src]="this.repeat ? 'assets/playlist/repeat_song_on_black.png' : 'assets/playlist/repeat_song_off_black.png'" (click)="repeatClicked()"/>
-      </div>
-      <ol class="list-group list-group-flush" *ngFor="let pls of this.playlist.playlistSong index as i">
-        <li class="list-group-item"  [style.background-color]="this.onSong === i ? '#918A8A' : '#BEBEBE'">
-          <img [src]="this.getThumbnail(pls.song.url)"/>
-          {{i+1}}. {{pls.song.name}}
-        </li>
-      </ol>
+<div class="container container-fluid">
+  <div class="row">
+    <div class="col-12 no-padding">
+      <youtube-player [videoId]="this.videoId" [height]="getScreenHeight()" [width]="getScreenWidth()" (ready)="savePlayer($event)"
+        (change)="onStateChange($event)"></youtube-player>
     </div>
   </div>
-</div>
+  <div class="row">
+    <div class="col-12 playlist-container playlist-song-list no-padding margin-top shadow" *ngIf="this.playlist && this.showPlaylist">
+      <div class="card" *ngIf="this.playlist  && this.showPlaylist">
+        <div class="card-headeer text-center current-playlist-holder">
+          <h5 class="text-center">{{this.playlist.name}}
+          </h5>
+        </div>
+        <ol class="list-group list-group-flush" *ngFor="let pls of this.playlist.playlistSong index as i">
+          <li class="list-group-item" [style.background-color]="this.onSong === i ? '#918A8A' : '#BEBEBE'" (click)="songClicked(i)">
+            <img [src]="this.getThumbnail(pls.song.url)" /> {{i+1}}. {{pls.song.name}}
+            <button type="button" class="btn btn-danger float-right" [@slideState]="this.songIndex === i ? 'full' : 'buttonShrink'">Delete</button>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>

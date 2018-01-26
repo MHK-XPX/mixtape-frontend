@@ -11,7 +11,7 @@ import { Subscription } from "rxjs";
 
 import { ApiService } from '../shared/api.service';
 import { StorageService } from '../shared/session-storage.service';
-import { UserService } from '../shared/user.service';
+import { DataShareService } from '../shared/data-share.service';
 
 import { User } from '../interfaces/user';
 
@@ -38,7 +38,7 @@ export class LoginComponent implements OnInit{
     private newPassword: string = "";
     private confirmPassword: string = "";
 
-    constructor(private _apiService: ApiService, public _storage: StorageService,private _router: Router, private _userService: UserService){}
+    constructor(private _apiService: ApiService, public _storage: StorageService,private _router: Router, private _dataShareService: DataShareService){}
 
     /*
         If we click remember me, load the last username sent into our box
@@ -98,7 +98,7 @@ export class LoginComponent implements OnInit{
 
                 s.unsubscribe();
 
-                this._userService.logIn(user);
+                this._dataShareService.changeUser(user);
                 this._router.navigate(['./home']);
             }
         );

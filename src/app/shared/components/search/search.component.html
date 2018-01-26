@@ -5,8 +5,7 @@
 
       <ul class="list-group list-group-flush static-size-list">
         <li class="list-group-item list-group-item-action" [ngClass]="{
-          'list-group-item-action':selectedArtist && artist.artistId !== selectedArtistIndex,
-          'list-group-item-success':selectedArtist && artist.artistId === selectedArtistIndex}" *ngFor="let artist of artists | async | filterPipe : searchString">
+          'active':selectedArtist && artist.artistId === selectedArtistIndex}" *ngFor="let artist of artists | async | filterPipe : searchString">
           <div (click)="selectArtist(artist)">
               {{artist.name}}
           </div>
@@ -20,9 +19,8 @@
       <input [value]="searchString" (input)="searchString = $event.target.value" type="text" placeholder="Search" />
 
       <ul class="list-group list-group-flush static-size-list">
-        <li class="list-group-item" [ngClass]="{
-          'list-group-item-action':selectedAlbum && album.albumId !== selectedAlbumIndex,
-          'list-group-item-success':selectedAlbum && album.albumId === selectedAlbumIndex}" *ngFor="let album of albums | async | filterPipe : searchString">
+        <li class="list-group-item list-group-item-action" [ngClass]="{
+          'active':selectedAlbum && album.albumId === selectedAlbumIndex}" *ngFor="let album of albums | async | filterPipe : searchString">
           <div (click)="selectAlbum(album)">
             {{album.name}}
           </div>

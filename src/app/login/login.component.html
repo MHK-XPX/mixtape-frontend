@@ -2,14 +2,17 @@
 <ngb-alert class="text-center" type="danger" (close)='this.displayName = ""; this.usernameTaken = false' *ngIf="this.usernameTaken">Username is already in use</ngb-alert>
 
 <div class="container mx-auto" *ngIf="!this._storage.getValue('loggedIn') && !this.createUser">
-    <div class="col-sm-6 col-md-4 mx-auto">
+    <div class="col-6 mx-auto">
         <h1 class="text-center login-title">Sign in to continue to Mixtape</h1>
         <div class="account-wall">
             <form class="form-signin was-validated">
-                <input [value]="username" (input)="username = $event.target.value" type="text" class="form-control" id="inputEmail3" placeholder="Username" required autofocus>
-                <input [value]="password" (input)="password = $event.target.value" type="password" class="form-control" id="inputPassword3" placeholder="Password" (ngEnter)="loginClicked($event)" required>
+                <input [value]="username" (input)="username = $event.target.value" type="text" class="form-control" id="inputEmail3" placeholder="Username"
+                    required autofocus>
+                <input [value]="password" (input)="password = $event.target.value" type="password" class="form-control" id="inputPassword3"
+                    placeholder="Password" (ngEnter)="loginClicked($event)" required>
                 <button class="btn btn-lg btn-primary btn-block" type="button" (click)="loginClicked()" [disabled]="!allFieldsFilled()">Sign In</button>
-                <label class="checkbox pull-left"><input type="checkbox" [checked]="rememberMe" (change)="rememberMe = !rememberMe"> Remember me</label>
+                <label class="checkbox pull-left">
+                    <input type="checkbox" [checked]="rememberMe" (change)="rememberMe = !rememberMe"> Remember me</label>
             </form>
         </div>
         <button class="btn btn-link text-center new-account mx-auto" type="button" (click)="createUserClicked()">Create an account </button>
@@ -17,40 +20,45 @@
 </div>
 
 <div class="container mx-auto" *ngIf="!this._storage.getValue('loggedIn') && this.createUser">
-    <div class="col-sm-8 col-md-8 mx-auto">
+    <div class="col-8 mx-auto">
         <div class="account-wall">
             <form class="was-validated">
                 <div class="form-group row">
                     <div class="form-group col-md-6">
                         <label for="inputFirstName" class="col-form-label">First Name:</label>
-                        <input [value]="firstName" (input)="firstName = $event.target.value" type="text" class="form-control" id="inputFirstName" placeholder="First Name" required autofocus>
+                        <input [value]="firstName" (input)="firstName = $event.target.value" type="text" class="form-control" id="inputFirstName"
+                            placeholder="First Name" required autofocus>
                     </div>
                     <div class="form-group col-md-6">
                         <label for="inputLastName" class="col-form-label">Last Name:</label>
-                        <input [value]="lastName" (input)="lastName = $event.target.value" type="text" class="form-control" id="inputLastName" placeholder="Last Name" required autofocus>
+                        <input [value]="lastName" (input)="lastName = $event.target.value" type="text" class="form-control" id="inputLastName" placeholder="Last Name"
+                            required autofocus>
                     </div>
                 </div>
                 <div class="for-group row">
                     <div class="form-group col-md-6">
                         <label for="inputUsername" class="col-form-label">Username:</label>
-                        <input [value]="displayName" (input)="displayName = $event.target.value" type="text" class="form-control" id="inputUsername" placeholder="Username" (focusout)="validateUsername()" required>
-                        <small id="usernameHelpBlock" class="form-text text-muted" *ngIf="!usernameTaken && hasClickedOff">Username is available!</small> 
+                        <input [value]="displayName" (input)="displayName = $event.target.value" type="text" class="form-control" id="inputUsername"
+                            placeholder="Username" (focusout)="validateUsername()" required>
+                        <small id="usernameHelpBlock" class="form-text text-muted" *ngIf="!usernameTaken && hasClickedOff">Username is available!</small>
                     </div>
                 </div>
                 <div class="form-group row">
                     <div class="form-group col-md-6">
                         <label for="inputPassword" class="col-form-label">Password:</label>
-                        <input [value]="newPassword" (input)="newPassword = $event.target.value" type="password" class="form-control" id="inputPassword" placeholder="Password" required>
-                    </div> 
+                        <input [value]="newPassword" (input)="newPassword = $event.target.value" type="password" class="form-control" id="inputPassword"
+                            placeholder="Password" required>
+                    </div>
                     <div class="form-group col-md-6">
                         <label for="inputCPassword" class="col-form-label">Confirm Password:</label>
-                        <input [value]="confirmPassword" (input)="confirmPassword = $event.target.value" type="password" class="form-control" id="inputCPassword" placeholder="Confirm Password" required>
-                        <small id="passwordHelpBlock" class="form-text text-muted" *ngIf="!passwordsMatch()">Passwords must match</small> 
+                        <input [value]="confirmPassword" (input)="confirmPassword = $event.target.value" type="password" class="form-control" id="inputCPassword"
+                            placeholder="Confirm Password" required>
+                        <small id="passwordHelpBlock" class="form-text text-muted" *ngIf="!passwordsMatch()">Passwords must match</small>
                     </div>
                 </div>
-                <button type="button" class="btn btn-primary btn-block" (click)="createAccount()" [disabled] = "!allFieldsFilled()">Create Account</button>
+                <button type="button" class="btn btn-primary btn-block" (click)="createAccount()" [disabled]="!allFieldsFilled()">Create Account</button>
             </form>
         </div>
-        <button class="btn btn-link text-center new-account mx-auto" type="button" (click)="this.createUser = !this.createUser">Back</button>        
+        <button class="btn btn-link text-center new-account mx-auto" type="button" (click)="this.createUser = !this.createUser">Back</button>
     </div>
 </div>

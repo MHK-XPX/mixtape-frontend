@@ -3,6 +3,7 @@ import { Observable } from 'rxjs/Observable';
 import { Subscription } from "rxjs";
 
 import { ApiService } from '../shared/api.service';
+import { DataShareService } from '../shared/data-share.service';
 
 import { User } from '../interfaces/user';
 import { Playlist } from '../interfaces/playlist';
@@ -12,9 +13,13 @@ import { Playlist } from '../interfaces/playlist';
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css']
 })
-export class SidebarComponent implements OnInit {
+export class SidebarComponent implements OnInit{
 
-  @Input() user: User;
+  user: User;
+  userPlaylists: Playlist[] = []
+
+  @Output() playlist: EventEmitter<Playlist> = new EventEmitter<Playlist>();
+  /*@Input() user: User;
   @Input() userPlaylists: Playlist[];
   @Input() globalPlaylists: Playlist[];
 
@@ -23,16 +28,36 @@ export class SidebarComponent implements OnInit {
   private editPlaylist: Playlist;
   private playPlaylist: Playlist;
   private createdPlaylist: Playlist;
+*/
+  
+  constructor(private _apiService: ApiService, private _dataShareService: DataShareService) { }
 
-  constructor(private _apiService: ApiService) { }
+  ngOnInit(){
+    this._dataShareService.playlist.subscribe(res => this.userPlaylists = res);
 
-  ngOnInit() {
+    this._dataShareService.user.subscribe(res => this.user = res);
+
+    let s: Subscription;
+    s = this._apiService.getAllEntities<Playlist>('Playlists/User/' + this.user.userId).subscribe(
+      d => this.userPlaylists = d,
+      err => console.log("Unable to load playlists", err),
+      () => { s.unsubscribe(); this._dataShareService.changePlaylist(this.userPlaylists); }
+    )
   }
 
   ngOnChanges(){
+
   }
 
-  viewPlaylist(p: Playlist) {
+  ngAfterViewInit(){
+ 
+  }
+
+  selectPlaylist(p: Playlist){
+    this.playlist.emit(p);
+  }
+  
+  /*viewPlaylist(p: Playlist) {
     this.createdPlaylist = null;
     this.editPlaylist = p;
     this.emitPlaylists();
@@ -79,5 +104,5 @@ export class SidebarComponent implements OnInit {
 
     this.playlists.emit(returnedPlaylists);
   }
-
+*/
 }

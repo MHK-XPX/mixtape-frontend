@@ -1,4 +1,4 @@
-<div class="side-bar col-12 border border-dark no-padding fixed">
+<!--<div class="side-bar col-12 border border-dark no-padding fixed">
   <div class="card w-100">
     <div class="card-header font-weight-bold">Your Playlists:</div>
     <ul class="list-group list-group-flush">
@@ -28,6 +28,18 @@
           <div class="dropdown-divider"></div>
           <button class="dropdown-item" type="button" (click)="selectPlaylist(playlist)">Play</button>
         </div>
+      </li>
+    </ul>
+  </div>
+</div>-->
+
+<div class="side-bar no-padding">
+  <div class="card w-100">
+    <div class="card-header text-center font-weight-bold">Playlists:</div>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item list-group-item-action" ngbDropdown placement="bottom-right" *ngFor="let playlist of userPlaylists index as i"
+        (click)="selectPlaylist(playlist)">
+        {{ playlist.name }}
       </li>
     </ul>
   </div>

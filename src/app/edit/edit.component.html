@@ -1,7 +1,71 @@
 <div class="main-container container-fluid">
   <div class="row">
-    <div class="col-2 no-padding">
-      <h4>Playlists:</h4>
+    <div class="col-3 margin-top no-padding">
+      <div class="card no-padding">
+        <div class="card-header text-center font-weight-bold">Playlists:</div>
+        <ul class="list-group list-group-flush static-size">
+          <li class="list-group-item list-group-item-action" [ngClass]="{
+            'active':selectedPlaylist && selectedPlaylist.playlistId === playlist.playlistId}"*ngFor="let playlist of playlists index as i">
+
+            <div (click)="selectPlaylist(playlist)">
+              {{ i+1 }}. {{ playlist.name }}
+            </div>
+
+            <div *ngIf="this.selectedPlaylist && this.selectedPlaylist.playlistId === playlist.playlistId">
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item list-group-item-action" (click)="selectSongToDelete(pls.song)" *ngFor="let pls of this.selectedPlaylist.playlistSong index as i">
+                  {{i+1}}. {{pls.song.name}}
+                  <button type="button" class="btn btn-danger float-right" [@slideState]="this.deletedSong === pls.song.songId ? 'full' : 'buttonShrink'"
+                    (click)="deleteSong(pls, i)">Delete</button>
+                </li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
-  </div>
+    <!--End of Playlist select bar -->
+
+    <!--Artist bar-->
+    <div class="col-3 margin-top">
+      <div class="card no-padding">
+        <div class="card-header text-center font-weight-bold">Artists</div>
+        <ul class="list-group list-group-flush static-size">
+          <li class="list-group-item list-group-item-action" [ngClass]="{
+            'active':selectedArtist && artist.artistId === selectedArtist.artistId}" *ngFor="let artist of artists | async index as i"
+            (click)="selectArtist(artist)">
+            {{artist.name}}
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!--Album bar-->
+    <div class="col-3 margin-top">
+      <div class="card no-padding">
+        <div class="card-header text-center font-weight-bold">Albums</div>
+        <ul class="list-group list-group-flush static-size">
+          <li class="list-group-item list-group-item-action" [ngClass]="{
+            'active': selectedAlbum && album.albumId === selectedAlbum.albumId}" *ngFor="let album of albums | async | editPipe : selectedArtist index as i"
+            (click)="selectAlbum(album)">
+            {{album.name}}
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!--Song bar-->
+    <div class="col-3 margin-top">
+      <div class="card no-padding">
+        <div class="card-header text-center font-weight-bold">Songs</div>
+        <ul class="list-group list-group-flush static-size">
+          <li class="list-group-item list-group-item-action" (click)="selectSong(song)" *ngFor="let song of songs | async | editPipe : selectedArtist : selectedAlbum index as i">
+            {{song.name}}
+            <button type="button" class="btn btn-success float-right" [@slideState]="this.selectedSong === song.songId ? 'full' : 'buttonShrink'"
+              (click)="addSong(song)">Add</button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div><!--END OF ROW-->
 </div>

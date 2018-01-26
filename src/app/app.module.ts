@@ -21,6 +21,7 @@ import { StorageService } from './shared/session-storage.service';
 import { SessionGuard } from './shared/session-guard.service'
 import { UserResolver } from './shared/user-resolver.service';
 import { ApiService } from './shared/api.service';
+import { DataShareService } from './shared/data-share.service';
 import { UserService } from './shared/user.service';
 import { ProfileComponent } from './profile/profile.component';
 import { NgEnterDirective } from './ng-enter.directive';
@@ -29,6 +30,8 @@ import { YoutubeComponent } from './youtube/youtube.component';
 import { FilterPipe } from './filter-pipe.pipe';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { EditComponent } from './edit/edit.component';
+import { EditPipe } from './edit-pipe.pipe';
+import { MouseoverMenuComponent } from './mouseover-menu/mouseover-menu.component';
 
 @NgModule({
   declarations: [
@@ -42,6 +45,8 @@ import { EditComponent } from './edit/edit.component';
     FilterPipe,
     SidebarComponent,
     EditComponent,
+    EditPipe,
+    MouseoverMenuComponent,
   ],
   imports: [
     BrowserModule,
@@ -58,6 +63,7 @@ import { EditComponent } from './edit/edit.component';
     SessionGuard,
     ApiService,
     UserService,
+    DataShareService,
     UserResolver
   ],
   bootstrap: [AppComponent]

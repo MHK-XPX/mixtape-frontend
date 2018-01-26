@@ -3,7 +3,7 @@
     it is created to make communication between pages much easier and only dependent
     on one service
 */
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from "rxjs";
 
@@ -33,8 +33,23 @@ export class UserService{
     */
     public logOut(): void{
         this.loggedIn = false;
+        this.user = null;
 
         this._storage.removeValue('token');
         this._storage.setValue('loggedIn', this.loggedIn);
+    }
+
+    public getUserID(): number{
+        if(this.user)
+            return this.user.userId;
+        return -1;
+    }
+
+    public setUser(user: User){
+        this.user = user;
+    }
+
+    public getUser(): User{
+        return this.user;
     }
 }

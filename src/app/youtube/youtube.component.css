@@ -8,13 +8,22 @@
 
 .playlist-container{
     padding: 0;
-    height: 48vh;
     overflow-y: auto;
     overflow-x: hidden;
 }
 
 .playlist-song-list{
     background: lightgrey !important;
+}
+
+.shadow{
+    box-shadow:         3px 3px 5px 6px #ccc;
+    -moz-box-shadow:    3px 3px 5px 6px #ccc;
+    -webkit-box-shadow: 3px 3px 5px 6px #ccc;
+}
+
+.margin-top{
+    margin-top: 3%;
 }
 
 img{
