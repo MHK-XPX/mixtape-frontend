@@ -1,0 +1,71 @@
+.margin-top{
+    margin-top: 3%;
+}
+
+.no-padding{
+    padding: 0;
+}
+
+.shadow{
+    box-shadow:         3px 3px 5px 6px #ccc;
+    -moz-box-shadow:    3px 3px 5px 6px #ccc;
+    -webkit-box-shadow: 3px 3px 5px 6px #ccc;
+}
+
+#snackbar {
+    min-width: 250px; /* Set a default minimum width */
+    margin-left: -125px; /* Divide value of min-width by 2 */
+    background-color: #333; /* Black background color */
+    color: #fff; /* White text color */
+    text-align: center; /* Centered text */
+    border-radius: 2px; /* Rounded borders */
+    padding: 16px; /* Padding */
+    position: fixed; /* Sit on top of the screen */
+    z-index: 1; /* Add a z-index if needed */
+    left: 50%; /* Center the snackbar */
+    bottom: 30px; /* 30px from the bottom */
+}
+
+img{
+    width: 50px;
+}
+
+.img-left{
+    float: left;
+}
+
+.img-right{
+    float: right;
+}
+
+img#playlist-img{
+    width: 75px;
+}
+
+.icon{
+    display: inline;
+}
+
+.icon:hover{
+    cursor: pointer;
+}
+
+.icon-middle{
+    vertical-align: middle;
+}
+
+.icon-ex-sm{
+    width: 17px;
+}
+
+.icon-sm{
+    width: 20px;
+}
+
+.icon-med{
+    width: 30px;
+}
+
+.icon-lrg{
+    width: 35px;
+}

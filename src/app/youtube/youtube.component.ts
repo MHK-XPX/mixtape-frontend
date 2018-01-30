@@ -4,6 +4,8 @@
 */
 import { Component, OnInit, NgZone, Input } from '@angular/core';
 import { trigger, state, animate, transition, style, sequence } from '@angular/animations';
+import {Subject} from 'rxjs/Subject';
+import {debounceTime} from 'rxjs/operator/debounceTime';
 
 import { StorageService } from '../shared/session-storage.service';
 import { DataShareService } from '../shared/data-share.service';
@@ -18,19 +20,20 @@ declare var window: any;
 @Component({
   selector: 'app-youtube',
   templateUrl: './youtube.component.html',
-  styleUrls: ['./youtube.component.css'],
+  styleUrls: ['./youtube.component.css', '../shared/global-style.css'],
   animations: [
     trigger(
-      'slideState', [
-        state('full', style({
-          width: '20%'
+      'showState', [
+        state('show', style({
+          opacity: 1,
+          visibility: 'visible'
         })),
-        state('buttonShrink', style({
+        state('hide', style({
           opacity: 0,
-          width: '0'
+          visibility: 'hidden'
         })),
-        transition('full => *', animate('200ms')),
-        transition('buttonShrink => full', animate('200ms')),
+        transition('show => *', animate('200ms')),
+        transition('hide => show', animate('400ms')),
       ]
     )
   ]
@@ -39,7 +42,7 @@ declare var window: any;
 export class YoutubeComponent implements OnInit {
 
   @Input() playlist: Playlist;
-  @Input() showPlaylist: boolean; 
+  @Input() showPlaylist: boolean;
 
   private lastPlaylist: Playlist;
 
@@ -47,17 +50,22 @@ export class YoutubeComponent implements OnInit {
   private url: string = "";
   videoId;
 
+  private _success = new Subject<string>();
+  successMessage: string;
+  mouseOver: number = -1;
+
   private onSong: number = this._storage.getValue('onSong') ? this._storage.getValue('onSong') : -1;
   private repeat: boolean = false;
   private paused: boolean = false;
-
-  private songIndex: number = -1;
 
   constructor(private _storage: StorageService, private _ngZone: NgZone, private _dataShareService: DataShareService) { }
 
   ngOnInit() {
     this.lastPlaylist = this.playlist;
     this._dataShareService.currentPlaylist.subscribe(res => this.playlist = res);
+
+    this._success.subscribe((message) => this.successMessage = message);
+    debounceTime.call(this._success, 2000).subscribe(() => this.successMessage = null);
 
   }
 
@@ -110,14 +118,6 @@ export class YoutubeComponent implements OnInit {
       default:
         console.log("DEFAULT");
     }
-  }
-
-  songClicked(index: number){
-    if(this.songIndex === index){
-      this.songIndex = -1;
-      return;
-    }
-    this.songIndex = index;
   }
 
   /*
@@ -182,6 +182,11 @@ export class YoutubeComponent implements OnInit {
 
     return (current / end) * 100;
   }
+
+  triggerMessage(message: string){
+    this.successMessage = message;
+    this._success.next(this.successMessage);
+}
 
   /*
     This method is called when we load a video, it parses the video ID from the youtube link

@@ -11,7 +11,7 @@ import { Playlist } from '../interfaces/playlist';
 @Component({
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
-  styleUrls: ['./sidebar.component.css']
+  styleUrls: ['./sidebar.component.css', '../shared/global-style.css']
 })
 export class SidebarComponent implements OnInit{
 

@@ -5,6 +5,7 @@ import { Subscription } from "rxjs";
 import { ApiService } from './shared/api.service';
 import { DataShareService } from './shared/data-share.service';
 import { StorageService } from './shared/session-storage.service';
+import { UserService } from './shared/user.service';
 
 import { YoutubeComponent } from './youtube/youtube.component';
 import { HomeComponent } from './home/home.component';
@@ -20,7 +21,7 @@ import { SidebarComponent } from './sidebar/sidebar.component';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css', './shared/global-style.css']
 })
 
 export class AppComponent implements OnInit {
@@ -39,11 +40,10 @@ export class AppComponent implements OnInit {
   private onSong: number = this._storage.getValue('onSong') ? this._storage.getValue('onSong') : -1;
 
 
-  constructor(private _apiService: ApiService, public _storage: StorageService, private _dataShareService: DataShareService) { }
+  constructor(private _apiService: ApiService, public _storage: StorageService, private _dataShareService: DataShareService, private _userService: UserService) { }
 
   ngOnInit() {
     if (this.isLoggedIn()) {
-      console.log('getthing user!');
       let s: Subscription;
       let tempUser: User;
 
@@ -86,5 +86,12 @@ export class AppComponent implements OnInit {
 
   isLoggedIn(): boolean {
     return this._storage.getValue('loggedIn') || this._storage.getValue('token');
+  }
+
+  logOut(){
+    this._storage.setValue("loggedIn", false);
+    this._storage.removeValue("token");
+
+    this._dataShareService.clearAllValues();
   }
 }

@@ -29,4 +29,10 @@ export class DataShareService {
   changeCurrentPlaylist(playlist: Playlist){
     this.currentPlaylistSubject.next(playlist);
   }
+
+  clearAllValues(){
+    this.userSubject.next(null);
+    this.playlists.next(null);
+    this.currentPlaylistSubject.next(null);
+  }
 }

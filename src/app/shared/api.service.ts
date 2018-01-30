@@ -25,7 +25,6 @@ export class ApiService{
         @return Observable<any> - An Observable containing a token for the user
     */
     getLoginToken(cred: string): Observable<any>{
-        console.log("sending: ", cred);
         let headers: HttpHeaders = new HttpHeaders(
             {'Content-Type': 'application/json'}
         );

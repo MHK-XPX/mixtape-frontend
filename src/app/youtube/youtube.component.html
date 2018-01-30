@@ -13,11 +13,13 @@
           </h5>
         </div>
         <ol class="list-group list-group-flush" *ngFor="let pls of this.playlist.playlistSong index as i">
-          <li class="list-group-item" [style.background-color]="this.onSong === i ? '#918A8A' : '#BEBEBE'" (click)="songClicked(i)">
+          <li class="list-group-item" [style.background-color]="this.onSong === i ? '#918A8A' : '#BEBEBE'" (mouseover)="this.mouseOver = i" (mouseout)="this.mouseOver = -1">
             <img [src]="this.getThumbnail(pls.song.url)" /> {{i+1}}. {{pls.song.name}}
-            <button type="button" class="btn btn-danger float-right" [@slideState]="this.songIndex === i ? 'full' : 'buttonShrink'">Delete</button>
+            <app-mouseover-menu [@showState]="this.mouseOver === i ? 'show' : 'hide'" [addToPL]="true" [addToQ]="true" [deleteFromPL]="true"
+              [selectedSong]="pls.song" [selectedPLS]="pls" (successMessageOutput)="triggerMessage($event)"></app-mouseover-menu>
           </li>
         </ol>
       </div>
     </div>
+    <div id="snackbar" [@showState]="successMessage ? 'show' : 'hide'">{{ successMessage }}</div>
   </div>

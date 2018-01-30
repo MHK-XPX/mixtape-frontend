@@ -18,17 +18,14 @@
 
     <ul class="navbar-nav mr-auto">
       <li class="nav-item">
-        <a class="nav-link" [routerLink]="['/edit']">Edit</a>
-      </li>
-      <li class="nav-item">
         <a class="nav-link" [routerLink]="['/profile']">Profile</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" *ngIf="!this._storage.getValue('loggedIn')" [routerLink]="['/login']">Sign In</a>
-        <a class="nav-link" *ngIf="this._storage.getValue('loggedIn')" [routerLink]="['/login']" (click)="this._userService.logOut()">Logout</a>
+        <a class="nav-link" *ngIf="this._storage.getValue('loggedIn')" [routerLink]="['/login']" (click)="this.logOut()">Logout</a>
       </li>
     </ul>
-    <div class="nav-item" *ngIf="this.selectedPlaylist">
+    <div class="nav-item" *ngIf="this.selectedPlaylist && this.isLoggedIn()">
       <img class='icon icon-middle icon-md float-left' src="assets/playlist/last_song.png" (click)='this.YT.lastSong()' />
       <img class="icon icon-middle icon-md" [src]="this.YT.paused ? 'assets/playlist/play_button.png' : 'assets/playlist/pause_button.png'"
         (click)="this.YT.pauseClicked()" />

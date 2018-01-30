@@ -10,12 +10,14 @@ import { User } from '../interfaces/user';
 import { Playlist } from '../interfaces/playlist';
 import { Song } from '../interfaces/song';
 import { PlaylistSong } from '../interfaces/playlistsong';
+import { Subscription } from 'rxjs/Subscription';
 
 @Component({
   selector: 'app-mouseover-menu',
   templateUrl: './mouseover-menu.component.html',
   styleUrls: ['./mouseover-menu.component.css']
 })
+
 export class MouseoverMenuComponent implements OnInit {
 
   @Input() addToPL: boolean;
@@ -23,6 +25,7 @@ export class MouseoverMenuComponent implements OnInit {
   @Input() deleteFromPL: boolean;
 
   @Input() selectedSong: Song;
+  @Input() selectedPLS: PlaylistSong;
 
   user: User;
   playlists: Playlist[];
@@ -40,22 +43,36 @@ export class MouseoverMenuComponent implements OnInit {
   }
 
   addToPlaylist(p: Playlist, index: number) {
-    let pls = this.createPlaylistSong(p);
+    let toSendPLS = {
+      playlistId: p.playlistId,
+      songId: this.selectedSong.songId
+    }
+    let actPLS: PlaylistSong;
 
-    p.playlistSong.push(pls);
-    this.playlists[index] = p;
+    let s: Subscription = this._apiService.postEntity<PlaylistSong>("PlaylistSongs", toSendPLS).subscribe(
+      d => actPLS = d,
+      err => {
+        this.successMessage = "Unable to add " + this.selectedSong.name + " to " + p.name;
+        this.outputMessage();
+      },
+      () => {
+        actPLS.song = this.selectedSong;
+        s.unsubscribe();
+        p.playlistSong.push(actPLS);
+        this.playlists[index] = p;
+        this._dataShareService.changePlaylist(this.playlists);
+        this.successMessage = this.selectedSong.name + " added to " + p.name;
 
-    this._dataShareService.changePlaylist(this.playlists);
-    this.successMessage = this.selectedSong.name + " added to " + p.name;
-
-    this.outputMessage();
+        this.outputMessage();
+      }
+    );
   }
 
-  addToQueue(){
+  addToQueue() {
     let pls: PlaylistSong;
     let copyPL: Playlist;
 
-    if(this.currentPL === null){
+    if (this.currentPL === null) {
       let newPL: Playlist = {
         playlistId: null,
         active: true,
@@ -67,7 +84,7 @@ export class MouseoverMenuComponent implements OnInit {
       pls = this.createPlaylistSong(newPL);
       newPL.playlistSong.push(pls);
       copyPL = newPL;
-    }else{
+    } else {
       pls = this.createPlaylistSong(this.currentPL);
       copyPL = {
         playlistId: this.currentPL.playlistId,
@@ -84,8 +101,27 @@ export class MouseoverMenuComponent implements OnInit {
     this.outputMessage();
   }
 
+  deletePlaylistSong(){
+    let plIndex: number = this.playlists.findIndex(pl => pl.playlistId === this.currentPL.playlistId);
+    let plsIndex: number = this.currentPL.playlistSong.findIndex(pls => pls.playlistSongId === this.selectedPLS.playlistSongId);
 
-  createPlaylistSong(p: Playlist): PlaylistSong{
+    let s: Subscription = this._apiService.deleteEntity<PlaylistSong>("PlaylistSongs", this.selectedPLS.playlistSongId).subscribe(
+      d => d = d,
+      err => {
+        this.successMessage = "Unable to delete " + this.selectedSong.name + " from " + this.playlists[plIndex].name;
+        this.outputMessage(); 
+      },
+      () => {
+        s.unsubscribe();
+        this.playlists[plIndex].playlistSong.splice(plsIndex, 1);
+        this._dataShareService.changePlaylist(this.playlists);
+        this.successMessage = "Deleted " + this.selectedSong.name + " from " + this.playlists[plIndex].name;
+        this.outputMessage();
+      }
+    )
+  }
+
+  createPlaylistSong(p: Playlist): PlaylistSong {
     let pls: PlaylistSong = {
       playlistSongId: null,
       playlistId: p.playlistId,
@@ -97,7 +133,7 @@ export class MouseoverMenuComponent implements OnInit {
     return pls;
   }
 
-  outputMessage(){
+  outputMessage() {
     this.successMessageOutput.emit(this.successMessage);
   }
 

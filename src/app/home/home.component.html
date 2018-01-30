@@ -59,6 +59,9 @@
 
 <!--<ngb-alert class="text-center" *ngIf="successMessage" type="success" (close)="successMessage = null" [dismissible]="false">{{ successMessage }}</ngb-alert>-->
 <div class="main-container container-fluid shadow no-padding">
+    <div class="card">
+        <div class="card-header">Top Results for: {{ searchString }}</div>
+    </div>
     <ul class="list-group list-group-flush">
         <li class="list-group-item list-group-item-action" (mouseover)="this.mouseOver = i" (mouseout)="this.mouseOver = -1" *ngFor="let song of songs | async | filterPipe : searchString index as i">
             {{ song.name }}

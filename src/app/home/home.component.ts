@@ -29,7 +29,7 @@ import { debounce } from 'rxjs/operator/debounce';
 
 @Component({
     selector: 'home',
-    styleUrls: ['./home.component.css'],
+    styleUrls: ['./home.component.css', '../shared/global-style.css'],
     templateUrl: './home.component.html',
     animations: [
         trigger(
