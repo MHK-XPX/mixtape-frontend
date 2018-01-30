@@ -1,22 +1,20 @@
-import { Component, ViewChild, OnInit, NgZone, Input } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
+/*
+  Written by: Ryan Kruse
+  This component controls the core logic of the app. It holds all of the child components (sidebar, youtube, home <--which is search)
+*/
+import { Component, ViewChild, OnInit } from '@angular/core';
 import { Subscription } from "rxjs";
 
 import { ApiService } from './shared/api.service';
 import { DataShareService } from './shared/data-share.service';
 import { StorageService } from './shared/session-storage.service';
-import { UserService } from './shared/user.service';
 
 import { YoutubeComponent } from './youtube/youtube.component';
 import { HomeComponent } from './home/home.component';
+import { SidebarComponent } from './sidebar/sidebar.component';
 
 import { User } from './interfaces/user';
 import { Playlist } from './interfaces/playlist';
-import { PlaylistSong } from './interfaces/playlistsong';
-import { Artist } from './interfaces/artist';
-import { Album } from './interfaces/album';
-import { Song } from './interfaces/song';
-import { SidebarComponent } from './sidebar/sidebar.component';
 
 @Component({
   selector: 'app-root',
@@ -37,11 +35,12 @@ export class AppComponent implements OnInit {
   isNavbarCollapsed = true;
   showPlaylist: boolean = false;
 
-  private onSong: number = this._storage.getValue('onSong') ? this._storage.getValue('onSong') : -1;
+  constructor(private _apiService: ApiService, public _storage: StorageService, private _dataShareService: DataShareService) { }
 
-
-  constructor(private _apiService: ApiService, public _storage: StorageService, private _dataShareService: DataShareService, private _userService: UserService) { }
-
+  /*
+    On init, if the user is currently logged in (which can happen if they refresh the page), we pull the user from the API and 
+    update the data-share service with the found user
+  */
   ngOnInit() {
     if (this.isLoggedIn()) {
       let s: Subscription;
@@ -60,9 +59,11 @@ export class AppComponent implements OnInit {
     this._dataShareService.currentPlaylist.subscribe(res => this.selectedPlaylist = res);
   }
 
-  ngAfterViewInit() {
-  }
-
+  /*
+    Called when we select a playlist from the side bar, it updates the data-share service with the playlist
+    and then shows the playlist on the DOM
+    @param event: Playlist - the playlist that was selected
+  */
   selectPlaylist(event: Playlist) {
     this.selectedPlaylist = event;
     this.showPlaylist = true;
@@ -70,10 +71,17 @@ export class AppComponent implements OnInit {
     this._dataShareService.changeCurrentPlaylist(event);
   }
 
+  /*
+    Called when we click the button to show the current playlist rather than the search (home) screen
+  */
   enablePlaylist() {
     this.showPlaylist = true;
   }
 
+  /*
+    Called when the user searches for a string in the input box on the navbar. It removes the current playlist 
+    from the view and shows a list of results that match the search string
+  */
   search() {
     this.showPlaylist = false;
     this.searchString = this.searchValue;

@@ -1,8 +1,8 @@
 /*
   Written by: Ryan Kruse
-  This component controls the embded youtube player and the currently playing playlist. It allows the user to play, pause, skip and repeat songs
+  This component controls the embded youtube player and the currently playing playlist.
 */
-import { Component, OnInit, NgZone, Input } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { trigger, state, animate, transition, style, sequence } from '@angular/animations';
 import {Subject} from 'rxjs/Subject';
 import {debounceTime} from 'rxjs/operator/debounceTime';
@@ -58,7 +58,7 @@ export class YoutubeComponent implements OnInit {
   private repeat: boolean = false;
   private paused: boolean = false;
 
-  constructor(private _storage: StorageService, private _ngZone: NgZone, private _dataShareService: DataShareService) { }
+  constructor(private _storage: StorageService, private _dataShareService: DataShareService) { }
 
   ngOnInit() {
     this.lastPlaylist = this.playlist;

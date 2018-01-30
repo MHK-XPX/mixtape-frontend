@@ -1,3 +1,12 @@
+/*
+  Written by: Ryan Kruse
+
+  This component controls the small icon menu that pops up on mouseover. It allows the user to add a song to a given playlist,
+  add a song to the current playlist in the queue, or delete a song from the current playlist.
+
+  The component makes all of the calls to the API and updates the playlists in the data share so that they are 
+  dynamically updated on the DOM
+*/
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 import { ApiService } from '../shared/api.service';
@@ -15,15 +24,17 @@ import { Subscription } from 'rxjs/Subscription';
 @Component({
   selector: 'app-mouseover-menu',
   templateUrl: './mouseover-menu.component.html',
-  styleUrls: ['./mouseover-menu.component.css']
+  styleUrls: ['./mouseover-menu.component.css', '../shared/global-style.css']
 })
 
 export class MouseoverMenuComponent implements OnInit {
 
+  //Takes input of three bools to indicate which icon to show (add to playlist, add to queue, or delete from playlist)
   @Input() addToPL: boolean;
   @Input() addToQ: boolean;
   @Input() deleteFromPL: boolean;
 
+  //The current song and playlist song we are acting on
   @Input() selectedSong: Song;
   @Input() selectedPLS: PlaylistSong;
 
@@ -31,17 +42,27 @@ export class MouseoverMenuComponent implements OnInit {
   playlists: Playlist[];
   currentPL: Playlist;
 
+  //The component outputs a message if the action either failed or completed
   successMessage: string;
   @Output() successMessageOutput: EventEmitter<string> = new EventEmitter<string>();
 
   constructor(private _apiService: ApiService, private _dataShareService: DataShareService) { }
 
+  /*
+    On Init we sync our current user, playlists, and currently playing playlist
+  */
   ngOnInit() {
     this._dataShareService.user.subscribe(res => this.user = res);
     this._dataShareService.playlist.subscribe(res => this.playlists = res);
     this._dataShareService.currentPlaylist.subscribe(res => this.currentPL = res);
   }
 
+  /*
+    Called when we attempt to add a song to a given playlist, if successful we add the song to the given playlist, update the global lists, and output a message.
+    If not successful we output a fail message.
+    @param p: Playlist - The playlist to add the song to
+    @param index: number - The index of the 'p' in our global array of playlists (from the DataShareService)
+  */
   addToPlaylist(p: Playlist, index: number) {
     let toSendPLS = {
       playlistId: p.playlistId,
@@ -68,6 +89,11 @@ export class MouseoverMenuComponent implements OnInit {
     );
   }
 
+  /*
+    Called when we add a song to the currently playing playlist or we want to start a new queue. If we aren't listening to a playlist
+    then we create a new queue and allow the user to add songs to it (via add to queue button) and they can listen to said queue.
+    If the user is currently listening to a playlist, then we append the song to the end of the list and output a success message
+  */
   addToQueue() {
     let pls: PlaylistSong;
     let copyPL: Playlist;
@@ -101,6 +127,10 @@ export class MouseoverMenuComponent implements OnInit {
     this.outputMessage();
   }
 
+  /*
+    Called when the user attempts to delete a song from a playlist. If the user is successful then we remove the song from the playlist,
+    update the global playlists, and output a success message. If not successful we output a fail message
+  */
   deletePlaylistSong(){
     let plIndex: number = this.playlists.findIndex(pl => pl.playlistId === this.currentPL.playlistId);
     let plsIndex: number = this.currentPL.playlistSong.findIndex(pls => pls.playlistSongId === this.selectedPLS.playlistSongId);
@@ -121,6 +151,11 @@ export class MouseoverMenuComponent implements OnInit {
     )
   }
 
+  /*
+    Called when we want to create a new playlist song to add to a playlist
+    @param p: Playlist - the playlist we want to create a playlist song for
+    @return PlaylistSong - A new playlist song
+  */
   createPlaylistSong(p: Playlist): PlaylistSong {
     let pls: PlaylistSong = {
       playlistSongId: null,
@@ -133,6 +168,9 @@ export class MouseoverMenuComponent implements OnInit {
     return pls;
   }
 
+  /*
+    Called whenever we finish an action, the message is emitted to all parent components
+  */
   outputMessage() {
     this.successMessageOutput.emit(this.successMessage);
   }

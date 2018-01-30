@@ -1,48 +1,4 @@
-<!--<div class="main-container container-fluid">
-    <div class="row">
-        <div class="col-2 no-padding">
-            <app-sidebar [user]="this.user" [userPlaylists]="this.userPlaylists" [globalPlaylists]="this.globalPlaylists" (playlists)="getSelectedPlaylists($event)"></app-sidebar>
-        </div>
-        <!--END OF SIDE BAR 
-
-        <!--main content
-        <div class="col-10 fluid d-flex flex-column">
-
-            <div class="row flex-grow">
-                <!--Youtube
-                <div class="col-12">
-                    <app-youtube [playlist]="this.selectedPlaylist"></app-youtube>
-                </div>
-
-                <!--Viewing/Editing Playlist
-                <div class="col-6 no-padding border border-dark" *ngIf="this.viewedPlaylist && !this.creatingPlaylist">
-                    <div class="card viewer-container">
-                        <div class="card-header text-center">
-                            <img class="icon icon-middle icon-md float-right" placement="left" ngbTooltip="Delete Playlist" *ngIf="this.viewedPlaylist.userId === this.user.userId"
-                                src='assets/playlist/delete_song_black.png' (click)="deletePlaylist()" />
-                            <h5 class="font-weight-bold" placement="top" ngbTooltip="Edit name" (click)="openModal(content)" *ngIf="this.viewedPlaylist.userId === this.user.userId">{{this.viewedPlaylist.name}}</h5>
-                            <h5 class="font-weight-bold" *ngIf="this.viewedPlaylist.userId !== this.user.userId">{{this.viewedPlaylist.name}}</h5>
-                        </div>
-                        <div class="static-size-list">
-                            <ol class="list-group" *ngFor="let pls of this.viewedPlaylist.playlistSong index as i">
-                                <li class="list-group-item list-group-item-action text-left" (click)="selectSong(pls.song)">
-                                    {{i+1}}. {{pls.song.name}}
-                                    <button type="button" class="btn btn-danger float-right" [@slideState]="this.selectedSong === pls.song.songId ? 'full' : 'shrink'"
-                                        (click)="deleteSong(pls, i)" [disabled]="!isUserPlaylist()">Delete</button>
-                                </li>
-                            </ol>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-6 no-padding border border-dark" *ngIf="this.viewedPlaylist && !this.creatingPlaylist">
-                    <app-search [user]=this.user [playlist]=this.viewedPlaylist (added)="addSong($event)"></app-search>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!--END OF TOP ROW
-</div>
-
+<!--
 <ng-template #content let-c="close" let-d="dismiss">
     <div class="modal-header">
         <h4 class="modal-title">Change Playlist Name</h4>
@@ -65,7 +21,7 @@
     <ul class="list-group list-group-flush">
         <li class="list-group-item list-group-item-action" (mouseover)="this.mouseOver = i" (mouseout)="this.mouseOver = -1" *ngFor="let song of songs | async | filterPipe : searchString index as i">
             {{ song.name }}
-            <app-mouseover-menu [@showState]="this.mouseOver === i ? 'show' : 'hide'" [addToPL]="true" [addToQ]="true" [deleteFromPL]="false" [selectedSong] = "song" (successMessageOutput)="triggerMessage($event)"></app-mouseover-menu>
+            <app-mouseover-menu [@showState]="this.mouseOver === i ? 'show' : 'hide'" [addToPL]="true" [addToQ]="true" [deleteFromPL]="false" [selectedSong]="song" (successMessageOutput)="triggerMessage($event)"></app-mouseover-menu>
         </li>
     </ul>
     <div id="snackbar" [@showState]="successMessage ? 'show' : 'hide'">{{ successMessage }}</div>

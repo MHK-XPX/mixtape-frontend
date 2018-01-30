@@ -25,11 +25,9 @@ import { DataShareService } from './shared/data-share.service';
 import { UserService } from './shared/user.service';
 import { ProfileComponent } from './profile/profile.component';
 import { NgEnterDirective } from './ng-enter.directive';
-import { SearchComponent } from './shared/components/search/search.component';
 import { YoutubeComponent } from './youtube/youtube.component';
 import { FilterPipe } from './filter-pipe.pipe';
 import { SidebarComponent } from './sidebar/sidebar.component';
-import { EditComponent } from './edit/edit.component';
 import { EditPipe } from './edit-pipe.pipe';
 import { MouseoverMenuComponent } from './mouseover-menu/mouseover-menu.component';
 
@@ -40,11 +38,9 @@ import { MouseoverMenuComponent } from './mouseover-menu/mouseover-menu.componen
     HomeComponent,
     ProfileComponent,
     NgEnterDirective,
-    SearchComponent,
     YoutubeComponent,
     FilterPipe,
     SidebarComponent,
-    EditComponent,
     EditPipe,
     MouseoverMenuComponent,
   ],

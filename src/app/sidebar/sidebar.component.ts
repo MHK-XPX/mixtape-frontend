@@ -1,5 +1,9 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
+/*
+  Written by: Ryan Kruse
+  This component controls the playlist holder on the right side of the DOM. It allows the user to select which playlist to listen to
+  and allows them to create a new playlist
+*/
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { Subscription } from "rxjs";
 
 import { ApiService } from '../shared/api.service';
@@ -18,25 +22,19 @@ export class SidebarComponent implements OnInit{
   user: User;
   userPlaylists: Playlist[] = []
 
-  @Output() playlist: EventEmitter<Playlist> = new EventEmitter<Playlist>();
-  /*@Input() user: User;
-  @Input() userPlaylists: Playlist[];
-  @Input() globalPlaylists: Playlist[];
-
-  @Output() playlists: EventEmitter<Playlist[]> = new EventEmitter<Playlist[]>(); //[0] the playlist to view/edit, [1] the playlist to listen to, [2] the newly created playlist
-
-  private editPlaylist: Playlist;
-  private playPlaylist: Playlist;
-  private createdPlaylist: Playlist;
-*/
+  @Output() playlist: EventEmitter<Playlist> = new EventEmitter<Playlist>(); //Output the playlist selected to listen to
   
   constructor(private _apiService: ApiService, private _dataShareService: DataShareService) { }
 
+  /*
+    On init we sync all of the user's playlists and the user.
+  */
   ngOnInit(){
     this._dataShareService.playlist.subscribe(res => this.userPlaylists = res);
 
     this._dataShareService.user.subscribe(res => this.user = res);
 
+    //Incase the sync was messed up we also pull all of the user's playlists from the API as a saftey net
     let s: Subscription;
     s = this._apiService.getAllEntities<Playlist>('Playlists/User/' + this.user.userId).subscribe(
       d => this.userPlaylists = d,
@@ -45,64 +43,12 @@ export class SidebarComponent implements OnInit{
     )
   }
 
-  ngOnChanges(){
-
-  }
-
-  ngAfterViewInit(){
- 
-  }
-
+  /*
+    Called when the user selects a playlist to listen to. It alerts all parent components of
+    the playlist
+    @param p: Playlist - The playlist selected to listen to
+  */
   selectPlaylist(p: Playlist){
     this.playlist.emit(p);
   }
-  
-  /*viewPlaylist(p: Playlist) {
-    this.createdPlaylist = null;
-    this.editPlaylist = p;
-    this.emitPlaylists();
-  }
-
-  selectPlaylist(p: Playlist) {
-    let s: Subscription = this._apiService.getSingleEntity<Playlist>("Playlists", p.playlistId).subscribe(
-      data => this.playPlaylist = data,
-      err => console.log("Unable to load playlist", err),
-      () => {
-        s.unsubscribe();
-        this.emitPlaylists();
-      }
-    );
-  }
-
-  newPlaylist() {
-    let s: Subscription;
-    let name = "Playlist: " + (this.userPlaylists.length + 1);
-
-    let p = {
-      active: true,
-      name: name,
-      userId: this.user.userId,
-    };
-
-    //POST the playlist to the backend
-    s = this._apiService.postEntity<Playlist>("Playlists", p).subscribe(
-      d => this.createdPlaylist = d,
-      err => console.log("Unable to create playlist", err),
-      () => {
-        s.unsubscribe();
-        this.emitPlaylists();
-      }
-    );
-  }
-
-  private emitPlaylists() {
-    let returnedPlaylists: Playlist[] = [];
-
-    this.editPlaylist ? returnedPlaylists.push(this.editPlaylist) : returnedPlaylists.push(null);
-    this.playPlaylist ? returnedPlaylists.push(this.playPlaylist) : returnedPlaylists.push(null);
-    this.createdPlaylist ? returnedPlaylists.push(this.createdPlaylist) : returnedPlaylists.push(null);
-
-    this.playlists.emit(returnedPlaylists);
-  }
-*/
 }

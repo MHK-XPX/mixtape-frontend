@@ -1,38 +1,3 @@
-<!--<div class="side-bar col-12 border border-dark no-padding fixed">
-  <div class="card w-100">
-    <div class="card-header font-weight-bold">Your Playlists:</div>
-    <ul class="list-group list-group-flush">
-      <li class="list-group-item list-group-item-action" ngbDropdown placement="bottom-right" *ngFor="let playlist of userPlaylists index as i">
-        <div ngbDropdownToggle [id]="i" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-          {{ playlist.name }}
-        </div>
-        <div ngbDropdownMenu [attr.aria-labelledby]="i">
-          <button class="dropdown-item" type="button" (click)="viewPlaylist(playlist)">View/Edit</button>
-          <div class="dropdown-divider"></div>
-          <button class="dropdown-item" type="button" (click)="selectPlaylist(playlist)">Play</button>
-        </div>
-      </li>
-      <li class="list-group-item list-group-item-action" (click)="newPlaylist()">New Playlist...</li>
-    </ul>
-  </div>
-
-  <div class="card w-100">
-    <div class="card-header font-weight-bold">Global Playlists:</div>
-    <ul class="list-group list-group-flush">
-      <li class="list-group-item list-group-item-action" ngbDropdown placement="bottom-right" *ngFor="let playlist of this.globalPlaylists index as i">
-        <div ngbDropdownToggle [id]="i" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          {{ playlist.name }}
-        </div>
-        <div ngbDropdownMenu [attr.aria-labelledby]="i">
-          <button class="dropdown-item" type="button" (click)="viewPlaylist(playlist)">View/Edit</button>
-          <div class="dropdown-divider"></div>
-          <button class="dropdown-item" type="button" (click)="selectPlaylist(playlist)">Play</button>
-        </div>
-      </li>
-    </ul>
-  </div>
-</div>-->
-
 <div class="side-bar no-padding">
   <div class="card w-100">
     <div class="card-header text-center font-weight-bold">Playlists:</div>
