@@ -42,7 +42,7 @@ import { MouseoverMenuComponent } from './mouseover-menu/mouseover-menu.componen
     FilterPipe,
     SidebarComponent,
     EditPipe,
-    MouseoverMenuComponent,
+    MouseoverMenuComponent
   ],
   imports: [
     BrowserModule,

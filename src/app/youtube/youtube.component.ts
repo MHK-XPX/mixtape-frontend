@@ -4,11 +4,16 @@
 */
 import { Component, OnInit, Input } from '@angular/core';
 import { trigger, state, animate, transition, style, sequence } from '@angular/animations';
-import {Subject} from 'rxjs/Subject';
-import {debounceTime} from 'rxjs/operator/debounceTime';
+import { Subscription } from "rxjs";
+
+import { Subject } from 'rxjs/Subject';
+import { debounceTime } from 'rxjs/operator/debounceTime';
+
+import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 
 import { StorageService } from '../shared/session-storage.service';
 import { DataShareService } from '../shared/data-share.service';
+import { ApiService } from '../shared/api.service';
 
 import { MouseoverMenuComponent } from '../mouseover-menu/mouseover-menu.component';
 
@@ -58,7 +63,9 @@ export class YoutubeComponent implements OnInit {
   private repeat: boolean = false;
   private paused: boolean = false;
 
-  constructor(private _storage: StorageService, private _dataShareService: DataShareService) { }
+  private playlistRename: string = "";
+
+  constructor(private _storage: StorageService, private _dataShareService: DataShareService, private _modalService: NgbModal, private _apiService: ApiService) { }
 
   ngOnInit() {
     this.lastPlaylist = this.playlist;
@@ -176,17 +183,32 @@ export class YoutubeComponent implements OnInit {
       this.player.playVideo();
   }
 
-  private getSongDuration(): number {
-    let end: number = this.player.getDuration();
-    let current: number = this.player.getCurrentTime();
-
-    return (current / end) * 100;
-  }
-
-  triggerMessage(message: string){
+  triggerMessage(message: string) {
     this.successMessage = message;
     this._success.next(this.successMessage);
-}
+  }
+
+  openModal(content) {
+    this._modalService.open(content).result.then((result) => {
+      if (this.playlistRename.length > 0) //On close via the save button we check if we changed anything, if so we update it
+        this.playlist.name = this.playlistRename;
+      this.renamePlaylist();
+      this.playlistRename = "";
+    }, (reason) => { //On close via clicking away we clear anything the user might have typed
+      this.playlistRename = "";
+    });
+  }
+
+  private renamePlaylist(){
+    let s: Subscription = this._apiService.putEntity<Playlist>("Playlists", this.playlist.playlistId, this.playlist).subscribe(
+      d => d = d,
+      err => this.triggerMessage("Unable to change name of playlist"),
+      () => {
+        s.unsubscribe();
+        this.triggerMessage("Playlist name updated!");
+      }
+    );
+  }
 
   /*
     This method is called when we load a video, it parses the video ID from the youtube link

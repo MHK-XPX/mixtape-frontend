@@ -6,6 +6,10 @@
     padding: 0;
 }
 
+.current-playlist-holder{
+    background: darkgrey !important;
+}
+
 .playlist-container{
     padding: 0;
     overflow-y: auto;

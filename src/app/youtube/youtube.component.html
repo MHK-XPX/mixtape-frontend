@@ -8,12 +8,13 @@
   <div class="row">
     <div class="col-12 playlist-container playlist-song-list no-padding margin-top shadow" *ngIf="this.playlist && this.showPlaylist">
       <div class="card" *ngIf="this.playlist  && this.showPlaylist">
-        <div class="card-headeer text-center current-playlist-holder">
-          <h5 class="text-center">{{this.playlist.name}}
+        <div class="card-header text-center current-playlist-holder">
+          <h5 class="text-center" placement="top" ngbTooltip="Edit Playlist Name" (click)="openModal(content)">{{this.playlist.name}}
           </h5>
         </div>
         <ol class="list-group list-group-flush" *ngFor="let pls of this.playlist.playlistSong index as i">
-          <li class="list-group-item" [style.background-color]="this.onSong === i ? '#918A8A' : '#BEBEBE'" (mouseover)="this.mouseOver = i" (mouseout)="this.mouseOver = -1">
+          <li class="list-group-item" [style.background-color]="this.onSong === i ? '#918A8A' : '#BEBEBE'" (mouseover)="this.mouseOver = i"
+            (mouseout)="this.mouseOver = -1">
             <img [src]="this.getThumbnail(pls.song.url)" /> {{i+1}}. {{pls.song.name}}
             <app-mouseover-menu [@showState]="this.mouseOver === i ? 'show' : 'hide'" [addToPL]="true" [addToQ]="true" [deleteFromPL]="true"
               [selectedSong]="pls.song" [selectedPLS]="pls" (successMessageOutput)="triggerMessage($event)"></app-mouseover-menu>
@@ -23,3 +24,17 @@
     </div>
     <div id="snackbar" [@showState]="successMessage ? 'show' : 'hide'">{{ successMessage }}</div>
   </div>
+</div>
+
+<ng-template #content let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">Change Playlist Name</h4>
+  </div>
+  <div class="modal-body">
+    <input [value]="playlistRename" (input)="playlistRename = $event.target.value" type="text" class="form-control col-12" placeholder="Playlist Name"
+      (ngEnter)="c($event)" autofocus="autofocus">
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-success col-2" (click)="c()" [disabled]="playlistRename.length <= 0 || playlistRename === this.playlist.name">Save</button>
+  </div>
+</ng-template>

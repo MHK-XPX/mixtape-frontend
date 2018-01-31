@@ -12,8 +12,6 @@ import { Subscription } from "rxjs";
 
 import { ApiService } from '../shared/api.service';
 
-import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
-
 import { MouseoverMenuComponent } from '../mouseover-menu/mouseover-menu.component';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 
@@ -61,7 +59,7 @@ export class HomeComponent implements OnInit {
 
     private songs: Observable<Song[]> = this._apiService.getAllEntities<Song>('Songs');
 
-    constructor(private _apiService: ApiService, private _modalService: NgbModal) { }
+    constructor(private _apiService: ApiService) { }
 
     ngOnInit() {
         this._success.subscribe((message) => this.successMessage = message);
@@ -71,37 +69,5 @@ export class HomeComponent implements OnInit {
     triggerMessage(message: string) {
         this.successMessage = message;
         this._success.next(this.successMessage);
-    }
-
-    /*
-        This method is called after we close the modal, it changes the name in the backend and in the local user playlist array for dynamic updates
-    */
-    private renamePlaylist() {
-        /*let s: Subscription;
-
-        for (let i = 0; i < this.userPlaylists.length; i++) {
-            if (this.userPlaylists[i].playlistId === this.viewedPlaylist.playlistId)
-                this.userPlaylists[i].name = this.viewedPlaylist.name;
-        }
-
-        s = this._apiService.putEntity<Playlist>("Playlists", this.viewedPlaylist.playlistId, this.viewedPlaylist).subscribe(
-            d => d = d,
-            err => console.log("Unable to update playlist", err),
-            () => {
-                s.unsubscribe();
-                this.viewPlaylist(this.viewedPlaylist);
-            }
-        )*/
-    }
-
-    openModal(content) {
-        this._modalService.open(content).result.then((result) => {
-            if (this.playlistRename.length > 0) //On close via the save button we check if we changed anything, if so we update it
-                this.viewedPlaylist.name = this.playlistRename;
-            this.renamePlaylist();
-            this.playlistRename = "";
-        }, (reason) => { //On close via clicking away we clear anything the user might have typed
-            this.playlistRename = "";
-        });
     }
 }
