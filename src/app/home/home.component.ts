@@ -57,7 +57,7 @@ export class HomeComponent implements OnInit {
 
     private newPlaylistName: string = "Playlist ";
 
-    private songs: Observable<Song[]> = this._apiService.getAllEntities<Song>('Songs');
+    songs: Observable<Song[]> = this._apiService.getAllEntities<Song>('Songs');
 
     constructor(private _apiService: ApiService) { }
 
