@@ -234,7 +234,7 @@ export class YoutubeComponent implements OnInit {
     @Output string - The thumbnail source link from the youtube api
   */
   private getThumbnail(url: string): string {
-    var prefixImgUrl: string = "http://img.youtube.com/vi/";
+    var prefixImgUrl: string = "https://img.youtube.com/vi/";
     var suffixImgUrl: string = "/default.jpg";
     var ID;
     var imgURL: string = '';

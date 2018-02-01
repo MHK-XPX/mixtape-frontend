@@ -33,7 +33,8 @@
       <img class="icon icon-middle icon-md" [src]="this.YT.repeat ? 'assets/playlist/repeat_song_on.png' : 'assets/playlist/repeat_song_off.png'"
         (click)="this.YT.repeatClicked()" />
 
-      <button type="button" class="btn btn-success icon-middle" (click)="enablePlaylist()">Show Playlist</button>
+      <button type="button" class="btn btn-success icon-middle" (click)="enablePlaylist()" *ngIf="!this.showPlaylist">Show Playlist</button>
+      <button type="button" class="btn btn-success icon-middle" (click)="search()" *ngIf="this.showPlaylist">Search Results</button>
 
     </div>
 
