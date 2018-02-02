@@ -1,7 +1,14 @@
 .icon-menu{
+    float: right;
     opacity: inherit;
+    width: 25%;
 }
 
 .img-margin{
     margin-right: 1%;
+}
+
+.specific-height{
+    max-height: 25vh;
+    overflow-y: auto;
 }

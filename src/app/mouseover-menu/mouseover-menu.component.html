@@ -11,11 +11,15 @@
     <img ngbDropdownToggle class="icon icon-middle icon-sm float-right img-margin" placement="left" ngbTooltip="Add to a playlist"
       src='assets/playlist/add_playlist_2.png' />
     <div ngbDropdownMenu aria-labelledby="addToPlaylists">
-      <ul class="list-group list-group-flush" *ngIf="this.playlists">
+      <ul class="list-group list-group-flush specific-height" *ngIf="this.playlists">
         <li class="list-group-item list-group-item-action" *ngFor="let playlist of this.playlists index as i" (click)="addToPlaylist(playlist, i)">
           {{ playlist.name }}
         </li>
       </ul>
     </div>
   </div>
+
+  <div *ngIf="deletePL">
+    <img class="icon icon-middle icon-sm float-right img-margin" placement="right" ngbTooltip="Delete" src="assets/playlist/delete_song_black.png"
+      (click)="deletePlaylist()" />
 </div>

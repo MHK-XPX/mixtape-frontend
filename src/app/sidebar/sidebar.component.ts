@@ -4,10 +4,15 @@
   and allows them to create a new playlist
 */
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { trigger, state, animate, transition, style, sequence } from '@angular/animations';
 import { Subscription } from "rxjs";
+import { Subject } from 'rxjs/Subject';
+import { debounceTime } from 'rxjs/operator/debounceTime';
 
 import { ApiService } from '../shared/api.service';
 import { DataShareService } from '../shared/data-share.service';
+
+import { MouseoverMenuComponent } from '../mouseover-menu/mouseover-menu.component';
 
 import { User } from '../interfaces/user';
 import { Playlist } from '../interfaces/playlist';
@@ -15,24 +20,49 @@ import { Playlist } from '../interfaces/playlist';
 @Component({
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
-  styleUrls: ['./sidebar.component.css', '../shared/global-style.css']
+  styleUrls: ['./sidebar.component.css', '../shared/global-style.css'],
+  animations: [
+    trigger(
+      'showState', [
+        state('show', style({
+          opacity: 1,
+          visibility: 'visible'
+        })),
+        state('hide', style({
+          opacity: 0,
+          visibility: 'hidden'
+        })),
+        transition('show => *', animate('200ms')),
+        transition('hide => show', animate('400ms')),
+      ]
+    )
+  ]
 })
-export class SidebarComponent implements OnInit{
+export class SidebarComponent implements OnInit {
 
   user: User;
   userPlaylists: Playlist[] = []
 
+  mouseOver: number = -1;
+  private _success = new Subject<string>();
+  successMessage: string;
+
+  private defaultPLName: string = "Playlist ";
+
   @Output() playlist: EventEmitter<Playlist> = new EventEmitter<Playlist>(); //Output the playlist selected to listen to
-  
+
   constructor(private _apiService: ApiService, private _dataShareService: DataShareService) { }
 
   /*
     On init we sync all of the user's playlists and the user.
   */
-  ngOnInit(){
+  ngOnInit() {
     this._dataShareService.playlist.subscribe(res => this.userPlaylists = res);
 
     this._dataShareService.user.subscribe(res => this.user = res);
+
+    this._success.subscribe((message) => this.successMessage = message);
+    debounceTime.call(this._success, 2000).subscribe(() => this.successMessage = null);
 
     //Incase the sync was messed up we also pull all of the user's playlists from the API as a saftey net
     let s: Subscription;
@@ -48,7 +78,34 @@ export class SidebarComponent implements OnInit{
     the playlist
     @param p: Playlist - The playlist selected to listen to
   */
-  selectPlaylist(p: Playlist){
+  selectPlaylist(p: Playlist) {
     this.playlist.emit(p);
+  }
+
+  createPlaylist() {
+    let nPL = {
+      active: true,
+      name: this.defaultPLName + (this.userPlaylists.length + 1),
+      userId: this.user.userId,
+    }
+
+    let returnedPL: Playlist;
+    let s: Subscription = this._apiService.postEntity<Playlist>("Playlists", nPL).subscribe(
+      d => returnedPL = d,
+      err => console.log(err),
+      () => {
+        s.unsubscribe();
+        this.userPlaylists.push(returnedPL);
+        this._dataShareService.changePlaylist(this.userPlaylists);
+        this.triggerMessage("Playlist created!");
+
+        this.selectPlaylist(returnedPL);
+      }
+    );
+  }
+
+  triggerMessage(message: string) {
+    this.successMessage = message;
+    this._success.next(this.successMessage);
   }
 }

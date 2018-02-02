@@ -33,11 +33,13 @@ export class MouseoverMenuComponent implements OnInit {
   @Input() addToPL: boolean;
   @Input() addToQ: boolean;
   @Input() deleteFromPL: boolean;
+  @Input() deletePL: boolean;
 
   //The current song and playlist song we are acting on
   @Input() selectedSong: Song;
   @Input() selectedPLS: PlaylistSong;
 
+  @Input() plToDelete: Playlist; //The playlist (if any) that we want to delete
   user: User;
   playlists: Playlist[];
   currentPL: Playlist;
@@ -131,7 +133,7 @@ export class MouseoverMenuComponent implements OnInit {
     Called when the user attempts to delete a song from a playlist. If the user is successful then we remove the song from the playlist,
     update the global playlists, and output a success message. If not successful we output a fail message
   */
-  deletePlaylistSong(){
+  deletePlaylistSong() {
     let plIndex: number = this.playlists.findIndex(pl => pl.playlistId === this.currentPL.playlistId);
     let plsIndex: number = this.currentPL.playlistSong.findIndex(pls => pls.playlistSongId === this.selectedPLS.playlistSongId);
 
@@ -139,7 +141,7 @@ export class MouseoverMenuComponent implements OnInit {
       d => d = d,
       err => {
         this.successMessage = "Unable to delete " + this.selectedSong.name + " from " + this.playlists[plIndex].name;
-        this.outputMessage(); 
+        this.outputMessage();
       },
       () => {
         s.unsubscribe();
@@ -166,6 +168,23 @@ export class MouseoverMenuComponent implements OnInit {
     };
 
     return pls;
+  }
+
+  deletePlaylist() {
+    let plIndex: number = this.playlists.findIndex(pl => pl.playlistId === this.plToDelete.playlistId);
+    let s: Subscription;
+
+    s = this._apiService.deleteEntity<Playlist>("Playlists", this.plToDelete.playlistId).subscribe(
+      d => d = d,
+      err => { this.successMessage = "Unable to delete playlist"; this.outputMessage(); },
+      () => {
+        s.unsubscribe();
+        this.playlists.splice(plIndex, 1);
+        this._dataShareService.changePlaylist(this.playlists);
+        this.successMessage = "Playlist deleted!";
+        this.outputMessage();
+      }
+    );
   }
 
   /*
