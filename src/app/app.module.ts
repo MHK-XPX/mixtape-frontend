@@ -30,6 +30,7 @@ import { FilterPipe } from './filter-pipe.pipe';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { EditPipe } from './edit-pipe.pipe';
 import { MouseoverMenuComponent } from './mouseover-menu/mouseover-menu.component';
+import { YoutubePipe } from './youtube.pipe';
 
 @NgModule({
   declarations: [
@@ -42,7 +43,8 @@ import { MouseoverMenuComponent } from './mouseover-menu/mouseover-menu.componen
     FilterPipe,
     SidebarComponent,
     EditPipe,
-    MouseoverMenuComponent
+    MouseoverMenuComponent,
+    YoutubePipe
   ],
   imports: [
     BrowserModule,

@@ -11,10 +11,18 @@ import { Observable } from 'rxjs/Observable';
 import { StorageService } from '../shared/session-storage.service';
 
 import { User } from '../interfaces/user';
+import { YoutubeResult } from '../interfaces/youtuberesult';
+import { LastfmTrack} from '../interfaces/lastfmresult';
+
+
 
 @Injectable()
 export class ApiService{
     private _api='https://xpx-mixtape.herokuapp.com/api/'
+    private _youtubeToken: string = "AIzaSyDYswrJ-YubO8TOqNO0_ictO1RnTh8FC-4";
+
+    private lastFMKey: string = "1e231c3b75baee47b9c947ce5b806e0c";
+
     //private _api = 'http://localhost:60430/api/';
 
     constructor(private _http: HttpClient, private _storage: StorageService){}
@@ -115,4 +123,57 @@ export class ApiService{
         );
         return this._http.delete(this._api + path + "/" + id, {headers}) as Observable<T>;
     }
+
+
+    /*
+        Returns any for now, will return youtube type later (once it's all parsed out)
+    */
+    getYoutubeResults(searchString: string, toDisplay: number): Observable<YoutubeResult[]>{
+        if(!searchString || searchString.length <= 0) return; 
+
+        let baseUrl: string = "https://www.googleapis.com/youtube/v3/search?part=snippet"
+        let mResult: string = "&maxResults=" + toDisplay;
+        let search: string = "&q=" + searchString;
+        let endUrl: string = "&type=video&key=" + this._youtubeToken;
+        
+        return this._http.get(baseUrl + mResult + search + endUrl) as Observable<YoutubeResult[]>;
+    }
+
+    getLastfmResults(artist: string, song: string): Observable<LastfmTrack>{
+        let baseUrl: string = "http://ws.audioscrobbler.com/2.0/?method=track.getinfo&api_key=" + this.lastFMKey;
+        let postUrl: string = "&track=" + song + "&artist=" + artist + "&autocorrect=1&format=json";
+
+        return this._http.get(baseUrl + postUrl) as Observable<LastfmTrack>;
+    }
 }
+
+
+
+//AIzaSyDYswrJ-YubO8TOqNO0_ictO1RnTh8FC-4 TOKEN
+// client ID: 132736446562-2bf10rb348ode6mtbfffl4pkns916e01.apps.googleusercontent.com
+///Client SECRET: zXDxMcLjcQcpig0Bi4bXHMlP
+
+/*
+HOW TO SEARCH YOUTUBE API FOR A VIDEO GIVEN A SEARCH WORD:
+BASE URL: https://www.googleapis.com/youtube/v3/search?part=snippet
+&maxResults=<num results>
+&q=<search>
+&type=video
+&key=AIzaSyDYswrJ-YubO8TOqNO0_ictO1RnTh8FC-4
+
+LOOK AT ME: https://developers.google.com/youtube/v3/docs/search/list#examples
+
+
+
+*/
+
+
+/*
+
+
+Application name	Mixtape-API
+API key	1e231c3b75baee47b9c947ce5b806e0c
+Shared secret	ea69e872350c66fdab63146a9a5fc5bc
+Registered to	mhk-mixtape
+
+*/
