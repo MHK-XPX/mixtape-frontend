@@ -140,7 +140,7 @@ export class ApiService{
     }
 
     getLastfmResults(artist: string, song: string): Observable<LastfmTrack>{
-        let baseUrl: string = "http://ws.audioscrobbler.com/2.0/?method=track.getinfo&api_key=" + this.lastFMKey;
+        let baseUrl: string = "https://ws.audioscrobbler.com/2.0/?method=track.getinfo&api_key=" + this.lastFMKey;
         let postUrl: string = "&track=" + song + "&artist=" + artist + "&autocorrect=1&format=json";
 
         return this._http.get(baseUrl + postUrl) as Observable<LastfmTrack>;
