@@ -3,28 +3,20 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 <ng-progress [thick]="true" color="red" [spinner]="false"></ng-progress>
-
-<nav class="navbar sticky-top navbar-expand-sm navbar-dark">
-  <a class="navbar-brand" [routerLink]="['/home']">
-    <img src="favicon.ico" width="30" height="30">Mixtape
+<nav class="navbar sticky-top navbar-expand-md navbar-dark">
+  <a class="navbar-brand">
+    <button type="button" class="btn btn-success" style="display: inline" (click)="isSidebarCollapsed = !isSidebarCollapsed">Show sidebar</button>
+    <img class="text-light" src="favicon.ico" width="30" height="30" [routerLink]="['/home']"/>
   </a>
   <button class="navbar-toggler hidden-sm-up" type="button" (click)="isNavbarCollapsed = !isNavbarCollapsed" aria-controls="navbarSupportedContent"
-    aria-expanded="false" aria-label="Toggle navigation">
+    [attr.aria-expanded]="isNavbarCollapsed" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
+
   <div [ngbCollapse]="isNavbarCollapsed" class="collapse navbar-collapse" id="navbarSupportedContent">
     <input class="nav-item form-control md-input" [value]="searchValue" (input)="searchValue = $event.target.value" type="text"
-      placeholder="Search..." (ngEnter)="search()" />
+      placeholder="Search..." (ngEnter)="search()" *ngIf="this.isLoggedIn()"/>
 
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item">
-        <a class="nav-link" [routerLink]="['/profile']">Profile</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" *ngIf="!this._storage.getValue('loggedIn')" [routerLink]="['/login']">Sign In</a>
-        <a class="nav-link" *ngIf="this._storage.getValue('loggedIn')" [routerLink]="['/login']" (click)="this.logOut()">Logout</a>
-      </li>
-    </ul>
     <div class="nav-item" *ngIf="this.selectedPlaylist && this.isLoggedIn()">
       <img class='icon icon-middle icon-md float-left' src="assets/playlist/last_song.png" (click)='this.YT.lastSong()' />
       <img class="icon icon-middle icon-md" [src]="this.YT.paused ? 'assets/playlist/play_button.png' : 'assets/playlist/pause_button.png'"
@@ -34,8 +26,15 @@
         (click)="this.YT.repeatClicked()" />
 
       <button type="button" class="btn btn-success icon-middle" (click)="enablePlaylist()" *ngIf="!this.showPlaylist">Show Playlist</button>
-      <button type="button" class="btn btn-success icon-middle" (click)="search()" *ngIf="this.showPlaylist">Search Results</button>
+      <button type="button" class="btn btn-success icon-middle" (click)="search()" *ngIf="this.showPlaylist">Show Page</button>
+    </div>
 
+    <div ngbDropdown placement="bottom" class="nav-item ml-auto" *ngIf="this.isLoggedIn()">
+      <img ngbDropdownToggle class="icon icon-middle icon-md" src="assets/shared/profile_white.png" />
+      <div ngbDropdownMenu>
+        <button class="dropdown-item" [routerLink]="['/profile']">Profile</button>
+        <button class="dropdown-item" [routerLink]="['/login']" (click)="this.logOut()">Logout</button>
+      </div>
     </div>
 
   </div>
@@ -50,15 +49,17 @@
 
   <div class="row" *ngIf="this.isLoggedIn()">
 
-    <div class="col-2 shadow no-padding">
+    <div class="col-sm-2 shadow no-padding" *ngIf="!isSidebarCollapsed">
       <app-sidebar (playlist)="selectPlaylist($event)" *ngIf="this.getUser()"></app-sidebar>
     </div>
 
-    <div class="col-7 mx-auto margin-top margin-bottom">
-      <div class="col-9 no-padding mx-auto shadow">
+    <div class="col-sm-10 margin-top margin-bottom">
+      <div class="col-sm-6 no-padding mx-auto shadow">
         <app-youtube [playlist]="this.selectedPlaylist" [showPlaylist]="this.showPlaylist"></app-youtube>
       </div>
-      <div class="col-12 margin-top mx-auto" style="margin-top: 5%" *ngIf="!this.showPlaylist">
+      <!--<router-outlet class="col-12 margin-top mx-auto" *ngIf="!this.showPlaylist"></router-outlet>-->
+      <!--Add this once we figure out how to send @Input() with router links! -->
+      <div class="col-sm-7 margin-top mx-auto" style="margin-top: 5%" *ngIf="!this.showPlaylist">
         <home [searchString]="this.searchString"></home>
       </div>
     </div>

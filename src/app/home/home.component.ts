@@ -100,6 +100,7 @@ export class HomeComponent implements OnInit {
     */
     selectYoutubeSong(result: items, content) {
         let title: string = result.snippet.title;
+
         let splitOnDash: string[] = title.split("-");
         let splitOnCol: string[] = title.split(":");
         let splitOnPar: string[] = title.split('"');
@@ -115,8 +116,8 @@ export class HomeComponent implements OnInit {
             this.potentialSong = splitOnPar[1];
         }
 
-        this.potentialSong = this.potentialSong.replace(/\[[^\]]*?\]/g, '');
-        this.potentialSong = this.potentialSong.replace(/ *\([^)]*\) */g, "");
+        this.potentialSong = this.potentialSong.replace(/\[[^\]]*?\]/g, ' ');
+        this.potentialSong = this.potentialSong.replace(/ *\([^)]*\) */g, " ");
 
         this.potentialArtist = this.potentialArtist.trim();
         this.potentialSong = this.potentialSong.trim();
@@ -134,7 +135,7 @@ export class HomeComponent implements OnInit {
         this.selectedArtist = null;
         this.selectedAlbum = null;
         this.selectedSong = null;
-        
+
         let tracks: LastfmTrack;
         let s: Subscription = this._apiService.getLastfmResults(this.potentialArtist, this.potentialSong).subscribe(
             d => tracks = d,
@@ -150,9 +151,17 @@ export class HomeComponent implements OnInit {
         This method takes the saved data from Last.FM and checks to see if we currently own it in our DB
     */
     checkIfArtistSaved(track: LastfmTrack) {
-        let artist = track.track.album.artist;
-        let album = track.track.album.title;
-        let song = track.track.name;
+        let artist: string;
+        let album: string;
+        let song: string;
+
+        try {
+            artist = track.track.album.artist;
+            album = track.track.album.title;
+            song = track.track.name;
+        }catch(e){
+            return;
+        }
 
         this.potentialAlbum = album;
         let pArt: Artist = this.artists.find(x => x.name.toLowerCase() === artist.toLowerCase()); //Check to see if we have artists
@@ -221,14 +230,14 @@ export class HomeComponent implements OnInit {
             x      -> Album -> Song
             x      -> x     -> Song
     */
-    private addWhatsNeeded(artist: string, album: string, song: string){
-        if(this.needToSendToDB[0] && this.needToSendToDB[1] && this.needToSendToDB[2]){ //We need to add everything
+    private addWhatsNeeded(artist: string, album: string, song: string) {
+        if (this.needToSendToDB[0] && this.needToSendToDB[1] && this.needToSendToDB[2]) { //We need to add everything
             this.addArtist();
-        }else if(!this.needToSendToDB[0] && !this.needToSendToDB[1] && this.needToSendToDB[2]){ //We need to add only a song
+        } else if (!this.needToSendToDB[0] && !this.needToSendToDB[1] && this.needToSendToDB[2]) { //We need to add only a song
             this.addSong(this.selectedArtist, this.selectedAlbum);
-        }else if(!this.needToSendToDB[0] && this.needToSendToDB[1] && this.needToSendToDB[2]){ //We need to add an album and song
+        } else if (!this.needToSendToDB[0] && this.needToSendToDB[1] && this.needToSendToDB[2]) { //We need to add an album and song
             this.addAlbum(this.selectedArtist);
-        }else{
+        } else {
             this.triggerMessage("This song is already in the database! Try searching for it");
         }
 
@@ -237,7 +246,7 @@ export class HomeComponent implements OnInit {
     /*
         Adds an artist to the database and then calls addAlbum()
     */
-    private addArtist(){
+    private addArtist() {
         let newArtist = {
             name: this.potentialArtist
         };
@@ -252,10 +261,10 @@ export class HomeComponent implements OnInit {
         );
     }
 
-     /*
-        Adds an album to the database and then calls addSong()
-    */
-    private addAlbum(artist: Artist){
+    /*
+       Adds an album to the database and then calls addSong()
+   */
+    private addAlbum(artist: Artist) {
         let newAlbum = {
             artistId: artist.artistId,
             name: this.potentialAlbum
@@ -274,7 +283,7 @@ export class HomeComponent implements OnInit {
     /*
         Adds a song to the database and then outputs a success message
     */
-    private addSong(artist: Artist, album: Album){
+    private addSong(artist: Artist, album: Album) {
         let newSong = {
             albumId: album.albumId,
             artistId: artist.artistId,

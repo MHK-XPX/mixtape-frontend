@@ -75,8 +75,7 @@ export class MouseoverMenuComponent implements OnInit {
     let s: Subscription = this._apiService.postEntity<PlaylistSong>("PlaylistSongs", toSendPLS).subscribe(
       d => actPLS = d,
       err => {
-        this.successMessage = "Unable to add " + this.selectedSong.name + " to " + p.name;
-        this.outputMessage();
+        this.outputMessage("Unable to add " + this.selectedSong.name + " to " + p.name);
       },
       () => {
         actPLS.song = this.selectedSong;
@@ -84,9 +83,7 @@ export class MouseoverMenuComponent implements OnInit {
         p.playlistSong.push(actPLS);
         this.playlists[index] = p;
         this._dataShareService.changePlaylist(this.playlists);
-        this.successMessage = this.selectedSong.name + " added to " + p.name;
-
-        this.outputMessage();
+        this.outputMessage(this.selectedSong.name + " added to " + p.name);
       }
     );
   }
@@ -125,8 +122,7 @@ export class MouseoverMenuComponent implements OnInit {
     }
 
     this._dataShareService.changeCurrentPlaylist(copyPL);
-    this.successMessage = this.selectedSong.name + " added to queue";
-    this.outputMessage();
+    this.outputMessage(this.selectedSong.name + " added to queue");
   }
 
   /*
@@ -137,20 +133,22 @@ export class MouseoverMenuComponent implements OnInit {
     let plIndex: number = this.playlists.findIndex(pl => pl.playlistId === this.currentPL.playlistId);
     let plsIndex: number = this.currentPL.playlistSong.findIndex(pls => pls.playlistSongId === this.selectedPLS.playlistSongId);
 
-    let s: Subscription = this._apiService.deleteEntity<PlaylistSong>("PlaylistSongs", this.selectedPLS.playlistSongId).subscribe(
-      d => d = d,
-      err => {
-        this.successMessage = "Unable to delete " + this.selectedSong.name + " from " + this.playlists[plIndex].name;
-        this.outputMessage();
-      },
-      () => {
-        s.unsubscribe();
-        this.playlists[plIndex].playlistSong.splice(plsIndex, 1);
-        this._dataShareService.changePlaylist(this.playlists);
-        this.successMessage = "Deleted " + this.selectedSong.name + " from " + this.playlists[plIndex].name;
-        this.outputMessage();
-      }
-    )
+    if (this.selectedPLS.playlistSongId === null) { //If the ID is null, we know it was added to queue not to the playlist...so we simply remove it
+      this.currentPL.playlistSong.splice(plsIndex, 1);
+      this._dataShareService.changeCurrentPlaylist(this.currentPL);
+      this.outputMessage("Removed " + this.selectedSong.name + " from queue");
+    } else {
+      let s: Subscription = this._apiService.deleteEntity<PlaylistSong>("PlaylistSongs", this.selectedPLS.playlistSongId).subscribe(
+        d => d = d,
+        err => this.outputMessage("Unable to remove " + this.selectedSong.name + " from " + this.playlists[plIndex].name),
+        () => {
+          s.unsubscribe();
+          this.playlists[plIndex].playlistSong.splice(plsIndex, 1);
+          this._dataShareService.changePlaylist(this.playlists);
+          this.outputMessage("Removed " + this.selectedSong.name + " from " + this.playlists[plIndex].name);
+        }
+      )
+    }
   }
 
   /*
@@ -176,13 +174,12 @@ export class MouseoverMenuComponent implements OnInit {
 
     s = this._apiService.deleteEntity<Playlist>("Playlists", this.plToDelete.playlistId).subscribe(
       d => d = d,
-      err => { this.successMessage = "Unable to delete playlist"; this.outputMessage(); },
+      err => this.outputMessage("Unable to delete playlist"),
       () => {
         s.unsubscribe();
         this.playlists.splice(plIndex, 1);
         this._dataShareService.changePlaylist(this.playlists);
-        this.successMessage = "Playlist deleted!";
-        this.outputMessage();
+        this.outputMessage("Playlist deleted!");
       }
     );
   }
@@ -190,7 +187,8 @@ export class MouseoverMenuComponent implements OnInit {
   /*
     Called whenever we finish an action, the message is emitted to all parent components
   */
-  outputMessage() {
+  outputMessage(message: string) {
+    this.successMessage = message;
     this.successMessageOutput.emit(this.successMessage);
   }
 

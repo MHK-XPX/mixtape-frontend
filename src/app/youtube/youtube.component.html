@@ -9,13 +9,12 @@
     <div class="col-12 playlist-container playlist-song-list no-padding margin-top shadow" *ngIf="this.playlist && this.showPlaylist">
       <div class="card" *ngIf="this.playlist  && this.showPlaylist">
         <div class="card-header text-center current-playlist-holder">
-          <h5 class="text-center" placement="top" ngbTooltip="Edit Playlist Name" (click)="openModal(content)">{{this.playlist.name}}
-          </h5>
+          <h5 class="text-center" placement="top" ngbTooltip="Edit Playlist Name" (click)="openModal(content)">{{this.playlist.name}}</h5>
         </div>
         <ol class="list-group list-group-flush" *ngFor="let pls of this.playlist.playlistSong index as i">
           <li class="list-group-item" [style.background-color]="this.onSong === i ? '#918A8A' : '#BEBEBE'" (mouseover)="this.mouseOver = i"
             (mouseout)="this.mouseOver = -1">
-            <img [src]="this.getThumbnail(pls.song.url)" /> {{i+1}}. {{pls.song.name}}
+            <img class="d-none d-sm-none d-md-inline" [src]="this.getThumbnail(pls.song.url)" /> {{i+1}}. {{pls.song.name}}
             <app-mouseover-menu [@showState]="this.mouseOver === i ? 'show' : 'hide'" [addToPL]="true" [addToQ]="true" [deleteFromPL]="true"
               [selectedSong]="pls.song" [selectedPLS]="pls" (successMessageOutput)="triggerMessage($event)"></app-mouseover-menu>
           </li>

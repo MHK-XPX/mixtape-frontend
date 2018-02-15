@@ -38,7 +38,7 @@
 
 <ng-template #content let-c="close" let-d="dismiss">
     <div class="modal-header">
-        <h4 class="modal-title">Check Our Work!</h4>
+        <h4 class="modal-title">Here's What We Found!</h4>
     </div>
     <div class="modal-body form was-validated">
 
@@ -71,6 +71,6 @@
 
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-success col-2" (click)="c()" [disabled]="potentialArtist.length <= 0 || potentialAlbum.length <= 0 || potentialSong.length <= 0 ">Save</button>
+        <button type="button" class="btn btn-success col-3" (click)="c()" [disabled]="potentialArtist.length <= 0 || potentialAlbum.length <= 0 || potentialSong.length <= 0 ">Looks Good!</button>
     </div>
 </ng-template>

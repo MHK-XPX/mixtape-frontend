@@ -1,17 +1,18 @@
 <div class="side-bar no-padding">
   <div class="card w-100">
-    <div class="card-header text-center font-weight-bold">Playlists:</div>
+    <div class="card-header text-center font-weight-bold">Playlists:
+      <img class="icon icon-middle icon-sm float-right img-margin" placement="left" ngbTooltip="Create Playlist" src='assets/playlist/edit.png'
+        (click)="createPlaylist()" />
+    </div>
     <ul class="list-group list-group-flush">
       <li class="list-group-item list-group-item-action" (mouseover)="this.mouseOver = i" (mouseout)="this.mouseOver = -1" *ngFor="let playlist of userPlaylists index as i"
-      (click)="selectPlaylist(playlist)">
+        (click)="selectPlaylist(playlist)">
         {{ playlist.name }}
         <app-mouseover-menu [@showState]="this.mouseOver === i ? 'show' : 'hide'" [addToPL]="false" [addToQ]="false" [deleteFromPL]="false"
           [deletePL]="true" [selectedSong]="null" [plToDelete]="playlist" (successMessageOutput)="triggerMessage($event)" (click)="$event.stopPropagation()"></app-mouseover-menu>
-        <!--<img class="icon icon-middle icon-sm float-right" [@showState]="this.mouseOver === i ? 'show' : 'hide'" placement="right"
-          ngbTooltip="Play" src="assets/playlist/play_button_black.png" (click)="selectPlaylist(playlist)" />-->
       </li>
+      <button class="btn btn-secondary" (click)="selectPlaylist(null)">Clear Queue</button>
     </ul>
-    <button class="btn btn-secondary w-100" (click)="createPlaylist()">New Playlist</button>
   </div>
   <div id="snackbar" [@showState]="successMessage ? 'show' : 'hide'">{{ successMessage }}</div>
 </div>

@@ -1,3 +1,7 @@
 .side-bar{
     height: 100vh;
 }
+
+.btn{
+    overflow-x: hidden;
+}

@@ -2,7 +2,8 @@
   Written by: Ryan Kruse
   This component controls the core logic of the app. It holds all of the child components (sidebar, youtube, home <--which is search)
 */
-import { Component, ViewChild, OnInit } from '@angular/core';
+import { Component, ViewChild, OnInit, HostListener} from '@angular/core';
+
 import { Subscription } from "rxjs";
 
 import { ApiService } from './shared/api.service';
@@ -33,9 +34,17 @@ export class AppComponent implements OnInit {
   searchString: string = "";
 
   isNavbarCollapsed = true;
+  isSidebarCollapsed = false;
   showPlaylist: boolean = false;
 
+  private minWindowSize: number = 720;
+
   constructor(private _apiService: ApiService, public _storage: StorageService, private _dataShareService: DataShareService) { }
+
+  @HostListener('window:resize') onResize() {
+    this.isSidebarCollapsed = window.outerWidth <= this.minWindowSize;
+    // console.log(window.outerWidth);
+  }
 
   /*
     On init, if the user is currently logged in (which can happen if they refresh the page), we pull the user from the API and 
@@ -66,8 +75,10 @@ export class AppComponent implements OnInit {
   */
   selectPlaylist(event: Playlist) {
     this.selectedPlaylist = event;
-    this.showPlaylist = true;
+    this.showPlaylist = event != null;
 
+    this.isSidebarCollapsed = window.outerWidth <= this.minWindowSize;
+    
     this._dataShareService.changeCurrentPlaylist(event);
   }
 

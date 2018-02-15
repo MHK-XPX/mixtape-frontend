@@ -15,12 +15,6 @@
     padding: 0;
 }
 
-.side-bar{
-    position: fixed;
-    float: left;
-    background-color: #666666;
-}
-
 .navbar{
     background-color: #333333;
 }
