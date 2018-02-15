@@ -5,7 +5,7 @@
 <ng-progress [thick]="true" color="red" [spinner]="false"></ng-progress>
 <nav class="navbar sticky-top navbar-expand-md navbar-dark">
   <a class="navbar-brand">
-    <button type="button" class="btn btn-success" style="display: inline" (click)="isSidebarCollapsed = !isSidebarCollapsed">Show sidebar</button>
+    <button type="button" class="btn btn-success" style="display: inline" (click)="isSidebarCollapsed = !isSidebarCollapsed" *ngIf="isLoggedIn()">Show sidebar</button>
     <img class="text-light" src="favicon.ico" width="30" height="30" [routerLink]="['/home']"/>
   </a>
   <button class="navbar-toggler hidden-sm-up" type="button" (click)="isNavbarCollapsed = !isNavbarCollapsed" aria-controls="navbarSupportedContent"
@@ -29,11 +29,16 @@
       <button type="button" class="btn btn-success icon-middle" (click)="search()" *ngIf="this.showPlaylist">Show Page</button>
     </div>
 
-    <div ngbDropdown placement="bottom" class="nav-item ml-auto" *ngIf="this.isLoggedIn()">
+    <div ngbDropdown placement="bottom" class="nav-item ml-auto">
       <img ngbDropdownToggle class="icon icon-middle icon-md" src="assets/shared/profile_white.png" />
       <div ngbDropdownMenu>
+        <div  *ngIf="this.isLoggedIn()">
         <button class="dropdown-item" [routerLink]="['/profile']">Profile</button>
         <button class="dropdown-item" [routerLink]="['/login']" (click)="this.logOut()">Logout</button>
+        </div>
+        <div  *ngIf="!this.isLoggedIn()">
+            <button class="dropdown-item" [routerLink]="['/login']">Login</button>
+        </div>
       </div>
     </div>
 
