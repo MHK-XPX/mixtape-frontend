@@ -65,7 +65,8 @@ export class MouseoverMenuComponent implements OnInit {
     @param p: Playlist - The playlist to add the song to
     @param index: number - The index of the 'p' in our global array of playlists (from the DataShareService)
   */
-  addToPlaylist(p: Playlist, index: number) {
+  addToPlaylist(p: Playlist, index: number, event) {
+    event.stopPropagation();
     let toSendPLS = {
       playlistId: p.playlistId,
       songId: this.selectedSong.songId
@@ -93,7 +94,8 @@ export class MouseoverMenuComponent implements OnInit {
     then we create a new queue and allow the user to add songs to it (via add to queue button) and they can listen to said queue.
     If the user is currently listening to a playlist, then we append the song to the end of the list and output a success message
   */
-  addToQueue() {
+  addToQueue(event) {
+    event.stopPropagation();
     let pls: PlaylistSong;
     let copyPL: Playlist;
 
@@ -129,7 +131,8 @@ export class MouseoverMenuComponent implements OnInit {
     Called when the user attempts to delete a song from a playlist. If the user is successful then we remove the song from the playlist,
     update the global playlists, and output a success message. If not successful we output a fail message
   */
-  deletePlaylistSong() {
+  deletePlaylistSong(event) {
+    event.stopPropagation();
     let plIndex: number = this.playlists.findIndex(pl => pl.playlistId === this.currentPL.playlistId);
     let plsIndex: number = this.currentPL.playlistSong.findIndex(pls => pls.playlistSongId === this.selectedPLS.playlistSongId);
 

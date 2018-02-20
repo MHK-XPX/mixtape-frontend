@@ -19,6 +19,7 @@ import { MouseoverMenuComponent } from '../mouseover-menu/mouseover-menu.compone
 
 import { Playlist } from '../interfaces/playlist';
 import { Song } from '../interfaces/song';
+import { PlaylistSong } from '../interfaces/playlistsong';
 
 declare var window: any;
 
@@ -183,6 +184,103 @@ export class YoutubeComponent implements OnInit {
       this.player.playVideo();
   }
 
+  playSongOnClick(index: number) {
+    this.onSong = index;
+    this.playVideo();
+  }
+
+  /*
+    Called when the user clicks the save playlist button. Based on param it will either create and fill a new playlist or update the current playlist
+    @param isNewPlaylist: boolean:- If the user wants to save the playlist as a new playlist (True) or wants to update their current playlist (False)
+  */
+  savePlaylist(isNewPlaylist: boolean) {
+    if (isNewPlaylist || !this.playlist.playlistId) { //If we are saving it to a new playlist OR we are trying to save our current custom queue
+      this.addNewPlaylist();
+    } else {
+      this.updatePlaylist();
+    }
+  }
+
+  /*
+    Called if the user wants to save as a new playlist. The method creates a new playlist and adds it to the DB and then fills it by calling addSongsToNewPlaylist, with the newly created playlist
+  */
+  private addNewPlaylist(){
+    let userPlaylists: Playlist[];
+    this._dataShareService.playlist.subscribe(res => userPlaylists = res);
+
+    let nPL = {
+      active: true,
+      name: "Playlist " + (userPlaylists.length + 1),
+      userId: this.playlist.userId,
+    }
+
+    let returnedPL: Playlist;
+    let s: Subscription = this._apiService.postEntity<Playlist>("Playlists", nPL).subscribe(
+      d => returnedPL = d,
+      err => this.triggerMessage("Unable to create new playlist"),
+      () => {
+        s.unsubscribe();
+        userPlaylists.push(returnedPL);
+        this._dataShareService.changePlaylist(userPlaylists);
+
+        this.addSongsToNewPlaylist(returnedPL, this.playlist.playlistSong);
+      }
+    );
+  }
+
+  /*
+    Called if the user wants to save the current queue to their current playlist. The method pulls all of the newly added songs and updates the current playlist
+    by calling addSongsToNewPlaylist(null, allNotAdded)
+  */
+  private updatePlaylist() {
+    let allNotAdded = this.playlist.playlistSong.filter(s => !s.playlistSongId); //any song in the playlist that does not have an ID needs to be added
+
+    this.addSongsToNewPlaylist(null, allNotAdded);
+  }
+
+  /*
+    Called when we want to fill a newly created playlist or update a current playlist. The method adds all of the songs to the DB as playlist songs
+    and updates the given playlist with them. Once everything is updated, we update the global reference to all of the user's playlists in _dataShareService
+    @param newPlaylist: Playlist:- The newly created playlist, if null, we set our playlist to update to our current playlist
+    @param songsToAdd: PlaylistSong[]:- An array of playlist songs to add to the given playlist
+  */
+  private addSongsToNewPlaylist(newPlaylist: Playlist, songsToAdd: PlaylistSong[]){
+    let playlist: Playlist = newPlaylist ? newPlaylist : this.playlist;
+
+    let userPlaylists: Playlist[];
+
+    this._dataShareService.playlist.subscribe(res => userPlaylists = res); //Get the most recent version of the user's playlists
+
+    let index: number = userPlaylists.findIndex(p => p.playlistId === playlist.playlistId); //index of the playlist we are updating in all of the user's playlists
+
+    for(let i=0; i < songsToAdd.length; i++){
+      let pls: PlaylistSong = songsToAdd[i];
+
+      let toSendPLS = {
+        playlistId: playlist.playlistId,
+        songId: pls.songId
+      };
+
+      let actPLS: PlaylistSong;
+
+      let s: Subscription = this._apiService.postEntity<PlaylistSong>("PlaylistSongs", toSendPLS).subscribe(
+        d => actPLS = d,
+        err => this.triggerMessage("Unable to save playlist"),
+        () => {
+          actPLS.song = pls.song;
+          s.unsubscribe();
+          playlist.playlistSong[i] = actPLS;
+
+          if(i === songsToAdd.length - 1){
+            userPlaylists[index] = playlist;
+            this._dataShareService.changePlaylist(userPlaylists);
+            this.triggerMessage("Playlist Saved!");
+          }
+        }
+      );
+    }
+  }
+
   triggerMessage(message: string) {
     this.successMessage = message;
     this._success.next(this.successMessage);
@@ -199,7 +297,9 @@ export class YoutubeComponent implements OnInit {
     });
   }
 
-  private renamePlaylist(){
+  private renamePlaylist() {
+    if(!this.playlist.playlistId) return; //Don't need to make an API cahnge call if the playlist does not exist
+
     let s: Subscription = this._apiService.putEntity<Playlist>("Playlists", this.playlist.playlistId, this.playlist).subscribe(
       d => d = d,
       err => this.triggerMessage("Unable to change name of playlist"),

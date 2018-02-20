@@ -5,8 +5,16 @@
 <ng-progress [thick]="true" color="red" [spinner]="false"></ng-progress>
 <nav class="navbar sticky-top navbar-expand-md navbar-dark">
   <a class="navbar-brand">
-    <button type="button" class="btn btn-success" style="display: inline" (click)="isSidebarCollapsed = !isSidebarCollapsed" *ngIf="isLoggedIn()">Show sidebar</button>
-    <img class="text-light" src="favicon.ico" width="30" height="30" [routerLink]="['/home']"/>
+    <button type="button" class="btn btn-success" style="display: inline" (click)="isSidebarCollapsed = !isSidebarCollapsed"
+      *ngIf="isLoggedIn() && !isSideBarCollapsed">
+      <<</button>
+
+    <!-- This is a temp fix...I will make it one image soon! -->
+    <div class="d-inline" [routerLink]="['/home']">
+      <h4 class="font-weight-bold text-light d-inline">Mi</h4>
+      <img class="text-light" src="favicon.ico" width="30" height="30" />
+      <h4 class="font-weight-bold text-light d-inline">Tape</h4>
+    </div>
   </a>
   <button class="navbar-toggler hidden-sm-up" type="button" (click)="isNavbarCollapsed = !isNavbarCollapsed" aria-controls="navbarSupportedContent"
     [attr.aria-expanded]="isNavbarCollapsed" aria-label="Toggle navigation">
@@ -15,29 +23,33 @@
 
   <div [ngbCollapse]="isNavbarCollapsed" class="collapse navbar-collapse" id="navbarSupportedContent">
     <input class="nav-item form-control md-input" [value]="searchValue" (input)="searchValue = $event.target.value" type="text"
-      placeholder="Search..." (ngEnter)="search()" *ngIf="this.isLoggedIn()"/>
+      placeholder="Search..." (ngEnter)="search()" *ngIf="this.isLoggedIn()" />
 
     <div class="nav-item" *ngIf="this.selectedPlaylist && this.isLoggedIn()">
-      <img class='icon icon-middle icon-md float-left' src="assets/playlist/last_song.png" (click)='this.YT.lastSong()' />
+      <img class='icon icon-middle icon-md float-left' src="assets/playlist/last_song.png" placement="bottom" ngbTooltip="Last Song" (click)='this.YT.lastSong()' />
       <img class="icon icon-middle icon-md" [src]="this.YT.paused ? 'assets/playlist/play_button.png' : 'assets/playlist/pause_button.png'"
-        (click)="this.YT.pauseClicked()" />
-      <img class='icon icon-middle icon-md' src="assets/playlist/next_song.png" (click)='this.YT.nextSong()' />
+        (click)="this.YT.pauseClicked()" placement="bottom" ngbTooltip="Pause/Play"/>
+      <img class='icon icon-middle icon-md' src="assets/playlist/next_song.png" placement="bottom" ngbTooltip="Next Song" (click)='this.YT.nextSong()' />
       <img class="icon icon-middle icon-md" [src]="this.YT.repeat ? 'assets/playlist/repeat_song_on.png' : 'assets/playlist/repeat_song_off.png'"
-        (click)="this.YT.repeatClicked()" />
+      placement="bottom" ngbTooltip="Repeat" (click)="this.YT.repeatClicked()" />
 
       <button type="button" class="btn btn-success icon-middle" (click)="enablePlaylist()" *ngIf="!this.showPlaylist">Show Playlist</button>
       <button type="button" class="btn btn-success icon-middle" (click)="search()" *ngIf="this.showPlaylist">Show Page</button>
     </div>
 
-    <div ngbDropdown placement="bottom" class="nav-item ml-auto">
+    <div class="nav-item" class="ml-auto no-padding" *ngIf="this.isLoggedIn()">
+      <h6 class="font-weight-bold text-light" *ngIf="this.getUser()">{{this.getUser().username}}</h6>
+    </div>
+
+    <div ngbDropdown placement="bottom" class="nav-item">
       <img ngbDropdownToggle class="icon icon-middle icon-md" src="assets/shared/profile_white.png" />
       <div ngbDropdownMenu>
-        <div  *ngIf="this.isLoggedIn()">
-        <button class="dropdown-item" [routerLink]="['/profile']">Profile</button>
-        <button class="dropdown-item" [routerLink]="['/login']" (click)="this.logOut()">Logout</button>
+        <div *ngIf="this.isLoggedIn()">
+          <button class="dropdown-item" [routerLink]="['/profile']">Profile</button>
+          <button class="dropdown-item" [routerLink]="['/login']" (click)="this.logOut()">Logout</button>
         </div>
-        <div  *ngIf="!this.isLoggedIn()">
-            <button class="dropdown-item" [routerLink]="['/login']">Login</button>
+        <div *ngIf="!this.isLoggedIn()">
+          <button class="dropdown-item" [routerLink]="['/login']">Login</button>
         </div>
       </div>
     </div>
