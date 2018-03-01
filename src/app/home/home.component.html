@@ -9,7 +9,7 @@
                     <li class="list-group-item list-group-item-action" (mouseover)="this.mouseOver = i" (mouseout)="this.mouseOver = -1" *ngFor="let song of songs | async | filterPipe : searchString index as i">
                         {{ song.name }}
                         <app-mouseover-menu [@showState]="this.mouseOver === i ? 'show' : 'hide'" [addToPL]="true" [addToQ]="true" [deleteFromPL]="false"
-                            [selectedSong]="song" (successMessageOutput)="triggerMessage($event)"></app-mouseover-menu>
+                            [selectedSong]="song" (successMessageOutput)="triggerMessage($event.message, $event.level)"></app-mouseover-menu>
                     </li>
                 </ul>
             </ng-template>
@@ -25,7 +25,6 @@
                         <li class="list-group-item list-group-item-action" (mouseover)="this.mouseOver = i" (mouseout)="this.mouseOver = -1" (click)="selectYoutubeSong(result, content)"
                             *ngIf="i <= this.currentlyDisplaying">
                             {{ result.snippet.title }}
-                            <!--<app-mouseover-menu [@showState]="this.mouseOver === i ? 'show' : 'hide'" [addToPL]="true" [addToQ]="true" [deleteFromPL]="false" [selectedSong]="song" (successMessageOutput)="triggerMessage($event)"></app-mouseover-menu>-->
                         </li>
                     </ul>
                     <button type="button" class="btn btn-secondary no-padding mx-auto w-100" [disabled]="!canShowMore()" (click)="showMoreYoutube()">Show More</button>
@@ -33,7 +32,7 @@
             </ng-template>
         </ngb-tab>
     </ngb-tabset>
-    <div id="snackbar" [@showState]="successMessage ? 'show' : 'hide'">{{ successMessage }}</div>
+    <app-snackbar [messageOut] = "messageOut" ></app-snackbar>
 </div>
 
 <ng-template #content let-c="close" let-d="dismiss">

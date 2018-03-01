@@ -13,9 +13,13 @@ import { ApiService } from '../shared/api.service';
 import { DataShareService } from '../shared/data-share.service';
 
 import { MouseoverMenuComponent } from '../mouseover-menu/mouseover-menu.component';
+import { SnackbarComponent } from '../snackbar/snackbar.component';
 
 import { User } from '../interfaces/user';
 import { Playlist } from '../interfaces/playlist';
+
+import { MessageType } from '../shared/messagetype.enum';
+import { MessageOutput } from '../interfaces/messageoutput';
 
 @Component({
   selector: 'app-sidebar',
@@ -39,13 +43,13 @@ import { Playlist } from '../interfaces/playlist';
   ]
 })
 export class SidebarComponent implements OnInit {
+  MessageType = MessageType;
 
   user: User;
   userPlaylists: Playlist[] = []
 
   mouseOver: number = -1;
-  private _success = new Subject<string>();
-  successMessage: string;
+  messageOut: MessageOutput;
 
   private defaultPLName: string = "Playlist ";
 
@@ -61,8 +65,6 @@ export class SidebarComponent implements OnInit {
 
     this._dataShareService.user.subscribe(res => this.user = res);
 
-    this._success.subscribe((message) => this.successMessage = message);
-    debounceTime.call(this._success, 2000).subscribe(() => this.successMessage = null);
 
     //Incase the sync was messed up we also pull all of the user's playlists from the API as a saftey net
     let s: Subscription;
@@ -97,15 +99,19 @@ export class SidebarComponent implements OnInit {
         s.unsubscribe();
         this.userPlaylists.push(returnedPL);
         this._dataShareService.changePlaylist(this.userPlaylists);
-        this.triggerMessage("Playlist created!");
+        this.triggerMessage("Playlist created!", MessageType.Notification);
 
         this.selectPlaylist(returnedPL);
       }
     );
   }
 
-  triggerMessage(message: string) {
-    this.successMessage = message;
-    this._success.next(this.successMessage);
+  triggerMessage(message: string, level: MessageType) {
+    let out: MessageOutput = {
+      message: message,
+      level: level
+    };
+
+    this.messageOut = out;
   }
 }

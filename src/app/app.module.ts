@@ -31,6 +31,7 @@ import { SidebarComponent } from './sidebar/sidebar.component';
 import { EditPipe } from './edit-pipe.pipe';
 import { MouseoverMenuComponent } from './mouseover-menu/mouseover-menu.component';
 import { YoutubePipe } from './youtube.pipe';
+import { SnackbarComponent } from './snackbar/snackbar.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +45,8 @@ import { YoutubePipe } from './youtube.pipe';
     SidebarComponent,
     EditPipe,
     MouseoverMenuComponent,
-    YoutubePipe
+    YoutubePipe,
+    SnackbarComponent
   ],
   imports: [
     BrowserModule,

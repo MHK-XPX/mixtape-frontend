@@ -16,10 +16,15 @@ import { DataShareService } from '../shared/data-share.service';
 import { ApiService } from '../shared/api.service';
 
 import { MouseoverMenuComponent } from '../mouseover-menu/mouseover-menu.component';
+import { SnackbarComponent } from '../snackbar/snackbar.component';
 
 import { Playlist } from '../interfaces/playlist';
 import { Song } from '../interfaces/song';
 import { PlaylistSong } from '../interfaces/playlistsong';
+
+import { MessageType } from '../shared/messagetype.enum';
+import { MessageOutput } from '../interfaces/messageoutput';
+
 
 declare var window: any;
 
@@ -46,6 +51,7 @@ declare var window: any;
 })
 
 export class YoutubeComponent implements OnInit {
+  MessageType = MessageType;
 
   @Input() playlist: Playlist;
   @Input() showPlaylist: boolean;
@@ -56,8 +62,11 @@ export class YoutubeComponent implements OnInit {
   private url: string = "";
   videoId;
 
-  private _success = new Subject<string>();
-  successMessage: string;
+  //private _success = new Subject<MessageOutput>();
+  messageOut: MessageOutput;
+  //successMessage: string;
+  //messageLevel: MessageType = MessageType.Notification;
+
   mouseOver: number = -1;
 
   private onSong: number = this._storage.getValue('onSong') ? this._storage.getValue('onSong') : -1;
@@ -72,8 +81,12 @@ export class YoutubeComponent implements OnInit {
     this.lastPlaylist = this.playlist;
     this._dataShareService.currentPlaylist.subscribe(res => this.playlist = res);
 
-    this._success.subscribe((message) => this.successMessage = message);
-    debounceTime.call(this._success, 2000).subscribe(() => this.successMessage = null);
+    /*this._success.subscribe((out) => this.messageOut = out);
+    debounceTime.call(this._success, 2000).subscribe(() =>
+    {
+      this.messageOut = null;
+      this.debounceTimer();
+    });*/
 
   }
 
@@ -217,13 +230,16 @@ export class YoutubeComponent implements OnInit {
     let returnedPL: Playlist;
     let s: Subscription = this._apiService.postEntity<Playlist>("Playlists", nPL).subscribe(
       d => returnedPL = d,
-      err => this.triggerMessage("Unable to create new playlist"),
+      err => this.triggerMessage("Unable to create new playlist", MessageType.Failure),
       () => {
         s.unsubscribe();
         userPlaylists.push(returnedPL);
         this._dataShareService.changePlaylist(userPlaylists);
 
         this.addSongsToNewPlaylist(returnedPL, this.playlist.playlistSong);
+
+        if(this.playlist.playlistSong.length <= 0)
+          this.triggerMessage("New Playlist Saved!", MessageType.Success);
       }
     );
   }
@@ -265,7 +281,7 @@ export class YoutubeComponent implements OnInit {
 
       let s: Subscription = this._apiService.postEntity<PlaylistSong>("PlaylistSongs", toSendPLS).subscribe(
         d => actPLS = d,
-        err => this.triggerMessage("Unable to save playlist"),
+        err => this.triggerMessage("Unable to save playlist", MessageType.Failure),
         () => {
           actPLS.song = pls.song;
           s.unsubscribe();
@@ -274,16 +290,11 @@ export class YoutubeComponent implements OnInit {
           if(i === songsToAdd.length - 1){
             userPlaylists[index] = playlist;
             this._dataShareService.changePlaylist(userPlaylists);
-            this.triggerMessage("Playlist Saved!");
+            this.triggerMessage("Playlist Saved!", MessageType.Success);
           }
         }
       );
     }
-  }
-
-  triggerMessage(message: string) {
-    this.successMessage = message;
-    this._success.next(this.successMessage);
   }
 
   openModal(content) {
@@ -302,10 +313,10 @@ export class YoutubeComponent implements OnInit {
 
     let s: Subscription = this._apiService.putEntity<Playlist>("Playlists", this.playlist.playlistId, this.playlist).subscribe(
       d => d = d,
-      err => this.triggerMessage("Unable to change name of playlist"),
+      err => this.triggerMessage("Unable to change name of playlist", MessageType.Failure),
       () => {
         s.unsubscribe();
-        this.triggerMessage("Playlist name updated!");
+        this.triggerMessage("Playlist name updated!", MessageType.Success);
       }
     );
   }
@@ -360,4 +371,11 @@ export class YoutubeComponent implements OnInit {
     return window.screen.width * .45;
   }
 
+  triggerMessage(message: string, level: MessageType) {
+    let out: MessageOutput = {
+      message: message,
+      level: level
+    };
+    this.messageOut = out;
+  }
 }

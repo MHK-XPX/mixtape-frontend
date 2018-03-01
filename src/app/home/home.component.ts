@@ -16,6 +16,7 @@ import { ApiService } from '../shared/api.service';
 
 import { MouseoverMenuComponent } from '../mouseover-menu/mouseover-menu.component';
 import { SidebarComponent } from '../sidebar/sidebar.component';
+import { SnackbarComponent } from '../snackbar/snackbar.component';
 
 import { User } from '../interfaces/user';
 import { Playlist } from '../interfaces/playlist';
@@ -27,35 +28,39 @@ import { Song } from '../interfaces/song';
 import { YoutubeResult, items } from '../interfaces/youtuberesult';
 import { LastfmTrack } from '../interfaces/lastfmresult';
 
+import { MessageType } from '../shared/messagetype.enum';
+import { MessageOutput } from '../interfaces/messageoutput';
+
 @Component({
     selector: 'home',
     styleUrls: ['./home.component.css', '../shared/global-style.css'],
     templateUrl: './home.component.html',
     animations: [
         trigger(
-            'showState', [
-                state('show', style({
-                    opacity: 1,
-                    visibility: 'visible'
-                })),
-                state('hide', style({
-                    opacity: 0,
-                    visibility: 'hidden'
-                })),
-                transition('show => *', animate('200ms')),
-                transition('hide => show', animate('400ms')),
-            ]
+          'showState', [
+            state('show', style({
+              opacity: 1,
+              visibility: 'visible'
+            })),
+            state('hide', style({
+              opacity: 0,
+              visibility: 'hidden'
+            })),
+            transition('show => *', animate('200ms')),
+            transition('hide => show', animate('400ms')),
+          ]
         )
-    ]
+      ]
 })
 
 export class HomeComponent implements OnInit {
+    MessageType = MessageType;
     @Input() searchString: string;
 
     mouseOver: number = -1;
 
-    private _success = new Subject<string>();
-    successMessage: string;
+    private _success = new Subject<MessageOutput>();
+    messageOut: MessageOutput;
 
     artists: Artist[] = [];
 
@@ -81,14 +86,13 @@ export class HomeComponent implements OnInit {
     constructor(private _apiService: ApiService, private _modalService: NgbModal) { }
 
     ngOnInit() {
-        this._success.subscribe((message) => this.successMessage = message);
-        debounceTime.call(this._success, 2000).subscribe(() => this.successMessage = null);
-
         let s: Subscription = this._apiService.getAllEntities<Artist>("Artists").subscribe(
             d => this.artists = d,
             err => console.log(err),
             () => s.unsubscribe()
         );
+
+
     }
 
     ngOnChanges() {
@@ -159,7 +163,7 @@ export class HomeComponent implements OnInit {
             artist = track.track.album.artist;
             album = track.track.album.title;
             song = track.track.name;
-        }catch(e){
+        } catch (e) {
             return;
         }
 
@@ -238,7 +242,7 @@ export class HomeComponent implements OnInit {
         } else if (!this.needToSendToDB[0] && this.needToSendToDB[1] && this.needToSendToDB[2]) { //We need to add an album and song
             this.addAlbum(this.selectedArtist);
         } else {
-            this.triggerMessage("This song is already in the database! Try searching for it");
+            this.triggerMessage("This song is already in the database! Try searching for it!", MessageType.Notification);
         }
 
     }
@@ -297,7 +301,7 @@ export class HomeComponent implements OnInit {
             () => {
                 s.unsubscribe();
                 //Do something here
-                this.triggerMessage("Successfully Added");
+                this.triggerMessage("Successfully Added", MessageType.Success);
             }
         );
     }
@@ -312,11 +316,6 @@ export class HomeComponent implements OnInit {
         return this.currentlyDisplaying < this.numToFetch;
     }
 
-    triggerMessage(message: string) {
-        this.successMessage = message;
-        this._success.next(this.successMessage);
-    }
-
     openModal(content) {
         this._modalService.open(content).result.then((result) => {
             this.addWhatsNeeded(this.potentialArtist, this.potentialAlbum, this.potentialSong);
@@ -326,5 +325,14 @@ export class HomeComponent implements OnInit {
             this.potentialSong = "";
             this.potentialID = "";
         });
+    }
+
+    triggerMessage(message: string, level: MessageType) {
+        let out: MessageOutput = {
+            message: message,
+            level: level
+        };
+
+        this.messageOut = out;
     }
 }
