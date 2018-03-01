@@ -70,6 +70,7 @@
 
     </div>
     <div class="modal-footer">
+            <button type="button" class="btn btn-secondary col-2" (click)="d()">Cancel</button>
         <button type="button" class="btn btn-success col-3" (click)="c()" [disabled]="potentialArtist.length <= 0 || potentialAlbum.length <= 0 || potentialSong.length <= 0 ">Looks Good!</button>
     </div>
 </ng-template>

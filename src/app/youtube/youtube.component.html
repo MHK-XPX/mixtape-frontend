@@ -42,6 +42,7 @@
       (ngEnter)="c($event)" autofocus="autofocus">
   </div>
   <div class="modal-footer">
+    <button type="button" class="btn btn-secondary col-2" (click)="d()">Cancel</button>
     <button type="button" class="btn btn-success col-2" (click)="c()" [disabled]="playlistRename.length <= 0 || playlistRename === this.playlist.name">Save</button>
   </div>
 </ng-template>
