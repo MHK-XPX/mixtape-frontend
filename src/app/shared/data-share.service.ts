@@ -14,8 +14,8 @@ export class DataShareService {
   private userSubject = new BehaviorSubject<User>(null);
   user = this.userSubject.asObservable();
 
-  private playlists = new BehaviorSubject<Playlist[]>([]); //starts empty
-  playlist = this.playlists.asObservable();
+  private playlistsSubject = new BehaviorSubject<Playlist[]>([]); //starts empty
+  playlists = this.playlistsSubject.asObservable();
 
   private currentPlaylistSubject = new BehaviorSubject<Playlist>(null);
   currentPlaylist = this.currentPlaylistSubject.asObservable();
@@ -28,7 +28,7 @@ export class DataShareService {
     @param playlist: Playlist[] - An array of new playlists
   */
   changePlaylist(playlist: Playlist[]){
-    this.playlists.next(playlist);
+    this.playlistsSubject.next(playlist);
   }
 
   /*

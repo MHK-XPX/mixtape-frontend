@@ -61,7 +61,7 @@ export class SidebarComponent implements OnInit {
     On init we sync all of the user's playlists and the user.
   */
   ngOnInit() {
-    this._dataShareService.playlist.subscribe(res => this.userPlaylists = res);
+    this._dataShareService.playlists.subscribe(res => this.userPlaylists = res);
 
     this._dataShareService.user.subscribe(res => this.user = res);
 

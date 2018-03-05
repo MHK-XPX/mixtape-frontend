@@ -62,7 +62,7 @@ export class MouseoverMenuComponent implements OnInit {
   */
   ngOnInit() {
     this._dataShareService.user.subscribe(res => this.user = res);
-    this._dataShareService.playlist.subscribe(res => this.playlists = res);
+    this._dataShareService.playlists.subscribe(res => this.playlists = res);
     this._dataShareService.currentPlaylist.subscribe(res => this.currentPL = res);
   }
 

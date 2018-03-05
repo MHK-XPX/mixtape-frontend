@@ -219,7 +219,7 @@ export class YoutubeComponent implements OnInit {
   */
   private addNewPlaylist(){
     let userPlaylists: Playlist[];
-    this._dataShareService.playlist.subscribe(res => userPlaylists = res);
+    this._dataShareService.playlists.subscribe(res => userPlaylists = res);
 
     let nPL = {
       active: true,
@@ -265,7 +265,7 @@ export class YoutubeComponent implements OnInit {
 
     let userPlaylists: Playlist[];
 
-    this._dataShareService.playlist.subscribe(res => userPlaylists = res); //Get the most recent version of the user's playlists
+    this._dataShareService.playlists.subscribe(res => userPlaylists = res); //Get the most recent version of the user's playlists
 
     let index: number = userPlaylists.findIndex(p => p.playlistId === playlist.playlistId); //index of the playlist we are updating in all of the user's playlists
 
