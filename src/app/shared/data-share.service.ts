@@ -52,7 +52,7 @@ export class DataShareService {
   */
   clearAllValues(){
     this.userSubject.next(null);
-    this.playlists.next(null);
+    this.playlistsSubject.next(null);
     this.currentPlaylistSubject.next(null);
   }
 }

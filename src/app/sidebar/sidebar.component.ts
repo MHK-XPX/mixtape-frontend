@@ -99,7 +99,7 @@ export class SidebarComponent implements OnInit {
         s.unsubscribe();
         this.userPlaylists.push(returnedPL);
         this._dataShareService.changePlaylist(this.userPlaylists);
-        this.triggerMessage("Playlist created!", MessageType.Notification);
+        this.triggerMessage("Playlist created!", MessageType.Success);
 
         this.selectPlaylist(returnedPL);
       }

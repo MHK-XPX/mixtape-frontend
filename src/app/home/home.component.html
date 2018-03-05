@@ -54,7 +54,7 @@
             <label for="inputpotentialAlbum" class="col-form-label font-weight-bold">Album:</label>
             <div class="form-group col-md-6">
                 <input [value]="potentialAlbum" (input)="potentialAlbum = $event.target.value" type="text" class="form-control" id="inputpotentialAlbum"
-                    placeholder="Album Name" (focusout)="loadTrackFromFM()" [disabled] = "this.selectedAlbum" required>
+                    placeholder="Album Name" (focusout)="loadTrackFromFM()" [disabled] = "this.selectedAlbum || potentialAlbum.length" required>
                 <!--<small id="artistHelpBlock" class="form-text text-muted" *ngIf="!usernameTaken && hasClickedOff">Username is available!</small>-->
             </div>
         </div>
@@ -63,7 +63,7 @@
             <label for="inputpotentialSong" class="col-form-label font-weight-bold">Song:</label>
             <div class="form-group col-md-6">
                 <input [value]="potentialSong" (input)="potentialSong = $event.target.value" type="text" class="form-control" id="inputpotentialSong"
-                    placeholder="Song Name"  (focusout)="loadTrackFromFM()" [disabled] = "this.selectedSong" required>
+                    placeholder="Song Name" [disabled] = "this.selectedSong" required>
                 <!--<small id="artistHelpBlock" class="form-text text-muted" *ngIf="!usernameTaken && hasClickedOff">Username is available!</small>-->
             </div>
         </div>

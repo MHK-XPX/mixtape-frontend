@@ -22,24 +22,24 @@
 <div class="container mx-auto" *ngIf="!this._storage.getValue('loggedIn') && this.createUser">
     <div class="col-8 mx-auto">
         <div class="account-wall">
-            <form class="was-validated">
+            <form>
                 <div class="form-group row">
                     <div class="form-group col-md-6">
                         <label for="inputFirstName" class="col-form-label">First Name:</label>
                         <input [value]="firstName" (input)="firstName = $event.target.value" type="text" class="form-control" id="inputFirstName"
-                            placeholder="First Name" required autofocus>
+                            placeholder="First Name" [ngClass] = "{ 'is-invalid': !firstName.length, 'is-valid': firstName.length }" required>
                     </div>
                     <div class="form-group col-md-6">
                         <label for="inputLastName" class="col-form-label">Last Name:</label>
                         <input [value]="lastName" (input)="lastName = $event.target.value" type="text" class="form-control" id="inputLastName" placeholder="Last Name"
-                            required autofocus>
+                            [ngClass] = "{ 'is-invalid': !lastName.length, 'is-valid': lastName.length }" required>
                     </div>
                 </div>
                 <div class="for-group row">
                     <div class="form-group col-md-6">
                         <label for="inputUsername" class="col-form-label">Username:</label>
                         <input [value]="displayName" (input)="displayName = $event.target.value" type="text" class="form-control" id="inputUsername"
-                            placeholder="Username" (focusout)="validateUsername()" required>
+                            placeholder="Username" (focusout)="validateUsername()" [ngClass] = "{ 'is-invalid': usernameTaken || !displayName.length, 'is-valid': !usernameTaken && displayName.length }" required>
                         <small id="usernameHelpBlock" class="form-text text-muted" *ngIf="!usernameTaken && hasClickedOff">Username is available!</small>
                     </div>
                 </div>
@@ -47,12 +47,12 @@
                     <div class="form-group col-md-6">
                         <label for="inputPassword" class="col-form-label">Password:</label>
                         <input [value]="newPassword" (input)="newPassword = $event.target.value" type="password" class="form-control" id="inputPassword"
-                            placeholder="Password" required>
+                            placeholder="Password" [ngClass] = "{ 'is-invalid': !passwordsMatch(), 'is-valid': passwordsMatch() }" required>
                     </div>
                     <div class="form-group col-md-6 is-valid">
                         <label for="inputCPassword" class="col-form-label">Confirm Password:</label>
                         <input [value]="confirmPassword" (input)="confirmPassword = $event.target.value" type="password" class="form-control" id="inputCPassword"
-                            placeholder="Confirm Password" required>
+                            placeholder="Confirm Password" [ngClass] = "{ 'is-invalid': !passwordsMatch(), 'is-valid': passwordsMatch() }" required>
                         <small id="passwordHelpBlock" class="form-text text-muted" *ngIf="!passwordsMatch()">Passwords must match</small>
                     </div>
                 </div>
