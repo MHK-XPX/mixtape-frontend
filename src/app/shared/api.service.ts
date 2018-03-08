@@ -127,6 +127,9 @@ export class ApiService{
 
     /*
         Returns any for now, will return youtube type later (once it's all parsed out)
+        @param searchString: string - The string searched by the user in the search bar
+        @param toDisplay: number - The number of results to return from Youtube's API
+        @return Observable<YoutubeResult[]> An observable of an array of YoutubeResults from Youtube's API
     */
     getYoutubeResults(searchString: string, toDisplay: number): Observable<YoutubeResult[]>{
         if(!searchString || searchString.length <= 0) return; 
@@ -139,6 +142,13 @@ export class ApiService{
         return this._http.get(baseUrl + mResult + search + endUrl) as Observable<YoutubeResult[]>;
     }
 
+    /*
+        This method is called whenver the user attempts to add a song directly from the youtube result page (The modal)
+        It searches LastFM's databse and returns the song and the corresponding Artist and Album
+        @param artist: string - The artist of the song
+        @param song: string - The song the user wants to add
+        @return Observable<LastfmTrack> - An observable of a LastfmTrack object
+    */
     getLastfmResults(artist: string, song: string): Observable<LastfmTrack>{
         let baseUrl: string = "https://ws.audioscrobbler.com/2.0/?method=track.getinfo&api_key=" + this.lastFMKey;
         let postUrl: string = "&track=" + song + "&artist=" + artist + "&autocorrect=1&format=json";

@@ -84,6 +84,11 @@ export class SidebarComponent implements OnInit {
     this.playlist.emit(p);
   }
 
+  /*
+    Called when the user clicks the create playlist button.
+    The method creates a new playlist object (that is empty) and 
+    adds it to our backend
+  */
   createPlaylist() {
     let nPL = {
       active: true,
@@ -106,6 +111,11 @@ export class SidebarComponent implements OnInit {
     );
   }
 
+  /*
+    Called whenever we make a transaction with the DB
+    @param message: string - The message to show to the user
+    @param level: MessageType - The type of message (Success, Failure, Notification)
+   */
   triggerMessage(message: string, level: MessageType) {
     let out: MessageOutput = {
       message: message,

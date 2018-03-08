@@ -62,10 +62,7 @@ export class YoutubeComponent implements OnInit {
   private url: string = "";
   videoId;
 
-  //private _success = new Subject<MessageOutput>();
   messageOut: MessageOutput;
-  //successMessage: string;
-  //messageLevel: MessageType = MessageType.Notification;
 
   mouseOver: number = -1;
 
@@ -80,14 +77,6 @@ export class YoutubeComponent implements OnInit {
   ngOnInit() {
     this.lastPlaylist = this.playlist;
     this._dataShareService.currentPlaylist.subscribe(res => this.playlist = res);
-
-    /*this._success.subscribe((out) => this.messageOut = out);
-    debounceTime.call(this._success, 2000).subscribe(() =>
-    {
-      this.messageOut = null;
-      this.debounceTimer();
-    });*/
-
   }
 
   /*
@@ -287,6 +276,7 @@ export class YoutubeComponent implements OnInit {
           s.unsubscribe();
           playlist.playlistSong[i] = actPLS;
 
+          //If we added the last song to our new playlist, we let the user know and update the user's playlist array (in datashare service)
           if(i === songsToAdd.length - 1){
             userPlaylists[index] = playlist;
             this._dataShareService.changePlaylist(userPlaylists);
@@ -297,6 +287,11 @@ export class YoutubeComponent implements OnInit {
     }
   }
 
+  /*
+    This method is called everytime the user closes the "change playlist name modal"
+    If the user clicks save, then we rename the playlist
+    otherwise, we reset the name field to empty
+  */
   openModal(content) {
     this._modalService.open(content).result.then((result) => {
       if (this.playlistRename.length > 0) //On close via the save button we check if we changed anything, if so we update it
@@ -308,6 +303,11 @@ export class YoutubeComponent implements OnInit {
     });
   }
 
+
+  /*
+    This method is called when the user attempts to rename a playlist. It updates the playlists name and calls
+    "put" on the DB to update it
+  */
   private renamePlaylist() {
     if(!this.playlist.playlistId) return; //Don't need to make an API cahnge call if the playlist does not exist
 
@@ -363,14 +363,25 @@ export class YoutubeComponent implements OnInit {
     return imgURL;
   }
 
+  /*
+    This method is called so we can set the youtube player to 65% of our current height
+  */
   getScreenHeight(): number {
     return window.screen.height * .35;
   }
 
+  /*
+    This method is called so we can set the youtube player to 45% of our width
+  */
   getScreenWidth(): number {
     return window.screen.width * .45;
   }
 
+   /*
+    Called whenever we make a transaction with the DB
+    @param message: string - The message to show to the user
+    @param level: MessageType - The type of message (Success, Failure, Notification)
+  */
   triggerMessage(message: string, level: MessageType) {
     let out: MessageOutput = {
       message: message,

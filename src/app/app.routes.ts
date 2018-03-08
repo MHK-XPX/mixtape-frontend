@@ -3,7 +3,7 @@
 */
 import { Routes } from '@angular/router';
 import { SessionGuard } from './shared/session-guard.service';
-import { UserResolver } from './shared/user-resolver.service'
+import { UserResolver } from './shared/user-resolver.service';
 
 import { HomeComponent } from './home/home.component';
 import { ProfileComponent } from './profile/profile.component';

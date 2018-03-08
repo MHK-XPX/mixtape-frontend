@@ -153,6 +153,7 @@ export class HomeComponent implements OnInit {
 
     /*
         This method takes the saved data from Last.FM and checks to see if we currently own it in our DB
+        @param track: LastfmTrack - the lastfm object returned from loadTrackFromFM() 
     */
     checkIfArtistSaved(track: LastfmTrack) {
         let artist: string;
@@ -191,6 +192,9 @@ export class HomeComponent implements OnInit {
 
     /*
         This method is called I.F.F we have the artist already in our database...if we do, we might have the proper album/song
+        @param artist: Artist - The artist object pulled from OUR DB
+        @param album: string - The name of the album given by the user or lastfm
+        @param song: string - The name of the song given by the user or lastfm
     */
     checkIfSongInAlbums(artist: Artist, album: string, song: string) {
         let alb: Album;
@@ -233,6 +237,10 @@ export class HomeComponent implements OnInit {
             Artist -> Album -> Song
             x      -> Album -> Song
             x      -> x     -> Song
+
+        @param artist: string - the name of the artist to add
+        @param album: string - the name of the album to add
+        @param song: string -  the name of the song to add
     */
     private addWhatsNeeded(artist: string, album: string, song: string) {
         if (this.needToSendToDB[0] && this.needToSendToDB[1] && this.needToSendToDB[2]) { //We need to add everything
@@ -267,6 +275,7 @@ export class HomeComponent implements OnInit {
 
     /*
        Adds an album to the database and then calls addSong()
+       @param artist: Artist - The artist in the DB to attach the album to (I.E. The owner of the album)
    */
     private addAlbum(artist: Artist) {
         let newAlbum = {
@@ -286,6 +295,8 @@ export class HomeComponent implements OnInit {
 
     /*
         Adds a song to the database and then outputs a success message
+        @param artist: Artist - The artist in the DB that owns the song
+        @param album: Album - The album the song is attached to
     */
     private addSong(artist: Artist, album: Album) {
         let newSong = {
@@ -306,16 +317,29 @@ export class HomeComponent implements OnInit {
         );
     }
 
+    /*
+        This method is called when a user clicks the "show more" button at the bottom of our youtube list
+        if the list isn't displaying all of the results, it will load more, otherwise the button will be disabled
+    */
     showMoreYoutube() {
         this.currentlyDisplaying *= 2;
 
         if (this.currentlyDisplaying > this.numToFetch) this.currentlyDisplaying = this.numToFetch;
     }
 
+    /*
+        This method is called to check to see if we should enable or disable the show more button
+        @return boolean - If we are showing all of the results from youtube or not
+    */
     canShowMore(): boolean {
         return this.currentlyDisplaying < this.numToFetch;
     }
 
+    /*
+        This method is called whenever our modal is closed. If it is closed via save, it will check to see
+        if we need to add any information to our database.
+        If it is closed via cancel or clicking off, it resets the field values
+    */
     openModal(content) {
         this._modalService.open(content).result.then((result) => {
             this.addWhatsNeeded(this.potentialArtist, this.potentialAlbum, this.potentialSong);
@@ -327,6 +351,11 @@ export class HomeComponent implements OnInit {
         });
     }
 
+    /*
+        Called whenever we make a transaction with the DB
+        @param message: string - The message to show to the user
+        @param level: MessageType - The type of message (Success, Failure, Notification)
+    */
     triggerMessage(message: string, level: MessageType) {
         let out: MessageOutput = {
             message: message,

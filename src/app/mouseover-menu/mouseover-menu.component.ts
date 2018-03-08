@@ -34,7 +34,7 @@ import { Message } from '@angular/compiler/src/i18n/i18n_ast';
 export class MouseoverMenuComponent implements OnInit {
   MessageType = MessageType;
 
-  //Takes input of three bools to indicate which icon to show (add to playlist, add to queue, or delete from playlist)
+  //Takes input of 4 bools to indicate which icon to show (add to playlist, add to queue, delete from playlist, or delete playlist)
   @Input() addToPL: boolean;
   @Input() addToQ: boolean;
   @Input() deleteFromPL: boolean;
@@ -178,6 +178,10 @@ export class MouseoverMenuComponent implements OnInit {
     return pls;
   }
 
+  /*
+    Called when the user clicks the delete icon on the sidebar component. The method will call our api service and remove the 
+    entity from our DB.
+  */
   deletePlaylist() {
     let plIndex: number = this.playlists.findIndex(pl => pl.playlistId === this.plToDelete.playlistId);
     let s: Subscription;
@@ -196,6 +200,8 @@ export class MouseoverMenuComponent implements OnInit {
 
   /*
     Called whenever we finish an action, the message is emitted to all parent components
+    @param message: string - The message to show to the user
+    @param level: MessageType - The type of message (Success, Failure, Notification)
   */
   outputMessage(message: string, level: MessageType) {
     let out: MessageOutput = {
@@ -204,8 +210,6 @@ export class MouseoverMenuComponent implements OnInit {
     };
 
     this.successMessageOutput.emit(out);
-    //this.successMessage = message;
-    //this.successMessageOutput.emit(this.successMessage);
   }
 
 }

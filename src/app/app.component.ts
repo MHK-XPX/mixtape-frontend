@@ -43,7 +43,6 @@ export class AppComponent implements OnInit {
 
   @HostListener('window:resize') onResize() {
     this.isSidebarCollapsed = window.outerWidth <= this.minWindowSize;
-    // console.log(window.outerWidth);
   }
 
   /*
