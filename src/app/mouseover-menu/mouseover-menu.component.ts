@@ -144,6 +144,7 @@ export class MouseoverMenuComponent implements OnInit {
     let plsIndex: number = this.currentPL.playlistSong.findIndex(pls => pls.playlistSongId === this.selectedPLS.playlistSongId);
 
     if (this.selectedPLS.playlistSongId === null) { //If the ID is null, we know it was added to queue not to the playlist...so we simply remove it
+      plsIndex = this.currentPL.playlistSong.findIndex(pls => pls.songId === this.selectedPLS.songId);
       this.currentPL.playlistSong.splice(plsIndex, 1);
       this._dataShareService.changeCurrentPlaylist(this.currentPL);
       this.outputMessage(this.selectedSong.name, "removed from queue", MessageType.Success);
@@ -171,7 +172,7 @@ export class MouseoverMenuComponent implements OnInit {
       playlistSongId: null,
       playlistId: p.playlistId,
       songId: this.selectedSong.songId,
-      playlist: p,
+      playlist: null,
       song: this.selectedSong
     };
 
