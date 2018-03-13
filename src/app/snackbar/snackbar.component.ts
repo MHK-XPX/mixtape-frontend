@@ -46,6 +46,7 @@ export class SnackbarComponent implements OnInit {
 
   messageToDisplay;
 
+  private s: Subscription;
   private maxTime: number = 100;
 
   timer: number = this.maxTime;
@@ -88,13 +89,20 @@ export class SnackbarComponent implements OnInit {
   }
 
   private startTimer() {
-    let s: Subscription = Observable.interval(20).subscribe(x => {
+    //We cannot tell if s has subscribed or not yet, so we must try to unsub (this might be changed later)
+    try{
+      this.s.unsubscribe();
+    }catch(e){
+      
+    }
+
+    this.s = Observable.interval(20).subscribe(x => {
       if (!this.hovering)
         this.timer--;
 
       if (this.timer < 0) {
         this.messageOut = null;
-        s.unsubscribe(); //Must unsub or the interval will increase in time
+        this.s.unsubscribe(); //Must unsub or the interval will increase in time
       }
     });
   }
