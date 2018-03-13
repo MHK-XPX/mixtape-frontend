@@ -37,8 +37,6 @@ export class AppComponent implements OnInit {
   isSidebarCollapsed = false;
   showPlaylist: boolean = false;
 
-  showProfile: boolean = false;
-
   private minWindowSize: number = 720;
 
   constructor(private _apiService: ApiService, public _storage: StorageService, private _dataShareService: DataShareService) { }
@@ -67,6 +65,7 @@ export class AppComponent implements OnInit {
     }
 
     this._dataShareService.currentPlaylist.subscribe(res => this.selectedPlaylist = res);
+    this._dataShareService.searchString.subscribe(res => this.searchString = res);
   }
 
   /*
@@ -97,6 +96,8 @@ export class AppComponent implements OnInit {
   search() {
     this.showPlaylist = false;
     this.searchString = this.searchValue;
+
+    this._dataShareService.changeSearchString(this.searchString);
   }
 
   getUser(): User {

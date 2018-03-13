@@ -10,7 +10,7 @@
       <<</button>
 
     <!-- This is a temp fix...I will make it one image soon! -->
-    <div class="d-inline" [routerLink]="['/home']" (click)="this.showProfile = false">
+    <div class="d-inline" [routerLink]="['/home']">
       <h4 class="font-weight-bold text-light d-inline">Mi</h4>
       <img class="text-light" src="favicon.ico" width="30" height="30" />
       <h4 class="font-weight-bold text-light d-inline">Tape</h4>
@@ -45,7 +45,7 @@
       <img ngbDropdownToggle class="icon icon-middle icon-md" src="assets/shared/profile_white.png" />
       <div ngbDropdownMenu>
         <div *ngIf="this.isLoggedIn()">
-          <button class="dropdown-item" [routerLink]="['/profile']" (click)="this.showProfile = true">Profile</button>
+          <button class="dropdown-item" [routerLink]="['/profile']">Profile</button>
           <button class="dropdown-item" [routerLink]="['/login']" (click)="this.logOut()">Logout</button>
         </div>
         <div *ngIf="!this.isLoggedIn()">
@@ -76,8 +76,10 @@
       </div>
 
       <div class="col-sm-7 margin-top mx-auto" style="margin-top: 5%" *ngIf="!this.showPlaylist">
-        <home [searchString]="this.searchString" *ngIf="!showProfile"></home>
-        <profile *ngIf="showProfile"></profile>
+        <!--<home [searchString]="this.searchString" *ngIf="!showProfile"></home>-->
+        <!--<home *ngIf = "!showProfile"></home>
+        <profile *ngIf="showProfile"></profile>-->
+        <router-outlet></router-outlet>
       </div>
     </div>
   </div>

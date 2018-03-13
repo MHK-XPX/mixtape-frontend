@@ -13,6 +13,7 @@ import { Subscription } from "rxjs";
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 
 import { ApiService } from '../shared/api.service';
+import { DataShareService } from '../shared/data-share.service';
 
 import { MouseoverMenuComponent } from '../mouseover-menu/mouseover-menu.component';
 import { SidebarComponent } from '../sidebar/sidebar.component';
@@ -55,7 +56,7 @@ import { MessageOutput } from '../interfaces/messageoutput';
 
 export class HomeComponent implements OnInit {
     MessageType = MessageType;
-    @Input() searchString: string;
+    searchString: string;
 
     mouseOver: number = -1;
 
@@ -83,7 +84,7 @@ export class HomeComponent implements OnInit {
 
     private needToSendToDB: boolean[] = [false, false, false]; //Art, Alb, Song (true if we need to add it to our database);
 
-    constructor(private _apiService: ApiService, private _modalService: NgbModal) { }
+    constructor(private _apiService: ApiService, private _modalService: NgbModal, private _dataShareService: DataShareService) { }
 
     ngOnInit() {
         let s: Subscription = this._apiService.getAllEntities<Artist>("Artists").subscribe(
@@ -92,13 +93,18 @@ export class HomeComponent implements OnInit {
             () => s.unsubscribe()
         );
 
+        this._dataShareService.searchString.subscribe(res => this.updateSearch(res));
 
     }
 
-    ngOnChanges() {
-        this.youtubeResults = this._apiService.getYoutubeResults(this.searchString, this.numToFetch);
-    }
+    private updateSearch(search: string){
+        this.searchString = search;
 
+        if(this.searchString !== null && this.searchString.length > 0){
+            this.youtubeResults = this._apiService.getYoutubeResults(this.searchString, this.numToFetch);
+        }
+    }
+    
     /*
         Note: The parsing for this method is really bad and will be fixed once I learn more regex!
     */

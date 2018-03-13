@@ -20,6 +20,9 @@ export class DataShareService {
   private currentPlaylistSubject = new BehaviorSubject<Playlist>(null);
   currentPlaylist = this.currentPlaylistSubject.asObservable();
 
+  private searchStringSubject = new BehaviorSubject<string>(null);
+  searchString = this.searchStringSubject.asObservable();
+
   constructor() { }
 
   /*
@@ -47,6 +50,10 @@ export class DataShareService {
     this.currentPlaylistSubject.next(playlist);
   }
 
+  changeSearchString(search: string){
+    this.searchStringSubject.next(search);
+  }
+
   /*
     Called when we logout, it clears the values to avoid any collisions with the next login
   */
@@ -54,5 +61,6 @@ export class DataShareService {
     this.userSubject.next(null);
     this.playlistsSubject.next(null);
     this.currentPlaylistSubject.next(null);
+    this.searchStringSubject.next(null);
   }
 }
