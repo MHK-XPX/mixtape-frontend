@@ -5,9 +5,11 @@
 <ng-progress [thick]="true" color="red" [spinner]="false"></ng-progress>
 <nav class="navbar sticky-top navbar-expand-md navbar-dark">
   <a class="navbar-brand">
-    <button type="button" class="btn btn-success" style="display: inline" (click)="isSidebarCollapsed = !isSidebarCollapsed"
-      *ngIf="isLoggedIn() && !isSideBarCollapsed">
-      <<</button>
+    <button type="button" class="btn btn-success" style="display: inline" (click)="this.isSidebarCollapsed = !this.isSidebarCollapsed"
+      *ngIf="isLoggedIn() && !this.isSidebarCollapsed"><<</button>
+
+    <button type="button" class="btn btn-success" style="display: inline" (click)="this.isSidebarCollapsed = !this.isSidebarCollapsed"
+      *ngIf="isLoggedIn() && this.isSidebarCollapsed">>></button>
 
     <!-- This is a temp fix...I will make it one image soon! -->
     <div class="d-inline" [routerLink]="['/home']" (click)="this.showPlaylist = false">
@@ -26,12 +28,14 @@
       placeholder="Search..." (ngEnter)="search()" *ngIf="this.isLoggedIn()" />
 
     <div class="nav-item" *ngIf="this.selectedPlaylist && this.isLoggedIn()">
-      <img class='icon icon-middle icon-md float-left' src="assets/playlist/last_song.png" placement="bottom" ngbTooltip="Last Song" (click)='this.YT.lastSong()' />
+      <img class='icon icon-middle icon-md float-left' src="assets/playlist/last_song.png" placement="bottom" ngbTooltip="Last Song"
+        (click)='this.YT.lastSong()' />
       <img class="icon icon-middle icon-md" [src]="this.YT.paused ? 'assets/playlist/play_button.png' : 'assets/playlist/pause_button.png'"
-        (click)="this.YT.pauseClicked()" placement="bottom" ngbTooltip="Pause/Play"/>
-      <img class='icon icon-middle icon-md' src="assets/playlist/next_song.png" placement="bottom" ngbTooltip="Next Song" (click)='this.YT.nextSong()' />
+        (click)="this.YT.pauseClicked()" placement="bottom" ngbTooltip="Pause/Play" />
+      <img class='icon icon-middle icon-md' src="assets/playlist/next_song.png" placement="bottom" ngbTooltip="Next Song" (click)='this.YT.nextSong()'
+      />
       <img class="icon icon-middle icon-md" [src]="this.YT.repeat ? 'assets/playlist/repeat_song_on.png' : 'assets/playlist/repeat_song_off.png'"
-      placement="bottom" ngbTooltip="Repeat" (click)="this.YT.repeatClicked()" />
+        placement="bottom" ngbTooltip="Repeat" (click)="this.YT.repeatClicked()" />
 
       <button type="button" class="btn btn-success icon-middle" (click)="enablePlaylist()" *ngIf="!this.showPlaylist">Show Playlist</button>
       <button type="button" class="btn btn-success icon-middle" (click)="search()" *ngIf="this.showPlaylist">Show Page</button>

@@ -99,7 +99,7 @@ export class ProfileComponent implements OnInit {
         Called after the user leaves the username box. It checks with the API to see if
         the given username has been taken or not, if so it alerts the user with the error
     */
-  private validateUsername() {
+  validateUsername() {
     if (this.displayName.length <= 0 || this.user.username === this.displayName)
       return;
 
