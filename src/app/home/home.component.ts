@@ -317,7 +317,6 @@ export class HomeComponent implements OnInit {
             err => console.log("Unable to add artist"),
             () => {
                 s.unsubscribe();
-                //Do something here
                 this.triggerMessage("", "Successfully Added", MessageType.Success);
             }
         );

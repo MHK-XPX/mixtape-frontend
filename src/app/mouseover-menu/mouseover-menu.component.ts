@@ -50,7 +50,6 @@ export class MouseoverMenuComponent implements OnInit {
   currentPL: Playlist;
 
   //The component outputs a message if the action either failed or completed
-  successMessage: string;
   messageLevel: MessageType = MessageType.Notification;
 
   @Output() successMessageOutput: EventEmitter<MessageOutput> = new EventEmitter<MessageOutput>();

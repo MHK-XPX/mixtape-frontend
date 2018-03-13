@@ -50,6 +50,9 @@ export class DataShareService {
     this.currentPlaylistSubject.next(playlist);
   }
 
+  /*
+    Called whenever we search for a new string on the search bar
+  */
   changeSearchString(search: string){
     this.searchStringSubject.next(search);
   }

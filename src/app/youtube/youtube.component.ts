@@ -388,7 +388,6 @@ export class YoutubeComponent implements OnInit {
       action: action,
       level: level
     };
-    console.log(out);
     this.messageOut = out;
   }
 }

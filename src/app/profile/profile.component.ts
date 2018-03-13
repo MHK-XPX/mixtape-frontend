@@ -142,7 +142,6 @@ export class ProfileComponent implements OnInit {
       level: level
     };
 
-    console.log(out);
     this.messageOut = out;
   }
 }
