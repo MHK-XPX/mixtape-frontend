@@ -219,7 +219,7 @@ export class YoutubeComponent implements OnInit {
     let returnedPL: Playlist;
     let s: Subscription = this._apiService.postEntity<Playlist>("Playlists", nPL).subscribe(
       d => returnedPL = d,
-      err => this.triggerMessage("Unable to create new playlist", MessageType.Failure),
+      err => this.triggerMessage("", "Unable to create new playlist", MessageType.Failure),
       () => {
         s.unsubscribe();
         userPlaylists.push(returnedPL);
@@ -228,7 +228,7 @@ export class YoutubeComponent implements OnInit {
         this.addSongsToNewPlaylist(returnedPL, this.playlist.playlistSong);
 
         if(this.playlist.playlistSong.length <= 0)
-          this.triggerMessage("New Playlist Saved!", MessageType.Success);
+          this.triggerMessage("", "New Playlist Saved!", MessageType.Success);
       }
     );
   }
@@ -270,7 +270,7 @@ export class YoutubeComponent implements OnInit {
 
       let s: Subscription = this._apiService.postEntity<PlaylistSong>("PlaylistSongs", toSendPLS).subscribe(
         d => actPLS = d,
-        err => this.triggerMessage("Unable to save playlist", MessageType.Failure),
+        err => this.triggerMessage("", "Unable to save playlist", MessageType.Failure),
         () => {
           actPLS.song = pls.song;
           s.unsubscribe();
@@ -280,7 +280,7 @@ export class YoutubeComponent implements OnInit {
           if(i === songsToAdd.length - 1){
             userPlaylists[index] = playlist;
             this._dataShareService.changePlaylist(userPlaylists);
-            this.triggerMessage("Playlist Saved!", MessageType.Success);
+            this.triggerMessage("", "Playlist Saved!", MessageType.Success);
           }
         }
       );
@@ -313,10 +313,10 @@ export class YoutubeComponent implements OnInit {
 
     let s: Subscription = this._apiService.putEntity<Playlist>("Playlists", this.playlist.playlistId, this.playlist).subscribe(
       d => d = d,
-      err => this.triggerMessage("Unable to change name of playlist", MessageType.Failure),
+      err => this.triggerMessage("", "Unable to change name of playlist", MessageType.Failure),
       () => {
         s.unsubscribe();
-        this.triggerMessage("Playlist name updated!", MessageType.Success);
+        this.triggerMessage("", "Playlist name updated!", MessageType.Success);
       }
     );
   }
@@ -382,11 +382,13 @@ export class YoutubeComponent implements OnInit {
     @param message: string - The message to show to the user
     @param level: MessageType - The type of message (Success, Failure, Notification)
   */
-  triggerMessage(message: string, level: MessageType) {
+  triggerMessage(message: string, action: string, level: MessageType) {
     let out: MessageOutput = {
       message: message,
+      action: action,
       level: level
     };
+    console.log(out);
     this.messageOut = out;
   }
 }

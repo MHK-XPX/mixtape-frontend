@@ -1,7 +1,13 @@
 <div [@showState]="messageOut ? 'show' : 'hide'" style="display: block" (mouseenter)="hoverToKeepMessage(true)" (mouseleave)="hoverToKeepMessage(false)" [ngSwitch]="this.messageLevel">
 
-  <div id="snackbar" [ngStyle]="{'background-color': 'green'}" *ngSwitchCase="MessageType.Success">{{ successMessage }}</div>
-  <div id="snackbar" [ngStyle]="{'background-color': 'red'}" *ngSwitchCase="MessageType.Failure">{{ successMessage }}</div>
-  <div id="snackbar" [ngStyle]="{'background-color': 'blue'}" *ngSwitchCase="MessageType.Notification">{{ successMessage }}</div>
+  <div id="snackbar" [ngStyle]="{'background-color': 'green'}" *ngSwitchCase="MessageType.Success">{{ messageToDisplay }}
+    <ngb-progressbar type="danger" height="5px" [value]="timer"></ngb-progressbar>
+  </div>
+  <div id="snackbar" [ngStyle]="{'background-color': 'red'}" *ngSwitchCase="MessageType.Failure">{{ messageToDisplay }}
+    <ngb-progressbar type="danger" height="5px" [value]="timer"></ngb-progressbar>
+  </div>
+  <div id="snackbar" [ngStyle]="{'background-color': 'blue'}" *ngSwitchCase="MessageType.Notification">{{ messageToDisplay }}
+    <ngb-progressbar type="danger" height="5px" [value]="timer"></ngb-progressbar>
+  </div>
   <div id="snackbar" *ngSwitchDefault>{{ this.messageLevel }} is not handled</div>
 </div>

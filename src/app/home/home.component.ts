@@ -256,7 +256,7 @@ export class HomeComponent implements OnInit {
         } else if (!this.needToSendToDB[0] && this.needToSendToDB[1] && this.needToSendToDB[2]) { //We need to add an album and song
             this.addAlbum(this.selectedArtist);
         } else {
-            this.triggerMessage("This song is already in the database! Try searching for it!", MessageType.Notification);
+            this.triggerMessage("", "This song is already in the database! Try searching for it!", MessageType.Notification);
         }
 
     }
@@ -318,7 +318,7 @@ export class HomeComponent implements OnInit {
             () => {
                 s.unsubscribe();
                 //Do something here
-                this.triggerMessage("Successfully Added", MessageType.Success);
+                this.triggerMessage("", "Successfully Added", MessageType.Success);
             }
         );
     }
@@ -362,9 +362,10 @@ export class HomeComponent implements OnInit {
         @param message: string - The message to show to the user
         @param level: MessageType - The type of message (Success, Failure, Notification)
     */
-    triggerMessage(message: string, level: MessageType) {
+    triggerMessage(message: string, action: string, level: MessageType) {
         let out: MessageOutput = {
             message: message,
+            action: action,
             level: level
         };
 

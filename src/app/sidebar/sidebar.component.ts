@@ -104,7 +104,7 @@ export class SidebarComponent implements OnInit {
         s.unsubscribe();
         this.userPlaylists.push(returnedPL);
         this._dataShareService.changePlaylist(this.userPlaylists);
-        this.triggerMessage("Playlist created!", MessageType.Success);
+        this.triggerMessage("", "Playlist created!", MessageType.Success);
 
         this.selectPlaylist(returnedPL);
       }
@@ -116,9 +116,10 @@ export class SidebarComponent implements OnInit {
     @param message: string - The message to show to the user
     @param level: MessageType - The type of message (Success, Failure, Notification)
    */
-  triggerMessage(message: string, level: MessageType) {
+  triggerMessage(message: string, action: string, level: MessageType) {
     let out: MessageOutput = {
       message: message,
+      action: action,
       level: level
     };
 

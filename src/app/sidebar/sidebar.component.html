@@ -9,7 +9,7 @@
         (click)="selectPlaylist(playlist)">
         {{ playlist.name }}
         <app-mouseover-menu [@showState]="this.mouseOver === i ? 'show' : 'hide'" [addToPL]="false" [addToQ]="false" [deleteFromPL]="false"
-          [deletePL]="true" [selectedSong]="null" [plToDelete]="playlist" (successMessageOutput)="triggerMessage($event.message, $event.level)" (click)="$event.stopPropagation()"></app-mouseover-menu>
+          [deletePL]="true" [selectedSong]="null" [plToDelete]="playlist" (successMessageOutput)="triggerMessage($event.message, $event.action, $event.level)" (click)="$event.stopPropagation()"></app-mouseover-menu>
       </li>
       <button class="btn btn-secondary" (click)="selectPlaylist(null)">Clear Queue</button>
     </ul>

@@ -67,12 +67,12 @@ export class ProfileComponent implements OnInit {
 
     s = this._apiService.putEntity<User>("Users", this.user.userId, this.user).subscribe(
       d => d = d,
-      err => this.triggerMessage("Unable to update user", MessageType.Failure),
+      err => this.triggerMessage("", "Unable to update user", MessageType.Failure),
       () => {
         s.unsubscribe();
         this.newPassword = "";
         this.confirmPassword = "";
-        this.triggerMessage("Information Updated Successfully", MessageType.Success);
+        this.triggerMessage("", "Information Updated Successfully", MessageType.Success);
         this.repullUser();
       }
     );
@@ -115,7 +115,7 @@ export class ProfileComponent implements OnInit {
     this.newPassword = "";
     this.confirmPassword = "";
     this.repullUser(); //Maybe not do this here?
-    this.triggerMessage("Update Canceled", MessageType.Notification)
+    this.triggerMessage("", "Update Canceled", MessageType.Notification)
   }
 
   /*
@@ -135,12 +135,14 @@ export class ProfileComponent implements OnInit {
     @param message: string - The message to show to the user
     @param level: MessageType - The type of message (Success, Failure, Notification)
    */
-  triggerMessage(message: string, level: MessageType) {
+  triggerMessage(message: string, action: string, level: MessageType) {
     let out: MessageOutput = {
       message: message,
+      action: action,
       level: level
     };
 
+    console.log(out);
     this.messageOut = out;
   }
 }

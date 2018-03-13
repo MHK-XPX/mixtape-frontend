@@ -83,7 +83,7 @@ export class MouseoverMenuComponent implements OnInit {
     let s: Subscription = this._apiService.postEntity<PlaylistSong>("PlaylistSongs", toSendPLS).subscribe(
       d => actPLS = d,
       err => {
-        this.outputMessage("Unable to add " + this.selectedSong.name + " to " + p.name, MessageType.Failure);
+        this.outputMessage("", "Unable to add " + this.selectedSong.name + " to " + p.name, MessageType.Failure);
       },
       () => {
         actPLS.song = this.selectedSong;
@@ -91,7 +91,7 @@ export class MouseoverMenuComponent implements OnInit {
         p.playlistSong.push(actPLS);
         this.playlists[index] = p;
         this._dataShareService.changePlaylist(this.playlists);
-        this.outputMessage(this.selectedSong.name + " added to " + p.name, MessageType.Success);
+        this.outputMessage(this.selectedSong.name, "added to playlist", MessageType.Success);
       }
     );
   }
@@ -131,7 +131,7 @@ export class MouseoverMenuComponent implements OnInit {
     }
 
     this._dataShareService.changeCurrentPlaylist(copyPL);
-    this.outputMessage(this.selectedSong.name + " added to queue", MessageType.Success);
+    this.outputMessage(this.selectedSong.name, "added to queue", MessageType.Success);
   }
 
   /*
@@ -146,16 +146,16 @@ export class MouseoverMenuComponent implements OnInit {
     if (this.selectedPLS.playlistSongId === null) { //If the ID is null, we know it was added to queue not to the playlist...so we simply remove it
       this.currentPL.playlistSong.splice(plsIndex, 1);
       this._dataShareService.changeCurrentPlaylist(this.currentPL);
-      this.outputMessage("Removed " + this.selectedSong.name + " from queue", MessageType.Success);
+      this.outputMessage(this.selectedSong.name, "removed from queue", MessageType.Success);
     } else {
       let s: Subscription = this._apiService.deleteEntity<PlaylistSong>("PlaylistSongs", this.selectedPLS.playlistSongId).subscribe(
         d => d = d,
-        err => this.outputMessage("Unable to remove " + this.selectedSong.name + " from " + this.playlists[plIndex].name, MessageType.Failure),
+        err => this.outputMessage("", "Unable to remove " + this.selectedSong.name + " from " + this.playlists[plIndex].name, MessageType.Failure),
         () => {
           s.unsubscribe();
           this.playlists[plIndex].playlistSong.splice(plsIndex, 1);
           this._dataShareService.changePlaylist(this.playlists);
-          this.outputMessage("Removed " + this.selectedSong.name + " from " + this.playlists[plIndex].name, MessageType.Success);
+          this.outputMessage(this.selectedSong.name, "removed from playlist", MessageType.Success);
         }
       )
     }
@@ -188,12 +188,12 @@ export class MouseoverMenuComponent implements OnInit {
 
     s = this._apiService.deleteEntity<Playlist>("Playlists", this.plToDelete.playlistId).subscribe(
       d => d = d,
-      err => this.outputMessage("Unable to delete playlist", MessageType.Failure),
+      err => this.outputMessage("", "Unable to delete playlist", MessageType.Failure),
       () => {
         s.unsubscribe();
         this.playlists.splice(plIndex, 1);
         this._dataShareService.changePlaylist(this.playlists);
-        this.outputMessage("Playlist deleted!", MessageType.Success);
+        this.outputMessage("", "Playlist deleted!", MessageType.Success);
       }
     );
   }
@@ -207,9 +207,10 @@ export class MouseoverMenuComponent implements OnInit {
     @param message: string - The message to show to the user
     @param level: MessageType - The type of message (Success, Failure, Notification)
   */
-  outputMessage(message: string, level: MessageType) {
+  outputMessage(message: string, action: string, level: MessageType) {
     let out: MessageOutput = {
       message: message,
+      action: action,
       level: level
     };
 

@@ -25,7 +25,7 @@
             (mouseout)="this.mouseOver = -1" (click)="playSongOnClick(i)">
             <img class="d-none d-sm-none d-md-inline" [src]="this.getThumbnail(pls.song.url)" /> {{i+1}}. {{pls.song.name}}
             <app-mouseover-menu [@showState]="this.mouseOver === i ? 'show' : 'hide'" [addToPL]="true" [addToQ]="true" [deleteFromPL]="true"
-              [selectedSong]="pls.song" [selectedPLS]="pls" (successMessageOutput)="triggerMessage($event.message, $event.level)"></app-mouseover-menu>
+              [selectedSong]="pls.song" [selectedPLS]="pls" (successMessageOutput)="triggerMessage($event.message, $event.action, $event.level)"></app-mouseover-menu>
           </li>
         </ol>
       </div>
