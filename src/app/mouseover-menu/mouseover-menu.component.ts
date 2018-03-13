@@ -198,6 +198,10 @@ export class MouseoverMenuComponent implements OnInit {
     );
   }
 
+  cancelDropdown(event){
+    event.stopPropagation();
+  }
+
   /*
     Called whenever we finish an action, the message is emitted to all parent components
     @param message: string - The message to show to the user

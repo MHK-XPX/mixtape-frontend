@@ -7,19 +7,20 @@
     <img class="icon icon-middle icon-sm float-right img-margin" placement="top" ngbTooltip="Add to queue" src='assets/playlist/add_playlist.png'
       (click)="addToQueue($event)" />
   </div>
-  <div ngbDropdown placement="top" *ngIf="addToPL">
+  <div ngbDropdown placement="top" *ngIf="addToPL" #myDrop="ngbDropdown">
     <img ngbDropdownToggle class="icon icon-middle icon-sm float-right img-margin" placement="left" ngbTooltip="Add to a playlist"
-      src='assets/playlist/add_playlist_2.png' (click)="$event.stopPropagation();"/>
-    <div ngbDropdownMenu aria-labelledby="addToPlaylists">
+      src='assets/playlist/add_playlist_2.png' (click)="$event.stopPropagation();" />
+    <div ngbDropdownMenu aria-labelledby="addToPlaylist">
       <ul class="list-group list-group-flush specific-height" *ngIf="this.playlists">
-        <li class="list-group-item list-group-item-action" *ngFor="let playlist of this.playlists index as i" (click)="addToPlaylist(playlist, i, $event)">
+        <li class="dropdown-item" *ngFor="let playlist of this.playlists index as i" (click)="addToPlaylist(playlist, i, $event); myDrop.close();">
           {{ playlist.name }}
         </li>
+        <button class="dropdown-item btn-danger" (click)="cancelDropdown($event); myDrop.close();">Cancel</button>
       </ul>
     </div>
   </div>
-
   <div *ngIf="deletePL">
     <img class="icon icon-middle icon-sm float-right img-margin" placement="right" ngbTooltip="Delete" src="assets/playlist/delete_song_black.png"
       (click)="deletePlaylist()" />
+  </div>
 </div>
