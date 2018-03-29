@@ -6,7 +6,8 @@
                     <div class="card-header">Top Results for: {{ searchString }}</div>
                 </div>
                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item list-group-item-action" (mouseover)="this.mouseOver = i" (mouseout)="this.mouseOver = -1" *ngFor="let song of songs | async | filterPipe : searchString index as i">
+                    <li class="list-group-item list-group-item-action" (mouseover)="this.mouseOver = i" (mouseout)="this.mouseOver = -1" 
+                    *ngFor="let song of songs | async | filterPipe : searchString index as i" (click)="previewSong(song)">
                         {{ song.name }}
                         <app-mouseover-menu [@showState]="this.mouseOver === i ? 'show' : 'hide'" [addToPL]="true" [addToQ]="true" [deleteFromPL]="false"
                             [selectedSong]="song" (successMessageOutput)="triggerMessage($event.message, $event.action, $event.level)"></app-mouseover-menu>

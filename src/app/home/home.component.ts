@@ -322,6 +322,10 @@ export class HomeComponent implements OnInit {
         );
     }
 
+    previewSong(song: Song){
+        this._dataShareService.changePreviewSong(song);
+    }
+
     /*
         This method is called when a user clicks the "show more" button at the bottom of our youtube list
         if the list isn't displaying all of the results, it will load more, otherwise the button will be disabled

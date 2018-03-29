@@ -7,6 +7,7 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 import { User } from '../interfaces/user';
 import { Playlist } from '../interfaces/playlist';
+import { Song } from '../interfaces/song';
 
 @Injectable()
 export class DataShareService {
@@ -22,6 +23,9 @@ export class DataShareService {
 
   private searchStringSubject = new BehaviorSubject<string>(null);
   searchString = this.searchStringSubject.asObservable();
+
+  private previewSongSubject = new BehaviorSubject<Song>(null);
+  previewSong = this.previewSongSubject.asObservable();
 
   constructor() { }
 
@@ -57,6 +61,10 @@ export class DataShareService {
     this.searchStringSubject.next(search);
   }
 
+  changePreviewSong(song: Song){
+    this.previewSongSubject.next(song);
+  }
+
   /*
     Called when we logout, it clears the values to avoid any collisions with the next login
   */
@@ -65,5 +73,6 @@ export class DataShareService {
     this.playlistsSubject.next(null);
     this.currentPlaylistSubject.next(null);
     this.searchStringSubject.next(null);
+    this.previewSongSubject.next(null);
   }
 }

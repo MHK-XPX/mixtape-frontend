@@ -72,10 +72,14 @@ export class YoutubeComponent implements OnInit {
 
   private playlistRename: string = "";
 
+  private previewSong: Song;
+  private lastPreview: Song;
+
   constructor(private _storage: StorageService, private _dataShareService: DataShareService, private _modalService: NgbModal, private _apiService: ApiService) { }
 
   ngOnInit() {
     this.lastPlaylist = this.playlist;
+    this._dataShareService.previewSong.subscribe(res => this.checkForSongPreview(res));
     this._dataShareService.currentPlaylist.subscribe(res => this.playlist = res);
   }
 
@@ -91,6 +95,7 @@ export class YoutubeComponent implements OnInit {
     if (this.lastPlaylist === this.playlist || (this.lastPlaylist && (this.lastPlaylist.playlistId === this.playlist.playlistId))) {
       this.onSong = this._storage.getValue('onSong') ? this._storage.getValue('onSong') : 0;
     } else { //otherwise we start from the beginning
+      this.clearPreviewSong();
       this.onSong = -1;
       this.lastPlaylist = this.playlist;
       this.nextSong();
@@ -115,6 +120,11 @@ export class YoutubeComponent implements OnInit {
       case -1:
         break;
       case 0:
+        if(this.previewSong){
+          this.clearPreviewSong();
+          this.playVideo();
+          break;
+        }
         this.nextSong();
         break;
       case 1:
@@ -170,7 +180,28 @@ export class YoutubeComponent implements OnInit {
     this.parseId(this.playlist.playlistSong[this.onSong].song.url);
     this.player.loadVideoById(this.videoId, 0);
     this.player.playVideo();
+  }
 
+  private playGivenVideo(songUrl: string) {
+    this.parseId(songUrl);
+    this.player.loadVideoById(this.videoId, 0);
+    this.player.playVideo();
+  }
+
+  private checkForSongPreview(song: Song){
+    this.previewSong = song;
+
+    //If this is our first time previewing a song we need to play it and set our last preview
+    if((this.previewSong && !this.lastPreview) || ((this.previewSong && this.lastPreview) && (this.previewSong.songId !== this.lastPreview.songId))){
+      console.log("SONG FROM YOUTUBE C:", this.previewSong);
+      this.lastPreview = this.previewSong;
+      this.playGivenVideo(this.previewSong.url);
+    }
+  }
+
+  private clearPreviewSong(){
+    this._dataShareService.changePreviewSong(null);
+    this.lastPreview = null;
   }
 
   private repeatClicked() {
@@ -206,7 +237,7 @@ export class YoutubeComponent implements OnInit {
   /*
     Called if the user wants to save as a new playlist. The method creates a new playlist and adds it to the DB and then fills it by calling addSongsToNewPlaylist, with the newly created playlist
   */
-  private addNewPlaylist(){
+  private addNewPlaylist() {
     let userPlaylists: Playlist[];
     this._dataShareService.playlists.subscribe(res => userPlaylists = res);
 
@@ -227,7 +258,7 @@ export class YoutubeComponent implements OnInit {
 
         this.addSongsToNewPlaylist(returnedPL, this.playlist.playlistSong);
 
-        if(this.playlist.playlistSong.length <= 0)
+        if (this.playlist.playlistSong.length <= 0)
           this.triggerMessage("", "New Playlist Saved!", MessageType.Success);
       }
     );
@@ -249,7 +280,7 @@ export class YoutubeComponent implements OnInit {
     @param newPlaylist: Playlist:- The newly created playlist, if null, we set our playlist to update to our current playlist
     @param songsToAdd: PlaylistSong[]:- An array of playlist songs to add to the given playlist
   */
-  private addSongsToNewPlaylist(newPlaylist: Playlist, songsToAdd: PlaylistSong[]){
+  private addSongsToNewPlaylist(newPlaylist: Playlist, songsToAdd: PlaylistSong[]) {
     let playlist: Playlist = newPlaylist ? newPlaylist : this.playlist;
 
     let userPlaylists: Playlist[];
@@ -258,7 +289,7 @@ export class YoutubeComponent implements OnInit {
 
     let index: number = userPlaylists.findIndex(p => p.playlistId === playlist.playlistId); //index of the playlist we are updating in all of the user's playlists
 
-    for(let i=0; i < songsToAdd.length; i++){
+    for (let i = 0; i < songsToAdd.length; i++) {
       let pls: PlaylistSong = songsToAdd[i];
 
       let toSendPLS = {
@@ -277,7 +308,7 @@ export class YoutubeComponent implements OnInit {
           playlist.playlistSong[i] = actPLS;
 
           //If we added the last song to our new playlist, we let the user know and update the user's playlist array (in datashare service)
-          if(i === songsToAdd.length - 1){
+          if (i === songsToAdd.length - 1) {
             userPlaylists[index] = playlist;
             this._dataShareService.changePlaylist(userPlaylists);
             this.triggerMessage("", "Playlist Saved!", MessageType.Success);
@@ -309,7 +340,7 @@ export class YoutubeComponent implements OnInit {
     "put" on the DB to update it
   */
   private renamePlaylist() {
-    if(!this.playlist.playlistId) return; //Don't need to make an API cahnge call if the playlist does not exist
+    if (!this.playlist.playlistId) return; //Don't need to make an API cahnge call if the playlist does not exist
 
     let s: Subscription = this._apiService.putEntity<Playlist>("Playlists", this.playlist.playlistId, this.playlist).subscribe(
       d => d = d,
@@ -377,11 +408,11 @@ export class YoutubeComponent implements OnInit {
     return window.screen.width * .45;
   }
 
-   /*
-    Called whenever we make a transaction with the DB
-    @param message: string - The message to show to the user
-    @param level: MessageType - The type of message (Success, Failure, Notification)
-  */
+  /*
+   Called whenever we make a transaction with the DB
+   @param message: string - The message to show to the user
+   @param level: MessageType - The type of message (Success, Failure, Notification)
+ */
   triggerMessage(message: string, action: string, level: MessageType) {
     let out: MessageOutput = {
       message: message,
