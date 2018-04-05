@@ -28,11 +28,11 @@
       placeholder="Search..." (ngEnter)="search()" *ngIf="this.isLoggedIn()" />
 
     <div class="nav-item" *ngIf="this.selectedPlaylist && this.isLoggedIn()">
-      <img class='icon icon-middle icon-md float-left' src="assets/playlist/last_song.png" placement="bottom" ngbTooltip="Last Song"
-        (click)='this.YT.lastSong()' />
-      <img class="icon icon-middle icon-md" [src]="this.YT.paused ? 'assets/playlist/play_button.png' : 'assets/playlist/pause_button.png'"
+      <img id="lastSongButton" class='icon icon-middle icon-md float-left' src="assets/playlist/last_song.png" placement="bottom" ngbTooltip="Last Song"
+        (click)='this.YT.changeSong(-1)' />
+      <img id="playPauseButton"class="icon icon-middle icon-md" [src]="this.YT.paused ? 'assets/playlist/play_button.png' : 'assets/playlist/pause_button.png'"
         (click)="this.YT.pauseClicked()" placement="bottom" ngbTooltip="Pause/Play" />
-      <img class='icon icon-middle icon-md' src="assets/playlist/next_song.png" placement="bottom" ngbTooltip="Next Song" (click)='this.YT.nextSong()'
+      <img id="nextSongButton" class='icon icon-middle icon-md' src="assets/playlist/next_song.png" placement="bottom" ngbTooltip="Next Song" (click)='this.YT.changeSong(1)'
       />
       <img class="icon icon-middle icon-md" [src]="this.YT.repeat ? 'assets/playlist/repeat_song_on.png' : 'assets/playlist/repeat_song_off.png'"
         placement="bottom" ngbTooltip="Repeat" (click)="this.YT.repeatClicked()" />
@@ -76,7 +76,7 @@
 
     <div class="col-sm-10 margin-top margin-bottom">
       <div class="col-md-6 no-padding mx-auto shadow">
-        <app-youtube [playlist]="this.selectedPlaylist" [showPlaylist]="this.showPlaylist"></app-youtube>
+        <app-youtube [showPlaylist]="this.showPlaylist"></app-youtube>
       </div>
 
       <div class="col-md-7 margin-top mx-auto" style="margin-top: 5%" *ngIf="!this.showPlaylist">

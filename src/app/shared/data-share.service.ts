@@ -1,8 +1,11 @@
 /*
   Written by: Ryan Kruse
   This service allows components to be dynamically updated and allows them to update the current user, playlist, and all playlists in real time
+
+  NTOES FOR MYSELF: https://stackoverflow.com/questions/43348463/what-is-the-difference-between-subject-and-behaviorsubject
 */
 import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs/Subject';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 import { User } from '../interfaces/user';
@@ -12,20 +15,14 @@ import { Song } from '../interfaces/song';
 @Injectable()
 export class DataShareService {
   
-  private userSubject = new BehaviorSubject<User>(null);
-  user = this.userSubject.asObservable();
+  public user: Subject<User> = new BehaviorSubject<User>(null);
 
-  private playlistsSubject = new BehaviorSubject<Playlist[]>([]); //starts empty
-  playlists = this.playlistsSubject.asObservable();
+  public playlists: Subject<Playlist[]> = new BehaviorSubject<Playlist[]>([]);
+  public currentPlaylist: Subject<Playlist> = new BehaviorSubject<Playlist>(null);
 
-  private currentPlaylistSubject = new BehaviorSubject<Playlist>(null);
-  currentPlaylist = this.currentPlaylistSubject.asObservable();
+  public searchString: Subject<string> = new BehaviorSubject<string>(null);
 
-  private searchStringSubject = new BehaviorSubject<string>(null);
-  searchString = this.searchStringSubject.asObservable();
-
-  private previewSongSubject = new BehaviorSubject<Song>(null);
-  previewSong = this.previewSongSubject.asObservable();
+  public previewSong: Subject<Song> = new BehaviorSubject<Song>(null);
 
   constructor() { }
 
@@ -34,8 +31,9 @@ export class DataShareService {
     and gives them the new data
     @param playlist: Playlist[] - An array of new playlists
   */
-  changePlaylist(playlist: Playlist[]){
-    this.playlistsSubject.next(playlist);
+  changePlaylists(playlists: Playlist[]){
+    //this.playlistsSubject.next(playlist);
+    this.playlists.next(playlists);
   }
 
   /*
@@ -43,7 +41,8 @@ export class DataShareService {
     @param user: User - the new user
   */
   changeUser(user: User){
-    this.userSubject.next(user);
+    this.user.next(user);
+    //this.user.next(user);
   }
 
   /*
@@ -51,28 +50,37 @@ export class DataShareService {
     @param playlist: Playlist - The new playlist to listen to
   */
   changeCurrentPlaylist(playlist: Playlist){
-    this.currentPlaylistSubject.next(playlist);
+    //this.currentPlaylistSubject.next(playlist);
+    this.currentPlaylist.next(playlist);
   }
 
   /*
     Called whenever we search for a new string on the search bar
   */
   changeSearchString(search: string){
-    this.searchStringSubject.next(search);
+    //this.searchStringSubject.next(search);
+    this.searchString.next(search);
   }
 
   changePreviewSong(song: Song){
-    this.previewSongSubject.next(song);
+    //this.previewSongSubject.next(song);
+    this.previewSong.next(song);
   }
 
   /*
     Called when we logout, it clears the values to avoid any collisions with the next login
   */
   clearAllValues(){
-    this.userSubject.next(null);
+    /*this.userSubject.next(null);
     this.playlistsSubject.next(null);
     this.currentPlaylistSubject.next(null);
     this.searchStringSubject.next(null);
     this.previewSongSubject.next(null);
+    */
+   this.user.next(null);
+   this.playlists.next(null);
+   this.currentPlaylist.next(null);
+   this.searchString.next(null);
+   this.previewSong.next(null);
   }
 }

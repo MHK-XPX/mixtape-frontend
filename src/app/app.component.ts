@@ -76,9 +76,10 @@ export class AppComponent implements OnInit {
   selectPlaylist(event: Playlist) {
     this.selectedPlaylist = event;
     this.showPlaylist = event != null;
-
+    
     this.isSidebarCollapsed = window.outerWidth <= this.minWindowSize;
     
+    this._storage.setValue("onPlaylist", event);
     this._dataShareService.changeCurrentPlaylist(event);
   }
 

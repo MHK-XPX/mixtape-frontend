@@ -94,7 +94,6 @@ export class HomeComponent implements OnInit {
         );
 
         this._dataShareService.searchString.subscribe(res => this.updateSearch(res));
-
     }
 
     private updateSearch(search: string){

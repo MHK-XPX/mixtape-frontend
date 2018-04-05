@@ -98,6 +98,8 @@ export class LoginComponent implements OnInit{
 
                 s.unsubscribe();
 
+                this.setAllStorageValues();
+
                 this._dataShareService.changeUser(user);
                 this._router.navigate(['./home']);
             }
@@ -169,6 +171,11 @@ export class LoginComponent implements OnInit{
                 this.loginClicked();
             }
         );
+    }
+
+    private setAllStorageValues(){
+        this._storage.setValue("onSong", 0);
+        this._storage.setValue("onPlaylist", null);
     }
     
     /*

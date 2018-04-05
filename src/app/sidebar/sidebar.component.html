@@ -11,6 +11,7 @@
         <app-mouseover-menu [@showState]="this.mouseOver === i ? 'show' : 'hide'" [addToPL]="false" [addToQ]="false" [deleteFromPL]="false"
           [deletePL]="true" [selectedSong]="null" [plToDelete]="playlist" (successMessageOutput)="triggerMessage($event.message, $event.action, $event.level)" (click)="$event.stopPropagation()"></app-mouseover-menu>
       </li>
+      <li class="list-group-item list-group-item-action" *ngIf="(!userPlaylists || !userPlaylists.length) && doneLoading">No Playlists :(</li>
       <button class="btn btn-secondary" (click)="selectPlaylist(null)">Clear Queue</button>
     </ul>
   </div>

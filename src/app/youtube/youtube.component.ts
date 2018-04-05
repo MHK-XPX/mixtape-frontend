@@ -53,10 +53,11 @@ declare var window: any;
 export class YoutubeComponent implements OnInit {
   MessageType = MessageType;
 
-  @Input() playlist: Playlist;
+  //@Input() playlist: Playlist;
+  playlist: Playlist;
   @Input() showPlaylist: boolean;
 
-  private lastPlaylist: Playlist;
+  private lastPlaylistID: number;
 
   private player: YT.Player;
   private url: string = "";
@@ -78,28 +79,15 @@ export class YoutubeComponent implements OnInit {
   constructor(private _storage: StorageService, private _dataShareService: DataShareService, private _modalService: NgbModal, private _apiService: ApiService) { }
 
   ngOnInit() {
-    this.lastPlaylist = this.playlist;
     this._dataShareService.previewSong.subscribe(res => this.checkForSongPreview(res));
-    this._dataShareService.currentPlaylist.subscribe(res => this.playlist = res);
+    this._dataShareService.currentPlaylist.subscribe(res => this.setPlaylist(res));
   }
 
   /*
-    This is called on load or when we select a new playlist to view
+    This is called when we load or select a new playlist to view
   */
   ngOnChanges() {
-    //If we do not have a playlist selected, there is nothing to do
-    if (!this.playlist || !this.showPlaylist)
-      return;
 
-    //If our lastplayist we watched is equal to the current one, then we continue playing where we left off
-    if (this.lastPlaylist === this.playlist || (this.lastPlaylist && (this.lastPlaylist.playlistId === this.playlist.playlistId))) {
-      this.onSong = this._storage.getValue('onSong') ? this._storage.getValue('onSong') : 0;
-    } else { //otherwise we start from the beginning
-      this.clearPreviewSong();
-      this.onSong = -1;
-      this.lastPlaylist = this.playlist;
-      this.nextSong();
-    }
   }
 
   savePlayer(player) {
@@ -120,12 +108,12 @@ export class YoutubeComponent implements OnInit {
       case -1:
         break;
       case 0:
-        if(this.previewSong){
+        if (this.previewSong) {
           this.clearPreviewSong();
           this.playVideo();
           break;
         }
-        this.nextSong();
+        this.changeSong(1);
         break;
       case 1:
         this.paused = false;
@@ -140,32 +128,16 @@ export class YoutubeComponent implements OnInit {
     }
   }
 
-  /*
-    If the user clicks the next button we move to the next song, if repeat is 
-    enabled we restart the playlist (if on the last song)
-  */
-  private nextSong() {
-    if (this.onSong + 1 >= this.playlist.playlistSong.length) {
+  private changeSong(dir: number) {
+    this.onSong += dir;
+
+    if (this.onSong >= this.playlist.playlistSong.length) {
       if (this.repeat)
         this.onSong = 0;
       else
         return;
-    } else {
-      this.onSong++;
-    }
-
-    this.playVideo()
-  }
-
-  /*
-    If the user clicks the last button we move to the last song, if repeat is 
-    enabled we move to the last song (if on the first song)
-  */
-  private lastSong() {
-    if (this.onSong - 1 < 0) {
+    } else if (this.onSong < 0) {
       this.onSong = this.playlist.playlistSong.length - 1;
-    } else {
-      this.onSong--;
     }
 
     this.playVideo();
@@ -188,18 +160,17 @@ export class YoutubeComponent implements OnInit {
     this.player.playVideo();
   }
 
-  private checkForSongPreview(song: Song){
+  private checkForSongPreview(song: Song) {
     this.previewSong = song;
 
     //If this is our first time previewing a song we need to play it and set our last preview
-    if((this.previewSong && !this.lastPreview) || ((this.previewSong && this.lastPreview) && (this.previewSong.songId !== this.lastPreview.songId))){
-      console.log("SONG FROM YOUTUBE C:", this.previewSong);
+    if ((this.previewSong && !this.lastPreview) || ((this.previewSong && this.lastPreview) && (this.previewSong.songId !== this.lastPreview.songId))) {
       this.lastPreview = this.previewSong;
       this.playGivenVideo(this.previewSong.url);
     }
   }
 
-  private clearPreviewSong(){
+  private clearPreviewSong() {
     this._dataShareService.changePreviewSong(null);
     this.lastPreview = null;
   }
@@ -254,7 +225,7 @@ export class YoutubeComponent implements OnInit {
       () => {
         s.unsubscribe();
         userPlaylists.push(returnedPL);
-        this._dataShareService.changePlaylist(userPlaylists);
+        this._dataShareService.changePlaylists(userPlaylists);
 
         this.addSongsToNewPlaylist(returnedPL, this.playlist.playlistSong);
 
@@ -310,30 +281,13 @@ export class YoutubeComponent implements OnInit {
           //If we added the last song to our new playlist, we let the user know and update the user's playlist array (in datashare service)
           if (i === songsToAdd.length - 1) {
             userPlaylists[index] = playlist;
-            this._dataShareService.changePlaylist(userPlaylists);
+            this._dataShareService.changePlaylists(userPlaylists);
             this.triggerMessage("", "Playlist Saved!", MessageType.Success);
           }
         }
       );
     }
   }
-
-  /*
-    This method is called everytime the user closes the "change playlist name modal"
-    If the user clicks save, then we rename the playlist
-    otherwise, we reset the name field to empty
-  */
-  openModal(content) {
-    this._modalService.open(content).result.then((result) => {
-      if (this.playlistRename.length > 0) //On close via the save button we check if we changed anything, if so we update it
-        this.playlist.name = this.playlistRename;
-      this.renamePlaylist();
-      this.playlistRename = "";
-    }, (reason) => { //On close via clicking away we clear anything the user might have typed
-      this.playlistRename = "";
-    });
-  }
-
 
   /*
     This method is called when the user attempts to rename a playlist. It updates the playlists name and calls
@@ -350,6 +304,41 @@ export class YoutubeComponent implements OnInit {
         this.triggerMessage("", "Playlist name updated!", MessageType.Success);
       }
     );
+  }
+
+  private setPlaylist(playlist: Playlist){
+    this.playlist = playlist;
+
+    //this.showPlaylist = this.playlist !== null;
+    
+    if (!this.playlist)
+      return;
+
+    //If our lastplayist we watched is equal to the current one, then we continue playing where we left off
+    if (this.lastPlaylistID === this.playlist.playlistId || (this.lastPlaylistID && (this.lastPlaylistID === this.playlist.playlistId))) {
+      this.onSong = this._storage.getValue('onSong') ? this._storage.getValue('onSong') : 0;
+    } else { //otherwise we start from the beginning
+      this.clearPreviewSong();
+      this.onSong = -1;
+      this.lastPlaylistID = this.playlist.playlistId;
+      this.changeSong(1);
+    }
+  }
+
+  /*
+   This method is called everytime the user closes the "change playlist name modal"
+   If the user clicks save, then we rename the playlist
+   otherwise, we reset the name field to empty
+ */
+  openModal(content) {
+    this._modalService.open(content).result.then((result) => {
+      if (this.playlistRename.length > 0) //On close via the save button we check if we changed anything, if so we update it
+        this.playlist.name = this.playlistRename;
+      this.renamePlaylist();
+      this.playlistRename = "";
+    }, (reason) => { //On close via clicking away we clear anything the user might have typed
+      this.playlistRename = "";
+    });
   }
 
   /*

@@ -51,6 +51,8 @@ export class SidebarComponent implements OnInit {
   mouseOver: number = -1;
   messageOut: MessageOutput;
 
+  doneLoading: boolean = false;
+
   private defaultPLName: string = "Playlist ";
 
   @Output() playlist: EventEmitter<Playlist> = new EventEmitter<Playlist>(); //Output the playlist selected to listen to
@@ -71,7 +73,7 @@ export class SidebarComponent implements OnInit {
     s = this._apiService.getAllEntities<Playlist>('Playlists/User/' + this.user.userId).subscribe(
       d => this.userPlaylists = d,
       err => console.log("Unable to load playlists", err),
-      () => { s.unsubscribe(); this._dataShareService.changePlaylist(this.userPlaylists); }
+      () => { s.unsubscribe(); this._dataShareService.changePlaylists(this.userPlaylists); this.doneLoading = true;}
     )
   }
 
@@ -103,7 +105,7 @@ export class SidebarComponent implements OnInit {
       () => {
         s.unsubscribe();
         this.userPlaylists.push(returnedPL);
-        this._dataShareService.changePlaylist(this.userPlaylists);
+        this._dataShareService.changePlaylists(this.userPlaylists);
         this.triggerMessage("", "Playlist created!", MessageType.Success);
 
         this.selectPlaylist(returnedPL);

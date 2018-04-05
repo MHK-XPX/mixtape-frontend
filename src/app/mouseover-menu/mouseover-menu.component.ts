@@ -89,7 +89,7 @@ export class MouseoverMenuComponent implements OnInit {
         s.unsubscribe();
         p.playlistSong.push(actPLS);
         this.playlists[index] = p;
-        this._dataShareService.changePlaylist(this.playlists);
+        this._dataShareService.changePlaylists(this.playlists);
         this.outputMessage(this.selectedSong.name, "added to playlist", MessageType.Success);
       }
     );
@@ -154,7 +154,7 @@ export class MouseoverMenuComponent implements OnInit {
         () => {
           s.unsubscribe();
           this.playlists[plIndex].playlistSong.splice(plsIndex, 1);
-          this._dataShareService.changePlaylist(this.playlists);
+          this._dataShareService.changePlaylists(this.playlists);
           this.outputMessage(this.selectedSong.name, "removed from playlist", MessageType.Success);
         }
       )
@@ -192,7 +192,7 @@ export class MouseoverMenuComponent implements OnInit {
       () => {
         s.unsubscribe();
         this.playlists.splice(plIndex, 1);
-        this._dataShareService.changePlaylist(this.playlists);
+        this._dataShareService.changePlaylists(this.playlists);
         this.outputMessage("", "Playlist deleted!", MessageType.Success);
       }
     );
