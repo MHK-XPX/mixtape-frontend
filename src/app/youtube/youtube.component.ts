@@ -1,37 +1,19 @@
-/*
-  Written by: Ryan Kruse
-  This component controls the embded youtube player and the currently playing playlist.
-*/
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { trigger, state, animate, transition, style, sequence } from '@angular/animations';
-import { Subscription } from "rxjs";
+import { Subscription, Subject } from "rxjs";
 
-import { Subject } from 'rxjs/Subject';
 import { debounceTime } from 'rxjs/operator/debounceTime';
 
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 
-import { StorageService } from '../shared/session-storage.service';
-import { DataShareService } from '../shared/data-share.service';
-import { ApiService } from '../shared/api.service';
-
-import { MouseoverMenuComponent } from '../mouseover-menu/mouseover-menu.component';
-import { SnackbarComponent } from '../snackbar/snackbar.component';
-
-import { Playlist } from '../interfaces/playlist';
-import { Song } from '../interfaces/song';
-import { PlaylistSong } from '../interfaces/playlistsong';
-
-import { MessageType } from '../shared/messagetype.enum';
-import { MessageOutput } from '../interfaces/messageoutput';
-
-
-declare var window: any;
+import { ApiService, DataShareService, StorageService } from '../services/services';
+import { Playlist, PlaylistSong, Song, MessageType, MessageOutput } from '../interfaces/interfaces';
+import { MouseoverMenuComponent, SnackbarComponent } from '../components';
 
 @Component({
-  selector: 'app-youtube',
+  selector: 'youtube',
   templateUrl: './youtube.component.html',
-  styleUrls: ['./youtube.component.css', '../shared/global-style.css'],
+  styleUrls: ['./youtube.component.css', '../global-style.css'],
   animations: [
     trigger(
       'showState', [
@@ -51,11 +33,10 @@ declare var window: any;
 })
 
 export class YoutubeComponent implements OnInit {
-  MessageType = MessageType;
-
-  //@Input() playlist: Playlist;
   playlist: Playlist;
-  @Input() showPlaylist: boolean;
+  previewSong: Song;
+
+  playlistRename: string = "";
 
   private lastPlaylistID: number;
 
@@ -63,7 +44,6 @@ export class YoutubeComponent implements OnInit {
   private url: string = "";
   videoId;
 
-  messageOut: MessageOutput;
 
   mouseOver: number = -1;
 
@@ -71,49 +51,41 @@ export class YoutubeComponent implements OnInit {
   private repeat: boolean = false;
   private paused: boolean = false;
 
-  private playlistRename: string = "";
+  constructor(private _apiService: ApiService, private _dataShareService: DataShareService, private _storage: StorageService, private _modalService: NgbModal) { }
 
-  private previewSong: Song;
-  private lastPreview: Song;
-
-  constructor(private _storage: StorageService, private _dataShareService: DataShareService, private _modalService: NgbModal, private _apiService: ApiService) { }
+  @HostListener('window:resize') onResize(){
+    if(this.player){
+      this.player.setSize(this.getScreenWidth(), this.getScreenHeight());
+    }
+  }
 
   ngOnInit() {
-    this._dataShareService.previewSong.subscribe(res => this.checkForSongPreview(res));
     this._dataShareService.currentPlaylist.subscribe(res => this.setPlaylist(res));
+    this._dataShareService.previewSong.subscribe(res => this.tryToPreviewSong(res));
   }
 
-  /*
-    This is called when we load or select a new playlist to view
-  */
-  ngOnChanges() {
-
-  }
-
-  savePlayer(player) {
+  public savePlayer(player) {
     this.player = player;
     this.player.setSize(this.getScreenWidth(), this.getScreenHeight());
   }
 
   /*
-    Called when soemthing changes our player state (ie we pause the video or it ends)
-    -1 - not started
-    0 - ended
-    1 - playing
-    2 - paused
-    3 - loading
+    Called when the YT video changes states
+    -1 --> Not started
+    0 --> ended
+    1 --> playing
+    2 --> paused
+    3 --> loading
   */
-  onStateChange(event) {
+  public onStateChange(event) {
     switch (event.data) {
       case -1:
         break;
       case 0:
-        if (this.previewSong) {
+        if(this.previewSong){
           this.clearPreviewSong();
-          this.playVideo();
-          break;
         }
-        this.changeSong(1);
+        if(this.playlist) this.changeSong(1);
         break;
       case 1:
         this.paused = false;
@@ -128,173 +100,95 @@ export class YoutubeComponent implements OnInit {
     }
   }
 
-  private changeSong(dir: number) {
+  private changeSong(dir: number){
     this.onSong += dir;
 
-    if (this.onSong >= this.playlist.playlistSong.length) {
-      if (this.repeat)
-        this.onSong = 0;
-      else
-        return;
-    } else if (this.onSong < 0) {
+    if(this.onSong >= this.playlist.playlistSong.length){
+      if(this.repeat) this.onSong = 0; else return;
+    }else if(this.onSong < 0)
       this.onSong = this.playlist.playlistSong.length - 1;
-    }
-
+    
     this.playVideo();
   }
 
-  /*
-    This method is called when we move to a new song or load a new playlist
-    it sets what song we are on in the session storage and loads then plays the video
-  */
-  private playVideo() {
-    this._storage.setValue('onSong', this.onSong);
-    this.parseId(this.playlist.playlistSong[this.onSong].song.url);
+  private playVideo(songUrl?: string) {
+    if (songUrl) {
+      this.parseAndSetVideoId(songUrl);
+    } else {
+      this._storage.setValue('onSong', this.onSong);
+      this.parseAndSetVideoId(this.playlist.playlistSong[this.onSong].song.url);
+    }
+
     this.player.loadVideoById(this.videoId, 0);
     this.player.playVideo();
   }
 
-  private playGivenVideo(songUrl: string) {
-    this.parseId(songUrl);
+  private playGivenVideo(songUrl: string, index?: number) {
+    if(index){
+      this.onSong = index;
+      this.playVideo();
+      return;
+    }
+    
+    this.parseAndSetVideoId(songUrl);
     this.player.loadVideoById(this.videoId, 0);
     this.player.playVideo();
   }
 
-  private checkForSongPreview(song: Song) {
-    this.previewSong = song;
+  private setPlaylist(playlist: Playlist) {
+    this.playlist = playlist;
 
-    //If this is our first time previewing a song we need to play it and set our last preview
-    if ((this.previewSong && !this.lastPreview) || ((this.previewSong && this.lastPreview) && (this.previewSong.songId !== this.lastPreview.songId))) {
-      this.lastPreview = this.previewSong;
-      this.playGivenVideo(this.previewSong.url);
+    if (!this.playlist) return;
+
+    if (this.lastPlaylistID === this.playlist.playlistId || (this.lastPlaylistID && (this.lastPlaylistID === this.playlist.playlistId))) {
+      this.onSong = this._storage.getValue('onSong') ? this._storage.getValue('onSong') : 0;
+    } else {
+      this.clearPreviewSong();
+      this.onSong = -1;
+      this.lastPlaylistID = this.playlist.playlistId;
+      this.changeSong(1);
     }
   }
 
-  private clearPreviewSong() {
-    this._dataShareService.changePreviewSong(null);
-    this.lastPreview = null;
+  private tryToPreviewSong(song: Song) {
+    if ((!this.previewSong && song) || this.previewSong && song && song.songId !== this.previewSong.songId) {
+      this.previewSong = song;
+      this.playVideo(this.previewSong.url);
+    }else{
+      this.previewSong = null;
+    }
   }
 
-  private repeatClicked() {
-    this.repeat = !this.repeat;
-  }
-
-  private pauseClicked() {
+  public pauseClicked(){
     this.paused = !this.paused;
 
-    if (this.paused)
+    if(this.paused)
       this.player.pauseVideo();
     else
       this.player.playVideo();
   }
 
-  playSongOnClick(index: number) {
-    this.onSong = index;
-    this.playVideo();
+  public repeatClicked(){
+    this.repeat = !this.repeat;
   }
 
-  /*
-    Called when the user clicks the save playlist button. Based on param it will either create and fill a new playlist or update the current playlist
-    @param isNewPlaylist: boolean:- If the user wants to save the playlist as a new playlist (True) or wants to update their current playlist (False)
-  */
-  savePlaylist(isNewPlaylist: boolean) {
-    if (isNewPlaylist || !this.playlist.playlistId) { //If we are saving it to a new playlist OR we are trying to save our current custom queue
-      this.addNewPlaylist();
-    } else {
-      this.updatePlaylist();
-    }
+  private clearPreviewSong(){
+    this._dataShareService.changePreviewSong(null);
   }
 
-  /*
-    Called if the user wants to save as a new playlist. The method creates a new playlist and adds it to the DB and then fills it by calling addSongsToNewPlaylist, with the newly created playlist
-  */
-  private addNewPlaylist() {
-    let userPlaylists: Playlist[];
-    this._dataShareService.playlists.subscribe(res => userPlaylists = res);
-
-    let nPL = {
-      active: true,
-      name: "Playlist " + (userPlaylists.length + 1),
-      userId: this.playlist.userId,
-    }
-
-    let returnedPL: Playlist;
-    let s: Subscription = this._apiService.postEntity<Playlist>("Playlists", nPL).subscribe(
-      d => returnedPL = d,
-      err => this.triggerMessage("", "Unable to create new playlist", MessageType.Failure),
-      () => {
-        s.unsubscribe();
-        userPlaylists.push(returnedPL);
-        this._dataShareService.changePlaylists(userPlaylists);
-
-        this.addSongsToNewPlaylist(returnedPL, this.playlist.playlistSong);
-
-        if (this.playlist.playlistSong.length <= 0)
-          this.triggerMessage("", "New Playlist Saved!", MessageType.Success);
-      }
-    );
+  openModal(content){
+    this._modalService.open(content).result.then((result) => {
+      if(this.playlistRename.length > 0)
+        this.playlist.name = this.playlistRename;
+      this.renamePlaylist();
+      this.playlistRename = "";
+    }, (reason) => {
+      this.playlistRename = "";
+    });
   }
 
-  /*
-    Called if the user wants to save the current queue to their current playlist. The method pulls all of the newly added songs and updates the current playlist
-    by calling addSongsToNewPlaylist(null, allNotAdded)
-  */
-  private updatePlaylist() {
-    let allNotAdded = this.playlist.playlistSong.filter(s => !s.playlistSongId); //any song in the playlist that does not have an ID needs to be added
-
-    this.addSongsToNewPlaylist(null, allNotAdded);
-  }
-
-  /*
-    Called when we want to fill a newly created playlist or update a current playlist. The method adds all of the songs to the DB as playlist songs
-    and updates the given playlist with them. Once everything is updated, we update the global reference to all of the user's playlists in _dataShareService
-    @param newPlaylist: Playlist:- The newly created playlist, if null, we set our playlist to update to our current playlist
-    @param songsToAdd: PlaylistSong[]:- An array of playlist songs to add to the given playlist
-  */
-  private addSongsToNewPlaylist(newPlaylist: Playlist, songsToAdd: PlaylistSong[]) {
-    let playlist: Playlist = newPlaylist ? newPlaylist : this.playlist;
-
-    let userPlaylists: Playlist[];
-
-    this._dataShareService.playlists.subscribe(res => userPlaylists = res); //Get the most recent version of the user's playlists
-
-    let index: number = userPlaylists.findIndex(p => p.playlistId === playlist.playlistId); //index of the playlist we are updating in all of the user's playlists
-
-    for (let i = 0; i < songsToAdd.length; i++) {
-      let pls: PlaylistSong = songsToAdd[i];
-
-      let toSendPLS = {
-        playlistId: playlist.playlistId,
-        songId: pls.songId
-      };
-
-      let actPLS: PlaylistSong;
-
-      let s: Subscription = this._apiService.postEntity<PlaylistSong>("PlaylistSongs", toSendPLS).subscribe(
-        d => actPLS = d,
-        err => this.triggerMessage("", "Unable to save playlist", MessageType.Failure),
-        () => {
-          actPLS.song = pls.song;
-          s.unsubscribe();
-          playlist.playlistSong[i] = actPLS;
-
-          //If we added the last song to our new playlist, we let the user know and update the user's playlist array (in datashare service)
-          if (i === songsToAdd.length - 1) {
-            userPlaylists[index] = playlist;
-            this._dataShareService.changePlaylists(userPlaylists);
-            this.triggerMessage("", "Playlist Saved!", MessageType.Success);
-          }
-        }
-      );
-    }
-  }
-
-  /*
-    This method is called when the user attempts to rename a playlist. It updates the playlists name and calls
-    "put" on the DB to update it
-  */
-  private renamePlaylist() {
-    if (!this.playlist.playlistId) return; //Don't need to make an API cahnge call if the playlist does not exist
+  private renamePlaylist(){
+    if (!this.playlist.playlistId) return; //The user shouldnt be allowed to rename a queue
 
     let s: Subscription = this._apiService.putEntity<Playlist>("Playlists", this.playlist.playlistId, this.playlist).subscribe(
       d => d = d,
@@ -305,48 +199,13 @@ export class YoutubeComponent implements OnInit {
       }
     );
   }
-
-  private setPlaylist(playlist: Playlist){
-    this.playlist = playlist;
-
-    //this.showPlaylist = this.playlist !== null;
-    
-    if (!this.playlist)
-      return;
-
-    //If our lastplayist we watched is equal to the current one, then we continue playing where we left off
-    if (this.lastPlaylistID === this.playlist.playlistId || (this.lastPlaylistID && (this.lastPlaylistID === this.playlist.playlistId))) {
-      this.onSong = this._storage.getValue('onSong') ? this._storage.getValue('onSong') : 0;
-    } else { //otherwise we start from the beginning
-      this.clearPreviewSong();
-      this.onSong = -1;
-      this.lastPlaylistID = this.playlist.playlistId;
-      this.changeSong(1);
-    }
-  }
-
+  
   /*
-   This method is called everytime the user closes the "change playlist name modal"
-   If the user clicks save, then we rename the playlist
-   otherwise, we reset the name field to empty
+   This method is called when we load a video, it parses the video ID from the youtube link
+   @Input url: string - The url to parse
+   @POST: sets this.videoId to the parsed string
  */
-  openModal(content) {
-    this._modalService.open(content).result.then((result) => {
-      if (this.playlistRename.length > 0) //On close via the save button we check if we changed anything, if so we update it
-        this.playlist.name = this.playlistRename;
-      this.renamePlaylist();
-      this.playlistRename = "";
-    }, (reason) => { //On close via clicking away we clear anything the user might have typed
-      this.playlistRename = "";
-    });
-  }
-
-  /*
-    This method is called when we load a video, it parses the video ID from the youtube link
-    @Input url: string - The url to parse
-    @POST: sets this.videoId to the parsed string
-  */
-  private parseId(url: string) {
+  private parseAndSetVideoId(url: string) {
     if (url !== '') {
       var fixedUrl = url.replace(/(>|<)/gi, '').split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/);
       if (fixedUrl !== undefined) {
@@ -383,31 +242,26 @@ export class YoutubeComponent implements OnInit {
     return imgURL;
   }
 
+  private triggerMessage(message: string, action: string, level: MessageType){
+    let out: MessageOutput = {
+      message: message,
+      action: action,
+      level: level
+    };
+
+    this._dataShareService.changeMessage(out);
+  }
   /*
     This method is called so we can set the youtube player to 65% of our current height
   */
-  getScreenHeight(): number {
+  public getScreenHeight(): number {
     return window.screen.height * .35;
   }
 
   /*
     This method is called so we can set the youtube player to 45% of our width
   */
-  getScreenWidth(): number {
-    return window.screen.width * .45;
-  }
-
-  /*
-   Called whenever we make a transaction with the DB
-   @param message: string - The message to show to the user
-   @param level: MessageType - The type of message (Success, Failure, Notification)
- */
-  triggerMessage(message: string, action: string, level: MessageType) {
-    let out: MessageOutput = {
-      message: message,
-      action: action,
-      level: level
-    };
-    this.messageOut = out;
+  public getScreenWidth(): number {
+    return window.screen.width * .40;
   }
 }

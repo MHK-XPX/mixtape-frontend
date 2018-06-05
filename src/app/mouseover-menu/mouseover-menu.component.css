@@ -9,6 +9,14 @@
 }
 
 .specific-height{
-    max-height: 25vh;
+    max-height: 15vh;
     overflow-y: auto;
+}
+
+div.ngbDropdown{
+    z-index: 5001 !important;
+}
+
+.top-z{
+    z-index: 9999 !important;
 }

@@ -1,119 +1,111 @@
 /*
-  Written by: Ryan Kruse
-  This component controls the core logic of the app. It holds all of the child components (sidebar, youtube, home <--which is search)
+TODO:
+  Finish the overall re-factor on the site (get all of the feautres added)
+  Add to GH
+  Maybe make new scrollbars (try to only show on hover like YT)
+  Get Global playlists working
 */
-import { Component, ViewChild, OnInit, HostListener} from '@angular/core';
 
-import { Subscription } from "rxjs";
+import { Component, ViewChild, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { Subscription, Subject } from 'rxjs';
+import 'rxjs/add/operator/debounceTime.js';
 
-import { ApiService } from './shared/api.service';
-import { DataShareService } from './shared/data-share.service';
-import { StorageService } from './shared/session-storage.service';
 
+import { LoginComponent, SidebarComponent, SnackbarComponent } from './components';
 import { YoutubeComponent } from './youtube/youtube.component';
-import { HomeComponent } from './home/home.component';
-import { SidebarComponent } from './sidebar/sidebar.component';
 
-import { User } from './interfaces/user';
-import { Playlist } from './interfaces/playlist';
+import { User, Playlist } from './interfaces/interfaces';
+import { ApiService, DataShareService, StorageService } from './services/services';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css', './shared/global-style.css']
+  styleUrls: ['./app.component.css', './global-style.css']
 })
 
 export class AppComponent implements OnInit {
   @ViewChild(YoutubeComponent) YT: YoutubeComponent;
 
+  isNavbarCollapsed = true;
+
   user: User;
 
-  selectedPlaylist: Playlist;
-  searchValue: string = "";
+  searchString = "";
+  searchStringChanged: Subject<string> = new Subject<string>(); //This is used so that we can do a debouceTime on the search string (we don't want to send a ton of get requests on each letter typed)
 
-  searchString: string = "";
+  currentPlaylist: Playlist;
 
-  isNavbarCollapsed = true;
-  isSidebarCollapsed = false;
-  showPlaylist: boolean = false;
+  constructor(private _apiService: ApiService, private _dataShareService: DataShareService, private _storage: StorageService, private _router: Router) { }
 
-  private minWindowSize: number = 720;
-
-  constructor(private _apiService: ApiService, public _storage: StorageService, private _dataShareService: DataShareService) { }
-
-  @HostListener('window:resize') onResize() {
-    this.isSidebarCollapsed = window.outerWidth <= this.minWindowSize;
-  }
-
-  /*
-    On init, if the user is currently logged in (which can happen if they refresh the page), we pull the user from the API and 
-    update the data-share service with the found user
-  */
   ngOnInit() {
-    if (this.isLoggedIn()) {
+    if(this.isLoggedIn()){
       let s: Subscription;
       let tempUser: User;
 
       s = this._apiService.validateToken().subscribe(
         d => tempUser = d,
         err => console.log(err),
-        () => { s.unsubscribe(); 
-          this.user = tempUser; 
+        () => {
+          s.unsubscribe();
+          this.user = tempUser;
           this._dataShareService.changeUser(this.user);
         }
       );
     }
-
-    this._dataShareService.currentPlaylist.subscribe(res => this.selectedPlaylist = res);
-    this._dataShareService.searchString.subscribe(res => this.searchString = res);
-  }
-
-  /*
-    Called when we select a playlist from the side bar, it updates the data-share service with the playlist
-    and then shows the playlist on the DOM
-    @param event: Playlist - the playlist that was selected
-  */
-  selectPlaylist(event: Playlist) {
-    this.selectedPlaylist = event;
-    this.showPlaylist = event != null;
-    
-    this.isSidebarCollapsed = window.outerWidth <= this.minWindowSize;
-    
-    this._storage.setValue("onPlaylist", event);
-    this._dataShareService.changeCurrentPlaylist(event);
-  }
-
-  /*
-    Called when we click the button to show the current playlist rather than the search (home) screen
-  */
-  enablePlaylist() {
-    this.showPlaylist = true;
-  }
-
-  /*
-    Called when the user searches for a string in the input box on the navbar. It removes the current playlist 
-    from the view and shows a list of results that match the search string
-  */
-  search() {
-    this.showPlaylist = false;
-    this.searchString = this.searchValue;
-
-    this._dataShareService.changeSearchString(this.searchString);
-  }
-
-  getUser(): User {
     this._dataShareService.user.subscribe(res => this.user = res);
+    this._dataShareService.currentPlaylist.subscribe(res => this.currentPlaylist = res);
+
+    let j: Subscription = this.searchStringChanged.debounceTime(250).subscribe(res => this.changeSearchString(res)); //Setup our debounce time so that we can reduce our # of requests
+  }
+  
+  /*
+    This method is called everytime we type a letter into our search box. It calls .next on our subject we do this to limit the number of get 
+    requests to the server (due to our debouce time on the sub.).
+    @param search: string - The string the user is searching for
+  */
+  public typedSearch(search: string){
+    if(this.searchString.length && !search.length){
+      this.searchString = "";
+      this.searchStringChanged.next(this.searchString);
+    }
+    if(!search.length) return;
+
+    this.searchString = search;
+    this.searchStringChanged.next(this.searchString);
+  }
+
+  /*
+    This method is called after we pass our debounce time on our changed search string subject. Once we have passed the debounce time, we are able to call the get from our
+    api letting the view update to the newest search string. This is used so that we can attempt to do the pull quickly AFTER the user is done typing
+    @param search: string - The string the user is searching
+  */
+  private changeSearchString(search: string){
+    this.searchString = search;
+    this._dataShareService.changeSearchString(this.searchString);
+    this._router.navigate(['./home']);
+  }
+
+  public getUser(): User{
     return this.user;
   }
 
-  isLoggedIn(): boolean {
+  public isLoggedIn(): boolean{
     return this._storage.getValue('loggedIn') || this._storage.getValue('token');
   }
 
-  logOut(){
+  public youtubeIsLoaded(): boolean{
+    try{
+      return (this.YT.playlist !== null || this.YT.playlist !== undefined);
+    }catch{
+      return false;
+    }
+    // return this.YT !== undefined && (this.YT.playlist !== null || this.YT.playlist !== undefined);
+  }
+
+  public logout(){
     this._storage.setValue("loggedIn", false);
     this._storage.removeValue("token");
-
     this._dataShareService.clearAllValues();
   }
 }

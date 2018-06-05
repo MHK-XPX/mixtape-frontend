@@ -1,4 +1,4 @@
-import { MessageType } from '../shared/messagetype.enum';
+import { MessageType } from '../misc/messagetype.enum';
 
 export interface MessageOutput{
     message: string,

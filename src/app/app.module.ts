@@ -12,41 +12,30 @@ import { NgProgressHttpClientModule } from '@ngx-progressbar/http-client';
 
 import { YoutubePlayerModule } from 'ngx-youtube-player';
 
-import { AppComponent } from './app.component';
-import { LoginComponent } from './login/login.component'
-import { HomeComponent } from './home/home.component'
+//Components:
+import { AppComponent, LoginComponent, MouseoverMenuComponent, ProfileComponent, SearchResultsComponent, SidebarComponent, SnackbarComponent, YoutubeComponent } from './components';
 
+//Services:
+import { ApiService, DataShareService, SessionGuard, StorageService, UserResolver } from './services/services';
 
-import { StorageService } from './shared/session-storage.service';
-import { SessionGuard } from './shared/session-guard.service'
-import { UserResolver } from './shared/user-resolver.service';
-import { ApiService } from './shared/api.service';
-import { DataShareService } from './shared/data-share.service';
-import { UserService } from './shared/user.service';
-import { ProfileComponent } from './profile/profile.component';
-import { NgEnterDirective } from './ng-enter.directive';
-import { YoutubeComponent } from './youtube/youtube.component';
-import { FilterPipe } from './filter-pipe.pipe';
-import { SidebarComponent } from './sidebar/sidebar.component';
-import { EditPipe } from './edit-pipe.pipe';
-import { MouseoverMenuComponent } from './mouseover-menu/mouseover-menu.component';
-import { YoutubePipe } from './youtube.pipe';
-import { SnackbarComponent } from './snackbar/snackbar.component';
+//Pipes:
+import { YoutubePipe } from './pipes/pipes';
+
+//Directives:
+import { NgEnterDirective } from './directives/directives';
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent,
-    HomeComponent,
-    ProfileComponent,
     NgEnterDirective,
-    YoutubeComponent,
-    FilterPipe,
-    SidebarComponent,
-    EditPipe,
-    MouseoverMenuComponent,
     YoutubePipe,
-    SnackbarComponent
+    SidebarComponent,
+    SnackbarComponent,
+    LoginComponent,
+    YoutubeComponent,
+    SearchResultsComponent,
+    MouseoverMenuComponent,
+    ProfileComponent
   ],
   imports: [
     BrowserModule,
@@ -56,14 +45,13 @@ import { SnackbarComponent } from './snackbar/snackbar.component';
     NgProgressModule.forRoot(),
     NgProgressHttpClientModule,
     YoutubePlayerModule,
-    RouterModule.forRoot(rootRouterConfig, { useHash: true })    
+    RouterModule.forRoot(rootRouterConfig, { useHash: true })
   ],
   providers: [
-    StorageService,
-    SessionGuard,
     ApiService,
-    UserService,
     DataShareService,
+    SessionGuard,
+    StorageService,
     UserResolver
   ],
   bootstrap: [AppComponent]

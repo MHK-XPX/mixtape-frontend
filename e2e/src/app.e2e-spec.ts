@@ -1,6 +1,6 @@
 import { AppPage } from './app.po';
 
-describe('mixtape-frontend-new App', () => {
+describe('workspace-project App', () => {
   let page: AppPage;
 
   beforeEach(() => {

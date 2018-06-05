@@ -1,87 +1,68 @@
 <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.grey-red.min.css">
-<script src="/node_modules/material-design-lite/material.min.js"></script>
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 <ng-progress [thick]="true" color="red" [spinner]="false"></ng-progress>
 <nav class="navbar sticky-top navbar-expand-md navbar-dark">
-  <a class="navbar-brand">
-    <button type="button" class="btn btn-success" style="display: inline" (click)="this.isSidebarCollapsed = !this.isSidebarCollapsed"
-      *ngIf="isLoggedIn() && !this.isSidebarCollapsed"><<</button>
+    <a class="navbar-brand">
+        <div class="d-inline" [routerLink]="['/home']" (click)="this.showPlaylist = false">
+            <h4 class="font-weight-bold text-light d-inline">Mi</h4>
+            <img class="text-light" src="favicon.ico" width="30" height="30" />
+            <h4 class="font-weight-bold text-light d-inline">Tape</h4>
+        </div>
+    </a>
+    <button class="navbar-toggler hidden-sm-up" type="button" (click)="isNavbarCollapsed = !isNavbarCollapsed" aria-controls="navbarSupportedContent"
+        [attr.aria-expanded]="isNavbarCollapsed" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div [ngbCollapse]="isNavbarCollapsed" class="collapse navbar-collapse" id="navbarSupportedContent">
+        <input type="search" class="nav-item form-control md-input" [value]="searchString" placeholder="Search..." (input)="typedSearch($event.target.value)"/>
 
-    <button type="button" class="btn btn-success" style="display: inline" (click)="this.isSidebarCollapsed = !this.isSidebarCollapsed"
-      *ngIf="isLoggedIn() && this.isSidebarCollapsed">>></button>
-
-    <!-- This is a temp fix...I will make it one image soon! -->
-    <div class="d-inline" [routerLink]="['/home']" (click)="this.showPlaylist = false">
-      <h4 class="font-weight-bold text-light d-inline">Mi</h4>
-      <img class="text-light" src="favicon.ico" width="30" height="30" />
-      <h4 class="font-weight-bold text-light d-inline">Tape</h4>
-    </div>
-  </a>
-  <button class="navbar-toggler hidden-sm-up" type="button" (click)="isNavbarCollapsed = !isNavbarCollapsed" aria-controls="navbarSupportedContent"
-    [attr.aria-expanded]="isNavbarCollapsed" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-
-  <div [ngbCollapse]="isNavbarCollapsed" class="collapse navbar-collapse" id="navbarSupportedContent">
-    <input class="nav-item form-control md-input" [value]="searchValue" (input)="searchValue = $event.target.value" type="text"
-      placeholder="Search..." (ngEnter)="search()" *ngIf="this.isLoggedIn()" />
-
-    <div class="nav-item" *ngIf="this.selectedPlaylist && this.isLoggedIn()">
-      <img id="lastSongButton" class='icon icon-middle icon-md float-left' src="assets/playlist/last_song.png" placement="bottom" ngbTooltip="Last Song"
-        (click)='this.YT.changeSong(-1)' />
-      <img id="playPauseButton"class="icon icon-middle icon-md" [src]="this.YT.paused ? 'assets/playlist/play_button.png' : 'assets/playlist/pause_button.png'"
-        (click)="this.YT.pauseClicked()" placement="bottom" ngbTooltip="Pause/Play" />
-      <img id="nextSongButton" class='icon icon-middle icon-md' src="assets/playlist/next_song.png" placement="bottom" ngbTooltip="Next Song" (click)='this.YT.changeSong(1)'
-      />
-      <img class="icon icon-middle icon-md" [src]="this.YT.repeat ? 'assets/playlist/repeat_song_on.png' : 'assets/playlist/repeat_song_off.png'"
-        placement="bottom" ngbTooltip="Repeat" (click)="this.YT.repeatClicked()" />
-
-      <button type="button" class="btn btn-success icon-middle" (click)="enablePlaylist()" *ngIf="!this.showPlaylist">Show Playlist</button>
-      <button type="button" class="btn btn-success icon-middle" (click)="search()" *ngIf="this.showPlaylist">Show Page</button>
+        <div class="nav-item" *ngIf="this.currentPlaylist !== null && this.isLoggedIn()">
+            <img id="lastSongButton" class='icon icon-middle icon-md float-left' src="assets/playlist/last_song.png" placement="bottom"
+                ngbTooltip="Last Song" (click)='this.YT.changeSong(-1)' />
+            <img id="playPauseButton" class="icon icon-middle icon-md" [src]="this.YT.paused ? 'assets/playlist/play_button.png' : 'assets/playlist/pause_button.png'"
+                (click)="this.YT.pauseClicked()" placement="bottom" ngbTooltip="Pause/Play" />
+            <img id="nextSongButton" class="icon icon-middle icon-md" src="assets/playlist/next_song.png" placement="bottom" ngbTooltip="Next Song"
+                (click)="this.YT.changeSong(1)" />
+            <img id="repeatButton" class="icon icon-middle icon-md" [src]="this.YT.repeat ? 'assets/playlist/repeat_song_on.png' : 'assets/playlist/repeat_song_off.png'"
+                placement="button" ngbTooltip="Repeat" (click)="this.YT.repeatClicked()" />
+        </div>
     </div>
 
     <div class="nav-item" class="ml-auto no-padding" *ngIf="this.isLoggedIn()">
-      <h6 class="font-weight-bold text-light" *ngIf="this.getUser()">{{this.getUser().username}}</h6>
-    </div>
-
-    <div ngbDropdown placement="bottom" class="nav-item">
-      <img ngbDropdownToggle class="icon icon-middle icon-md" src="assets/shared/profile_white.png" />
-      <div ngbDropdownMenu>
-        <div *ngIf="this.isLoggedIn()">
-          <button class="dropdown-item" [routerLink]="['/profile']" (click)="this.showPlaylist = false">Profile</button>
-          <button class="dropdown-item" [routerLink]="['/login']" (click)="this.logOut()">Logout</button>
+        <div ngbDropdown placement="bottom-right" *ngIf="this.getUser()">
+            <h6 class="font-weight-bold text-light" ngbDropdownToggle>{{this.getUser().username}}</h6>
+            <div ngbDropdownMenu>
+                <button class="dropdown-item" [routerLink]="['/profile']" (click)="this.showPlaylist = false">Profile</button>
+                <button class="dropdown-item" [routerLink]="['/login']" (click)="this.logout()">Logout</button>
+            </div>
         </div>
-        <div *ngIf="!this.isLoggedIn()">
-          <button class="dropdown-item" [routerLink]="['/login']">Login</button>
-        </div>
-      </div>
     </div>
-
-  </div>
 </nav>
 
-<div class="main-container container-fluid">
-  <div class="row" *ngIf="!this.isLoggedIn()">
-    <div class="col-12">
-      <login></login>
-    </div>
-  </div>
-
-  <div class="row" *ngIf="this.isLoggedIn()">
-
-    <div class="col-sm-2 shadow no-padding" *ngIf="!isSidebarCollapsed">
-      <app-sidebar (playlist)="selectPlaylist($event)" *ngIf="this.getUser()"></app-sidebar>
+<div class="container-fluid">
+    <div class="row" *ngIf="!this.isLoggedIn()">
+        <div class="col-12">
+            <login></login>
+        </div>
     </div>
 
-    <div class="col-sm-10 margin-top margin-bottom">
-      <div class="col-md-6 no-padding mx-auto shadow">
-        <app-youtube [showPlaylist]="this.showPlaylist"></app-youtube>
-      </div>
+    <div class="row" *ngIf="this.isLoggedIn()">
 
-      <div class="col-md-7 margin-top mx-auto" style="margin-top: 5%" *ngIf="!this.showPlaylist">
-        <router-outlet></router-outlet>
-      </div>
+        <button type="button" class="btn btn-success toggle" id="toggle" (click)="isSidebarCollapsed = !isSidebarCollapsed" *ngIf="!isSidebarCollapsed"><=</button>
+        <button type="button" class="btn btn-success toggle" id="toggle" (click)="isSidebarCollapsed = !isSidebarCollapsed" *ngIf="isSidebarCollapsed">=></button>
+        <div class="col-sm-2 no-padding" *ngIf="!isSidebarCollapsed">
+            <sidebar *ngIf="this.getUser()"></sidebar>
+        </div>
+
+        <div class="margin-top margin-bottom" [ngClass]="{'col-sm-10': !isSidebarCollapsed, 'col-sm-12': isSidebarCollapsed}">
+            <div class="col-md-12 shadow">
+                <youtube></youtube>
+            </div>
+
+            <div class="col-md-7 margin-top mx-auto">
+                <router-outlet></router-outlet>
+            </div>
+        </div>
     </div>
-  </div>
+    <app-snackbar></app-snackbar>
 </div>

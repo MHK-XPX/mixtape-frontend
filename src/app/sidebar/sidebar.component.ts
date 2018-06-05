@@ -1,30 +1,16 @@
-/*
-  Written by: Ryan Kruse
-  This component controls the playlist holder on the right side of the DOM. It allows the user to select which playlist to listen to
-  and allows them to create a new playlist
-*/
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { trigger, state, animate, transition, style, sequence } from '@angular/animations';
-import { Subscription } from "rxjs";
-import { Subject } from 'rxjs/Subject';
-import { debounceTime } from 'rxjs/operator/debounceTime';
 
-import { ApiService } from '../shared/api.service';
-import { DataShareService } from '../shared/data-share.service';
+import { ApiService, DataShareService } from '../services/services';
+import { Playlist, User, MessageType, MessageOutput } from '../interfaces/interfaces';
+import { MouseoverMenuComponent, SnackbarComponent } from '../components';
 
-import { MouseoverMenuComponent } from '../mouseover-menu/mouseover-menu.component';
-import { SnackbarComponent } from '../snackbar/snackbar.component';
-
-import { User } from '../interfaces/user';
-import { Playlist } from '../interfaces/playlist';
-
-import { MessageType } from '../shared/messagetype.enum';
-import { MessageOutput } from '../interfaces/messageoutput';
+import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-sidebar',
+  selector: 'sidebar',
   templateUrl: './sidebar.component.html',
-  styleUrls: ['./sidebar.component.css', '../shared/global-style.css'],
+  styleUrls: ['./sidebar.component.css', '../global-style.css'],
   animations: [
     trigger(
       'showState', [
@@ -42,6 +28,7 @@ import { MessageOutput } from '../interfaces/messageoutput';
     )
   ]
 })
+
 export class SidebarComponent implements OnInit {
   MessageType = MessageType;
 
@@ -49,82 +36,62 @@ export class SidebarComponent implements OnInit {
   userPlaylists: Playlist[] = []
 
   mouseOver: number = -1;
-  messageOut: MessageOutput;
 
   doneLoading: boolean = false;
-
-  private defaultPLName: string = "Playlist ";
-
-  @Output() playlist: EventEmitter<Playlist> = new EventEmitter<Playlist>(); //Output the playlist selected to listen to
+  
+  private defaultPLName: string = "New Playlist ";
 
   constructor(private _apiService: ApiService, private _dataShareService: DataShareService) { }
 
-  /*
-    On init we sync all of the user's playlists and the user.
-  */
-  ngOnInit() {
+  ngOnInit() { 
     this._dataShareService.playlists.subscribe(res => this.userPlaylists = res);
-
     this._dataShareService.user.subscribe(res => this.user = res);
 
-
-    //Incase the sync was messed up we also pull all of the user's playlists from the API as a saftey net
     let s: Subscription;
     s = this._apiService.getAllEntities<Playlist>('Playlists/User/' + this.user.userId).subscribe(
       d => this.userPlaylists = d,
       err => console.log("Unable to load playlists", err),
-      () => { s.unsubscribe(); this._dataShareService.changePlaylists(this.userPlaylists); this.doneLoading = true;}
-    )
+      () => {
+        s.unsubscribe();
+        this._dataShareService.changePlaylists(this.userPlaylists);
+        this.doneLoading = true;
+      }
+    );
   }
 
-  /*
-    Called when the user selects a playlist to listen to. It alerts all parent components of
-    the playlist
-    @param p: Playlist - The playlist selected to listen to
-  */
-  selectPlaylist(p: Playlist) {
-    this.playlist.emit(p);
-  }
-
-  /*
-    Called when the user clicks the create playlist button.
-    The method creates a new playlist object (that is empty) and 
-    adds it to our backend
-  */
-  createPlaylist() {
+  public createPlaylist(){
     let nPL = {
       active: true,
       name: this.defaultPLName + (this.userPlaylists.length + 1),
-      userId: this.user.userId,
-    }
+      userId: this.user.userId 
+    };
 
     let returnedPL: Playlist;
     let s: Subscription = this._apiService.postEntity<Playlist>("Playlists", nPL).subscribe(
       d => returnedPL = d,
-      err => console.log(err),
+      err => this.triggerMessage("", "Unable to create new playlist", MessageType.Failure),
       () => {
         s.unsubscribe();
         this.userPlaylists.push(returnedPL);
         this._dataShareService.changePlaylists(this.userPlaylists);
         this.triggerMessage("", "Playlist created!", MessageType.Success);
-
-        this.selectPlaylist(returnedPL);
+        
+        //this.selectPlaylist(returnedPL); //Add this if we want to auto swap to the new PL
       }
     );
   }
 
-  /*
-    Called whenever we make a transaction with the DB
-    @param message: string - The message to show to the user
-    @param level: MessageType - The type of message (Success, Failure, Notification)
-   */
-  triggerMessage(message: string, action: string, level: MessageType) {
+  public selectPlaylist(playlist: Playlist){
+    this._dataShareService.changeCurrentPlaylist(playlist);
+  }
+
+  private triggerMessage(message: string, action: string, level: MessageType){
     let out: MessageOutput = {
       message: message,
-      action: action,
+      action: action, 
       level: level
     };
 
-    this.messageOut = out;
+    this._dataShareService.changeMessage(out);
   }
 }

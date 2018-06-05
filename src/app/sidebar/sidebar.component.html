@@ -1,19 +1,19 @@
-<div class="side-bar no-padding">
+<div class="side-bar shadow no-padding col-12" *ngIf="!sideBarHidden" [ngClass]="{'visible': !sideBarHidden, 'invisible': sideBarHidden}">
   <div class="card w-100">
     <div class="card-header text-center font-weight-bold">Playlists:
-      <img class="icon float-right img-margin" style="width: 32px; height: 32px;" placement="right" ngbTooltip="Create Playlist" src='assets/playlist/new_playlist_black.png'
-        (click)="createPlaylist()" />
+      <img class="icon float-right img-margin" style="width: 32px; height: 32px;" placement="right" ngbTooltip="Create Playlist"
+        src='assets/playlist/new_playlist_black.png' (click)="createPlaylist()" />
     </div>
     <ul class="list-group list-group-flush">
       <li class="list-group-item list-group-item-action" (mouseover)="this.mouseOver = i" (mouseout)="this.mouseOver = -1" *ngFor="let playlist of userPlaylists index as i"
         (click)="selectPlaylist(playlist)">
         {{ playlist.name }}
         <app-mouseover-menu [@showState]="this.mouseOver === i ? 'show' : 'hide'" [addToPL]="false" [addToQ]="false" [deleteFromPL]="false"
-          [deletePL]="true" [selectedSong]="null" [plToDelete]="playlist" (successMessageOutput)="triggerMessage($event.message, $event.action, $event.level)" (click)="$event.stopPropagation()"></app-mouseover-menu>
+          [deletePL]="true" [selectedSong]="null" [plToDelete]="playlist" (click)="$event.stopPropagation()"></app-mouseover-menu>
       </li>
+      <li class="list-group-item list-group-item-action" [routerLink]="['/global-player']" (click)="selectGlobalPlaylist()">Global Playlist</li>
       <li class="list-group-item list-group-item-action" *ngIf="(!userPlaylists || !userPlaylists.length) && doneLoading">No Playlists :(</li>
       <button class="btn btn-secondary" (click)="selectPlaylist(null)">Clear Queue</button>
     </ul>
   </div>
-  <app-snackbar [messageOut] = "messageOut" ></app-snackbar>
 </div>

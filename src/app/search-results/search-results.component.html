@@ -1,0 +1,154 @@
+<div class="shadow no-padding">
+  <ngb-tabset justify="justified">
+    <ngb-tab title="Our Results">
+      <ng-template ngbTabContent>
+        <div class="card">
+          <div class="card-header">
+            <b>Top Results For:</b> {{ searchString }}</div>
+        </div>
+        <ul class="list-group list-group-flush" *ngIf="this.searchResults">
+          <h5 class="mb-1">Artists</h5>
+          <li class="list-group-item list-group-item-action" *ngFor="let artist of searchResults.artists" (click)="createNewSearch(artist.name)">
+            {{ artist.name }}
+          </li>
+
+          <h5 class="mb-1">Albums</h5>
+          <li class="list-group-item list-group-item-action" *ngFor="let album of searchResults.albums index as i">
+            {{ album.name }}
+          </li>
+
+          <h5 class="mb-1">Songs</h5>
+          <li class="list-group-item list-group-item-action" (mouseover)="this.mouseOver = i" (mouseout)="this.mouseOver = -1" *ngFor="let song of searchResults.songs index as i"
+            (click)="previewSong(song)">
+            {{ song.name }}
+            <app-mouseover-menu [@showState]="this.mouseOver === i ? 'show': 'hide'" [addToPL]="true" [addToQ]="true" [deleteFromPL]="false"
+              [selectedSong]="song"></app-mouseover-menu>
+          </li>
+        </ul>
+      </ng-template>
+    </ngb-tab>
+    <ngb-tab title="Youtube Results">
+      <ng-template ngbTabContent>
+        <div class="card">
+          <div class="card-header">
+            <b>Top Results For:</b> {{ searchString }} </div>
+        </div>
+        <div *ngIf="this.searchString.length">
+          <ul class="list-group list-group-flush" *ngFor="let result of youtubeResults | async | youtubePipe index as i">
+            <li class="list-group-item list-group-item-action" (mouseover)="this.mouseOver = i" (mouseout)="this.mouseOver = -1" (click)="selectYoutubeSong(result, content)"
+              *ngIf="i <= this.currentNumberResultsShowing">
+              {{ result.snippet.title }}
+            </li>
+          </ul>
+          <button type="button" class="btn btn-secondary no-padding mx-auto w-100" [disabled]="!canShowMore()" (click)="showMoreYoutube()">More Results</button>
+        </div>
+      </ng-template>
+    </ngb-tab>
+  </ngb-tabset>
+</div>
+
+<ng-template #content let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">{{ this.modalHeader }}</h4>
+  </div>
+
+  <div class="modal-body form-was-validated">
+    <div [ngSwitch]="this.currentStep">
+      <!--Youtube Rip-->
+      <div id="stepOne" *ngSwitchCase="1">
+        <form class="form ml-5">
+          <div class="form-group row">
+            <label for="guessedArtist" class="col-xl-4 col-form-label font-weight-bold">Artist:</label>
+            <div class="col-md-7">
+              <input [value]="this.guessedArtist" (input)="this.guessedArtist = $event.target.value" type="text" class="form-control" id="guessedArtist"
+                placeholder="Artist Name" [ngClass]="{ 'is-invalid': !this.guessedArtist.length, 'is-valid': this.guessedArtist.length }">
+              <small id="artistHelpBlock" class="form-text text-muted" *ngIf="!this.guessedArtist.length">Please insert artist name</small>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label for="guessedSong" class="col-xl-4 col-form-label font-weight-bold">Song:</label>
+            <div class="col-md-7">
+              <input [value]="this.guessedSong" (input)="this.guessedSong = $event.target.value" type="text" class="form-control" id="guessedSong"
+                placeholder="Song Title" [ngClass]="{ 'is-invalid': !this.guessedSong.length, 'is-valid': this.guessedSong.length }">
+              <small id="artistHelpBlock" class="form-text text-muted" *ngIf="!this.guessedSong.length">Please insert song title</small>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!--LastFM Check-->
+      <div id="stepTwo" *ngSwitchCase="2">
+        <form class="form ml-5">
+          <div class="form-group row">
+            <label for="lastFMArtist" class="col-xl-4 col-form-label font-weight-bold">Artist:</label>
+            <div class="col-md-7">
+              <input [value]="this.lastFMArtist" (input)="this.lastFMArtist = $event.target.value" type="text" class="form-control" id="lastFMArtist"
+                placeholder="Artist Name" [ngClass]="{ 'is-invalid': !this.lastFMArtist.length, 'is-valid': this.lastFMArtist.length }">
+              <small id="artistHelpBlock" class="form-text text-muted" *ngIf="!this.lastFMArtist.length">Please insert artist name</small>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label for="lastFMAlbum" class="col-xl-4 col-form-label font-weight-bold">Album:</label>
+            <div class="col-md-7">
+              <input [value]="this.lastFMAlbum" (input)="this.lastFMAlbum = $event.target.value" type="text" class="form-control" id="lastFMAlbum"
+                placeholder="Album Name" [ngClass]="{ 'is-invalid': !this.lastFMAlbum.length, 'is-valid': this.lastFMAlbum.length }">
+              <small id="albumHelpBlock" class="form-text text-muted" *ngIf="!this.lastFMAlbum.length">Please insert album title</small>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label for="lastFMSong" class="col-xl-4 col-form-label font-weight-bold">Song:</label>
+            <div class="col-md-7">
+              <input [value]="this.lastFMSong" (input)="this.lastFMSong = $event.target.value" type="text" class="form-control" id="lastFMSong"
+                placeholder="Song Title" [ngClass]="{ 'is-invalid': !this.lastFMSong.length, 'is-valid': this.lastFMSong.length }">
+              <small id="songHelpBlock" class="form-text text-muted" *ngIf="!this.lastFMSong.length">Please insert song title</small>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!--Local DB Confirm (aka add)-->
+      <div id="stepThree" *ngSwitchCase="3">
+        <form class="form ml-5">
+          <div class="form-group row">
+            <label for="finalArtist" class="col-xl-4 col-form-label font-weight-bold">Artist:</label>
+            <div class="col-md-7">
+              <input [value]="this.lastFMArtist" (input)="this.lastFMArtist = $event.target.value" type="text" class="form-control" id="finalArtist"
+                placeholder="Artist Name" [ngClass]="{ 'is-invalid': !this.lastFMArtist.length, 'is-valid': this.lastFMArtist.length }" [disabled]="this.finalArtistInDB">
+              <small id="artistHelpBlock" class="form-text text-muted" *ngIf="!this.lastFMArtist.length">Please insert artist name</small>
+              <small id="artistHelpBlock2" class="form-text text-muted" *ngIf="this.finalArtist">Found in database!</small>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label for="finalAlbum" class="col-xl-4 col-form-label font-weight-bold">Album:</label>
+            <div class="col-md-7">
+              <input [value]="this.lastFMAlbum" (input)="this.lastFMAlbum = $event.target.value" type="text" class="form-control" id="finalAlbum"
+                placeholder="Album Name" [ngClass]="{ 'is-invalid': !this.lastFMAlbum.length, 'is-valid': this.lastFMAlbum.length }" [disabled]="this.finalAlbumInDB">
+              <small id="albumHelpBlock" class="form-text text-muted" *ngIf="!this.lastFMAlbum.length">Please insert album title</small>
+              <small id="albumHelpBlock2" class="form-text text-muted" *ngIf="this.finalAlbum">Found in database!</small>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label for="finalSong" class="col-xl-4 col-form-label font-weight-bold">Song:</label>
+            <div class="col-md-7">
+              <input [value]="this.lastFMSong" (input)="this.lastFMSong = $event.target.value" type="text" class="form-control" id="finalSong"
+                placeholder="Song Title" [ngClass]="{ 'is-invalid': !this.lastFMSong.length, 'is-valid': this.lastFMSong.length }" [disabled]="this.finalSongInDB">
+              <small id="songHelpBlock" class="form-text text-muted" *ngIf="!this.lastFMSong.length">Please insert song title</small>
+              <small id="songHelpBlock2" class="form-text text-muted" *ngIf="this.finalSong">Found in database!</small>
+            </div>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary col-2" (click)="this.doActionOnStepChange(-1)" [disabled]="this.currentStep === 1 || (this.currentStep === 1 && !canMoveToNewStep())">Back</button>
+    <button type="button" class="btn btn-primary col-2" (click)="this.doActionOnStepChange(1)" [disabled]="!canMoveToNewStep()" *ngIf="this.currentStep !== 3">Next</button>
+    <button type="button" class="btn btn-success col-2" (click)="c()" [disabled]="!canMoveToNewStep()" *ngIf="this.currentStep == 3">Save</button>
+  </div>
+</ng-template>

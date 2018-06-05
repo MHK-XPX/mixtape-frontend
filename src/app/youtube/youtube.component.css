@@ -12,9 +12,22 @@
 
 .playlist-container{
     padding: 0;
-    
 }
 
 .playlist-song-list{
     background: lightgrey !important;
+}
+
+.playlist-list{
+    overflow-y: scroll;
+}
+
+.half-height{
+    max-height: 45vh;
+    height: 45vh;
+}
+
+::-webkit-scrollbar{
+    background: transparent;
+    width: 0px;
 }

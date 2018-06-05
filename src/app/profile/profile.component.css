@@ -6,18 +6,3 @@
     -webkit-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
     box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
 }
-
-/*.no-padding{
-    padding: 0;
-}
-
-.static-size-card{
-    height: 45vh;
-    max-height: 45vh;
-}
-
-.static-size-list{
-    height: 85%;
-    max-height: 85%;
-    overflow-y: auto; 
-}*/

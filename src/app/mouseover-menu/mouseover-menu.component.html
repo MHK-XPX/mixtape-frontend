@@ -7,8 +7,8 @@
     <img class="icon icon-middle icon-sm float-right img-margin" placement="top" ngbTooltip="Add to queue" src='assets/playlist/add_playlist.png'
       (click)="addToQueue($event)" />
   </div>
-  <div ngbDropdown placement="top" *ngIf="addToPL" #myDrop="ngbDropdown">
-    <img ngbDropdownToggle class="icon icon-middle icon-sm float-right img-margin" placement="left" ngbTooltip="Add to a playlist"
+  <div ngbDropdown placement="top-right" *ngIf="addToPL" #myDrop="ngbDropdown">
+    <img ngbDropdownToggle class="icon icon-middle icon-sm float-right img-margin" placement="left-bottom" ngbTooltip="Add to a playlist"
       src='assets/playlist/add_playlist_2.png' (click)="$event.stopPropagation();" />
     <div ngbDropdownMenu aria-labelledby="addToPlaylist">
       <ul class="list-group list-group-flush specific-height" *ngIf="this.playlists">

@@ -4,8 +4,8 @@
       <h5 class="font-weight-bold">Profile Information</h5>
     </div>
   </div>
-  <div class="row">
 
+  <div class="row">
     <div class="col-xl-9">
       <form class="form ml-5">
 
@@ -14,7 +14,8 @@
           <label for="inputFirstName" class="col-xl-4 col-form-label font-weight-bold">First Name:</label>
           <div class="col-md-7">
             <input [value]="this.user.firstName" (input)="this.user.firstName = $event.target.value" type="text" class="form-control"
-              id="inputFirstName" placeholder="First Name">
+              id="inputFirstName" placeholder="First Name" [ngClass]="{ 'is-invalid': !this.user.firstName.length, 'is-valid': this.user.firstName.length }">
+              <small id="passwordHelpBlock" class="form-text text-muted" *ngIf="!this.user.firstName.length">Must have first name</small>
           </div>
         </div>
 
@@ -23,7 +24,8 @@
           <label for="inputLastName" class="col-xl-4 col-form-label font-weight-bold">Last Name:</label>
           <div class="col-md-7">
             <input [value]="this.user.lastName" (input)="this.user.lastName = $event.target.value" type="text" class="form-control" id="inputLastName"
-              placeholder="Last Name">
+              placeholder="Last Name" [ngClass]="{ 'is-invalid': !this.user.lastName.length, 'is-valid': this.user.lastName.length }">
+              <small id="passwordHelpBlock" class="form-text text-muted" *ngIf="!this.user.lastName.length">Must have last name</small>
           </div>
         </div>
 
@@ -41,8 +43,8 @@
         <div class="form-group row">
           <label for="inputPassword" class="col-xl-4 col-form-label font-weight-bold">Password:</label>
           <div class="col-md-7">
-            <input [value]="newPassword" (input)="newPassword = $event.target.value" type="password" class="form-control" id="inputPassword"
-              placeholder="Password" [ngClass]="{ 'is-invalid': !passwordsMatch(), 'is-valid': passwordsMatch() }">
+            <input [value]="newPassword" (input)="newPassword = $event.target.value" type="password" class="form-control" id="inputPassword" placeholder="Password" 
+            [ngClass]="{ 'is-invalid': !passwordsMatch(), 'is-valid': passwordsMatch() }">
           </div>
         </div>
 
@@ -50,8 +52,8 @@
         <div class="form-group row">
           <label for="inputCPassword" class="col-xl-4 col-form-label font-weight-bold">Confirm Password:</label>
           <div class="col-md-7">
-            <input [value]="confirmPassword" (input)="confirmPassword = $event.target.value" type="password" class="form-control" id="inputCPassword"
-              placeholder="Confirm Password" [ngClass]="{ 'is-invalid': !passwordsMatch(), 'is-valid': passwordsMatch() }">
+            <input [value]="confirmPassword" (input)="confirmPassword = $event.target.value" type="password" class="form-control" id="inputCPassword" placeholder="Confirm Password"
+            [ngClass]="{ 'is-invalid': !passwordsMatch(), 'is-valid': passwordsMatch() }">
             <small id="passwordHelpBlock" class="form-text text-muted" *ngIf="!passwordsMatch()">Passwords must match</small>
           </div>
         </div>
@@ -60,14 +62,14 @@
         <div class="form-group row">
           <!--Empty label for spacing-->
           <label class="col-xl-4 col-form-label"></label>
-          <div class="col-md-7">
+          <div class="col-md-6">
             <button type="button" class="btn btn-primary" (click)="updateAccount()" [disabled]="!canUpdateInfo()">Save Changes</button>
-            <button type="button" class="btn btn-outline-danger" (click)="cancelUpdate()">Cancel</button>
+            <button type="button" class="btn btn-outline-danger" (click)="resetValues(true)">Cancel</button>
           </div>
         </div>
+
+
       </form>
     </div>
   </div>
-
-  <app-snackbar [messageOut]="messageOut"></app-snackbar>
 </div>
