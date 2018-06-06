@@ -1,3 +1,7 @@
+/*
+    Written by Ryan Kruse
+    This directive is called whenever we hit the enter key, it will fire on key up
+*/
 import { Directive, ElementRef, Output, EventEmitter, HostListener } from '@angular/core';
 
 @Directive({

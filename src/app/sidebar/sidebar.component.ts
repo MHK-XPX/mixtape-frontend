@@ -1,3 +1,10 @@
+/*
+  Written by: Ryan Kruse
+  This component controls all actions on the sidebar visual. It allows the user to create a new playlist, delete a playlist
+  and play a new playlist. It allows allows them to clear their current queue. In the future it will allow them to view the global 
+  playlist
+*/
+
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { trigger, state, animate, transition, style, sequence } from '@angular/animations';
 
@@ -38,12 +45,12 @@ export class SidebarComponent implements OnInit {
   mouseOver: number = -1;
 
   doneLoading: boolean = false;
-  
+
   private defaultPLName: string = "New Playlist ";
 
   constructor(private _apiService: ApiService, private _dataShareService: DataShareService) { }
 
-  ngOnInit() { 
+  ngOnInit() {
     this._dataShareService.playlists.subscribe(res => this.userPlaylists = res);
     this._dataShareService.user.subscribe(res => this.user = res);
 
@@ -59,11 +66,15 @@ export class SidebarComponent implements OnInit {
     );
   }
 
-  public createPlaylist(){
+  /*
+    This method is called when the user clicks the new playlist button. It will create a new playlist
+    and add it to the database
+  */
+  public createPlaylist() {
     let nPL = {
       active: true,
       name: this.defaultPLName + (this.userPlaylists.length + 1),
-      userId: this.user.userId 
+      userId: this.user.userId
     };
 
     let returnedPL: Playlist;
@@ -75,20 +86,28 @@ export class SidebarComponent implements OnInit {
         this.userPlaylists.push(returnedPL);
         this._dataShareService.changePlaylists(this.userPlaylists);
         this.triggerMessage("", "Playlist created!", MessageType.Success);
-        
+
         //this.selectPlaylist(returnedPL); //Add this if we want to auto swap to the new PL
       }
     );
   }
 
-  public selectPlaylist(playlist: Playlist){
+  /*
+    This method is called when the user clicks a playlist to play. It updates the datashare subject so that
+    all subscribers know that the user wants to play the given playlist
+    @param playlist: Playlist - The playlist the user wants to play
+  */
+  public selectPlaylist(playlist: Playlist) {
     this._dataShareService.changeCurrentPlaylist(playlist);
   }
 
-  private triggerMessage(message: string, action: string, level: MessageType){
+  /*
+    This method handles snackbar event triggers
+  */
+  private triggerMessage(message: string, action: string, level: MessageType) {
     let out: MessageOutput = {
       message: message,
-      action: action, 
+      action: action,
       level: level
     };
 

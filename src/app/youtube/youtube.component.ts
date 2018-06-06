@@ -1,3 +1,9 @@
+/*
+  Written by: Ryan Kruse
+  This component handles all youtube player and current playlist events. It allows the user to delete, add, or queue a song
+  from the current playlist. It also allows the user to view the video on the page.
+*/
+
 import { Component, OnInit, HostListener } from '@angular/core';
 import { trigger, state, animate, transition, style, sequence } from '@angular/animations';
 import { Subscription, Subject } from "rxjs";
@@ -64,6 +70,26 @@ export class YoutubeComponent implements OnInit {
     this._dataShareService.previewSong.subscribe(res => this.tryToPreviewSong(res));
   }
 
+  /*
+    This method is called whenver the current playlist is updated, it auto plays it iff 
+    it isn't the last playlist played
+    @param playlist: Playlist - The new playlist to play
+  */
+  private setPlaylist(playlist: Playlist) {
+    this.playlist = playlist;
+
+    if (!this.playlist) return;
+
+    if (this.lastPlaylistID === this.playlist.playlistId || (this.lastPlaylistID && (this.lastPlaylistID === this.playlist.playlistId))) {
+      this.onSong = this._storage.getValue('onSong') ? this._storage.getValue('onSong') : 0;
+    } else {
+      this.clearPreviewSong();
+      this.onSong = -1;
+      this.lastPlaylistID = this.playlist.playlistId;
+      this.changeSong(1);
+    }
+  }
+
   public savePlayer(player) {
     this.player = player;
     this.player.setSize(this.getScreenWidth(), this.getScreenHeight());
@@ -100,6 +126,11 @@ export class YoutubeComponent implements OnInit {
     }
   }
 
+  /*
+    This method is called when the user clicks the next/last song of button.
+    It moves our currently playing (onSong) value in a given direction
+    @param dir: number - the direction to move in our playlist
+  */
   private changeSong(dir: number){
     this.onSong += dir;
 
@@ -111,6 +142,12 @@ export class YoutubeComponent implements OnInit {
     this.playVideo();
   }
 
+  /*
+    This method is called when we want to play a specific video or the next video. This is decided by if the songURl param
+    is given or not. If it is not given then we play the video at the onSong index; otherwise, we play the video with
+    the given url
+    @param? songUrl: string - The video url to play
+  */
   private playVideo(songUrl?: string) {
     if (songUrl) {
       this.parseAndSetVideoId(songUrl);
@@ -123,6 +160,11 @@ export class YoutubeComponent implements OnInit {
     this.player.playVideo();
   }
 
+  /*
+    This method is called when the user wants to play a song at a specific index (IE when the user clicks on a specific song in the playlist)
+    @param songUrl: string - The song url we want to play
+    @param index?: number - The index in the playlist we want to move to
+  */
   private playGivenVideo(songUrl: string, index?: number) {
     if(index){
       this.onSong = index;
@@ -135,21 +177,10 @@ export class YoutubeComponent implements OnInit {
     this.player.playVideo();
   }
 
-  private setPlaylist(playlist: Playlist) {
-    this.playlist = playlist;
-
-    if (!this.playlist) return;
-
-    if (this.lastPlaylistID === this.playlist.playlistId || (this.lastPlaylistID && (this.lastPlaylistID === this.playlist.playlistId))) {
-      this.onSong = this._storage.getValue('onSong') ? this._storage.getValue('onSong') : 0;
-    } else {
-      this.clearPreviewSong();
-      this.onSong = -1;
-      this.lastPlaylistID = this.playlist.playlistId;
-      this.changeSong(1);
-    }
-  }
-
+  /*
+    This method is called when we try to preview a song (when the user clicks a song on the search component)
+    @param song: Song - The song we want to preview
+  */
   private tryToPreviewSong(song: Song) {
     if ((!this.previewSong && song) || this.previewSong && song && song.songId !== this.previewSong.songId) {
       this.previewSong = song;
@@ -251,6 +282,7 @@ export class YoutubeComponent implements OnInit {
 
     this._dataShareService.changeMessage(out);
   }
+
   /*
     This method is called so we can set the youtube player to 65% of our current height
   */

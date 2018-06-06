@@ -1,4 +1,8 @@
 /*
+  Written by: Ryan Kruse
+  This component handles the search bar. It searches our local database for the string and youtube.
+  If the user clicks a youtube result, it will attempt to add it to our database iff it isn't already in there
+
   Note: 
     This component is very crazy right now, it will be refactored later! --Ryan Kruse
 */
@@ -77,6 +81,10 @@ export class SearchResultsComponent implements OnInit {
     this._dataShareService.searchString.subscribe(res => this.updateSearch(res));
   }
 
+  /*
+    This method is called whenever our search string is changed
+    @param search: string - The new word or phrase to search
+  */
   private updateSearch(search: string) {
     this.searchString = search;
 
@@ -92,7 +100,13 @@ export class SearchResultsComponent implements OnInit {
     }
   }
 
+  /*
+    This method is called when the user clicks a youtube result. It splits the title of the video on: '-', ':', '
+    @param result: items - The result returned from the YOUTUBE API
+    @param content - Used to open our modal
+  */
   public selectYoutubeSong(result: items, content) {
+    //Parse out the title with regex:
     let title: string = result.snippet.title;
 
     let splitOnDash: string[] = title.split("-");
@@ -118,10 +132,15 @@ export class SearchResultsComponent implements OnInit {
 
     this.songId = result.id.videoId;
 
+    //Open the model for the user so they can correct any errors
     this.openModal(content);
   }
 
+  /*
+    This method is called after the youtube video title has been parsed
+  */
   private openModal(content) {
+    //Clear all of our values to make sure they don't appear twice (or trigger events early)
     this.lastFMArtist = "";
     this.lastFMAlbum = "";
     this.lastFMSong = "";
@@ -133,32 +152,56 @@ export class SearchResultsComponent implements OnInit {
     this.finalAlbumInDB = false;
     this.finalSongInDB = false;
 
-    this._modalService.open(content).result.then((result) => {
-      this.addNeededEntitiesToDB();
+    this._modalService.open(content).result.then((result) => { //On close via save
+      this.addNeededEntitiesToDB(); //When we save, we attempt to add all needed entities to the DB
       this.currentStep = 1;
-    }, (reason) => {
+    }, (reason) => { //on close via click off
       this.currentStep = 1;
     });
   }
 
+  /*
+    This method is called when the user clicks an artist from the DB results
+    It changes our search to the given value and updates the view
+    @param search: string - the new string to search
+  */
   public createNewSearch(search: string) {
     this._dataShareService.changeSearchString(search);
   }
-
+  
+  /*
+    This method is called when the user clicks on a song from the DB results
+    It changes the current video to the given song so that the user can preview it
+    @param song: Song - The song to preview
+    @side-effects - Changes the youtube video to the provided song
+  */
   public previewSong(song: Song) {
     this._dataShareService.changePreviewSong(song);
   }
 
+  /*
+    This method is called when the user clicks the show more button under the youtube tab
+    It brings more results to the view iff we aren't already at the max view size
+  */
   public showMoreYoutube() {
     this.currentNumberResultsShowing *= 2;
 
-    if (this.currentNumberResultsShowing > this.maxNumResultsToFetch) this.currentNumberResultsShowing = this.maxNumResultsToFetch;
+    if (!this.canShowMore()) this.currentNumberResultsShowing = this.maxNumResultsToFetch;
   }
 
+  /*
+    This method is called to check if we can display more search results to the screen
+    @return boolean - If the number of result showing is less than the max number of results
+  */
   public canShowMore(): boolean {
     return this.currentNumberResultsShowing < this.maxNumResultsToFetch;
   }
 
+  /*
+    This method is called to enable/disable the buttons in our create song modal. It is called per step and will return if
+    at that step we can move on.
+    @return boolean - If we meet the requirements of step n to continue to step n+1
+  */
   public canMoveToNewStep(): boolean {
     switch (this.currentStep) {
       case 1:
@@ -172,20 +215,24 @@ export class SearchResultsComponent implements OnInit {
     }
   }
 
+  /*
+    This method is called everytime we move to a new step. It takes the dir given and moves us +/- 1 steps. Each time this is called,
+    we perform a different action based on the step we are given
+  */
   public doActionOnStepChange(dir: number) {
     this.currentStep += dir;
     switch (this.currentStep) {
-      case 1:
+      case 1: //Called when the modal is opened, displays the parsed youtube title
         this.modalHeader = "Is this the correct artist and song?";
         break;
-      case 2:
+      case 2: //This step resets lastFM values and attempts to load the album for the given artist and song
         this.modalHeader = "Is this the correct album?"
         this.lastFMArtist = "";
         this.lastFMAlbum = "";
         this.lastFMSong = "";
         this.loadLastFMTrack();
         break;
-      case 3:
+      case 3: //Called after the user confirms the last FM, it checks our local DB to see if we have any of the three (artist, album, song) in our DB
         this.modalHeader = "Does everything look right?"
         this.updateSearch(this.lastFMArtist);
         this.finalizeData();
@@ -195,6 +242,9 @@ export class SearchResultsComponent implements OnInit {
     }
   }
 
+  /*
+    This method is called on our second step, it attempts to load the album given an artist and album
+  */
   private loadLastFMTrack() {
     let track: LastfmTrack;
     let s: Subscription = this._apiService.getLastfmResults(this.guessedArtist, this.guessedSong).subscribe(
@@ -207,17 +257,25 @@ export class SearchResultsComponent implements OnInit {
     );
   }
 
+  /*
+    This method is called after the lastFM api returns a result (can be 200 or err)
+  */
   private validateLastFMData() {
+    //If it cannot find the artist, album, or track, we simply set the artist and song to what we guessed in the last step
     if (!this.lastFMResults.track || !this.lastFMResults.track.album || !this.lastFMResults.track.artist) {
       this.lastFMArtist = this.guessedArtist;
       this.lastFMSong = this.guessedSong;
-    } else {
+    } else { //if we do find them, then we fill out our fields with those values
       this.lastFMArtist = this.lastFMResults.track.artist.name;
       this.lastFMAlbum = this.lastFMResults.track.album.title;
       this.lastFMSong = this.lastFMResults.track.name;
     }
   }
 
+  /*
+    This method is called on the third step. It calls our local DB to get search results that would work with the guessedArtist
+    The reason for this is because it greatly reduces the amount we must look on the client side!
+  */
   private finalizeData() {
     this.lastFMArtist = this.lastFMArtist.trim();
     this.lastFMAlbum = this.lastFMAlbum.trim();
@@ -234,6 +292,16 @@ export class SearchResultsComponent implements OnInit {
     );
   }
 
+  /*
+    This method is called after our api returns our search results from finalizeData();
+    It has three core checks, each one following the other iff the last check returned true:
+      First: It checks to see if we have the artist in our local database
+      Second: It checks to see if the artist has the given album
+      Third: It checks to see if the album has the given song
+    If all three checks are true, then we do nothing
+    If one of the checks fails, then we must add everything below that check
+      IE: Artist->Album->Song || Album->Song || Song
+  */
   private checkInDatabase() {
     let potentialArtist: Artist = this.searchResults.artists.find(x => x.name.toLowerCase() === this.lastFMArtist.toLocaleLowerCase());
 
@@ -257,6 +325,9 @@ export class SearchResultsComponent implements OnInit {
     }
   }
 
+  /*
+    This method is called at the very end, it checks what needs to be added to the database and calls the appropriate method to do so
+  */
   public addNeededEntitiesToDB() {
     if (!this.finalArtistInDB) {
       this.createNewArtist();
@@ -269,6 +340,9 @@ export class SearchResultsComponent implements OnInit {
     }
   }
 
+/*
+  The next three methods cascade and add their respective entity to the database
+*/
   private createNewArtist() {
     let artist = {
       name: this.lastFMArtist
@@ -325,6 +399,9 @@ export class SearchResultsComponent implements OnInit {
     );
   }
 
+  /*
+    Used to trigger snackbar events
+  */
   private triggerMessage(message: string, action: string, level: MessageType) {
     let out: MessageOutput = {
       message: message,

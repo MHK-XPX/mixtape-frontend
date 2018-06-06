@@ -1,11 +1,13 @@
 /*
+  Written by: Ryan Kruse
+  This component is used by any component that wants to have mouse-over actions IE add to playlist, delete from playlist, or add to queue.
+  It handles almost all of our api calls and triggers the snackbar messages
+*/
+
+/*
 ******TODO******
 Make the Z-index of the mouse over menu to be higher than everything else so that when the user
 attempts to mouse over something that would get covered by other elements it wont
-
-
-ALSO:
-  Fix the weird scaling bug with the youtube component, the user's probably dont want to have to scroll their YT video
 */
 
 
@@ -54,7 +56,7 @@ export class MouseoverMenuComponent implements OnInit {
       If not successful we output a fail message.
       @param p: Playlist - The playlist to add the song to
       @param index: number - The index of the 'p' in our global array of playlists (from the DataShareService)
-    */
+  */
   public addToPlaylist(p: Playlist, index: number, event) {
     event.stopPropagation();
     let toSendPLS = {
@@ -79,12 +81,17 @@ export class MouseoverMenuComponent implements OnInit {
     );
   }
 
-  public addToQueue(event){
+  /*
+    Called when we want to add a song to our queue, this does NOT add it to the playlist forever, just until it is cleared
+    @param event - The click event, used to stop propagation
+  */
+  public addToQueue(event) {
     event.stopPropagation();
     let pls: PlaylistSong;
     let copyPL: Playlist;
 
-    if(this.currentPL === null){
+    //If we currently do not have a playlist, we must create fake one called custom queue
+    if (this.currentPL === null) {
       let newPL: Playlist = {
         playlistId: null,
         active: true,
@@ -96,7 +103,7 @@ export class MouseoverMenuComponent implements OnInit {
       pls = this.createPlaylistSong(newPL);
       newPL.playlistSong.push(pls);
       copyPL = newPL;
-    }else{
+    } else { //If we do have a playlist create a new song to add to it and append it to the end (DOES NOT CALL API)
       pls = this.createPlaylistSong(this.currentPL);
       copyPL = {
         playlistId: this.currentPL.playlistId,
@@ -121,17 +128,21 @@ export class MouseoverMenuComponent implements OnInit {
     this._dataShareService.changeMessage(out);
   }
 
-  public deletePlaylistSong(event){
+  /*
+    This method is called when we want to delete a playlist song.
+  */
+  public deletePlaylistSong(event) {
     event.stopPropagation();
     let plIndex: number = this.playlists.findIndex(pl => pl.playlistId === this.currentPL.playlistId);
     let plsIndex: number = this.currentPL.playlistSong.findIndex(pls => pls.playlistSongId === this.selectedPLS.playlistSongId);
 
-    if(this.selectedPLS.playlistSongId === null){
+    //If the song does not have a playlist ID then we know it is a queued song so we just need to remove it from the list (DOES NOT CALL API)
+    if (this.selectedPLS.playlistSongId === null) {
       plsIndex = this.currentPL.playlistSong.findIndex(pls => pls.songId === this.selectedPLS.songId);
       this.currentPL.playlistSong.splice(plsIndex, 1);
       this._dataShareService.changeCurrentPlaylist(this.currentPL);
       this.outputMessage(this.selectedSong.name, "removed from queue", MessageType.Success);
-    }else{
+    } else { //If it does have a playlist ID attached, then we need to remove it from the Database
       let s: Subscription = this._apiService.deleteEntity<PlaylistSong>("PlaylistSongs", this.selectedPLS.playlistSongId).subscribe(
         d => d = d,
         err => this.outputMessage("", "unable to remove " + this.selectedSong.name + " from " + this.playlists[plIndex].name, MessageType.Failure),
@@ -145,6 +156,9 @@ export class MouseoverMenuComponent implements OnInit {
     }
   }
 
+  /*
+    This method is called when the user attempts to delete a playlist. It will remove it from the api and update our view
+  */
   public deletePlaylist() {
     let plIndex: number = this.playlists.findIndex(pl => pl.playlistId === this.plToDelete.playlistId);
     let s: Subscription;
@@ -161,7 +175,12 @@ export class MouseoverMenuComponent implements OnInit {
     );
   }
 
-  private createPlaylistSong(p: Playlist): PlaylistSong{
+  /*
+    This method is called everytime we need to create a playlist song to add to a playlist OR queue
+    @param p: Playlist - The playlist we want to add the song to
+    @return PlaylistSong - a new playlist song entity
+  */
+  private createPlaylistSong(p: Playlist): PlaylistSong {
     let pls: PlaylistSong = {
       playlistSongId: null,
       playlistId: p.playlistId,
@@ -173,11 +192,13 @@ export class MouseoverMenuComponent implements OnInit {
     return pls;
   }
 
-
   public cancelDropdown(event) {
     event.stopPropagation();
   }
 
+  /*
+    Used to trigger snackbar events
+  */
   public outputMessage(message: string, action: string, level: MessageType) {
     let out: MessageOutput = {
       message: message,

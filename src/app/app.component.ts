@@ -1,9 +1,6 @@
 /*
-TODO:
-  Finish the overall re-factor on the site (get all of the feautres added)
-  Add to GH
-  Maybe make new scrollbars (try to only show on hover like YT)
-  Get Global playlists working
+  Written by: Ryan Kruse
+  This component handles all logic to all other components
 */
 
 import { Component, ViewChild, OnInit } from '@angular/core';

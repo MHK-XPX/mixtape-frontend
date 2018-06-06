@@ -1,3 +1,8 @@
+/*
+  Written by: Ryan Kruse
+  This component is used during the login period. It allows the user to login to an already existing account or to create a new one
+  It also handles putting the token (and if chosen) the username into session storage 
+*/
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 

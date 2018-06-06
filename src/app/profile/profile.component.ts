@@ -1,7 +1,11 @@
+/*
+  Written by: Ryan Kruse
+  This component allows for the user to change any of their profile information. If the information is valid, then it will
+  be updated in the backend
+*/
 import { Component, OnInit } from '@angular/core';
 import { Subscription, Observable } from 'rxjs';
 
-// import {} from '../components';
 import { MessageType, User, MessageOutput } from '../interfaces/interfaces';
 import { ApiService, DataShareService, StorageService } from '../services/services';
 
@@ -28,6 +32,12 @@ export class ProfileComponent implements OnInit {
     this.username = this.user.username;
   }
 
+  /*
+    This method is called once the user clicks the update button. It can be clicked IFF:
+      1) The username is not taken (if changed)
+      2) The passwords match (if changed)
+      3) All changed fields are non-empty (excluding passwords)
+  */
   public updateAccount() {
     let s: Subscription;
 
@@ -48,7 +58,12 @@ export class ProfileComponent implements OnInit {
     );
   }
 
+  /*
+    This method is called if the user attempts to change their username, it checks to make sure that 
+    the given username is not already in use in the DB.
+  */
   public validateUsername() {
+    //It won't be taken if there is no username entered (or if we enter our own)
     if (this.username.length <= 0 || this.user.username === this.username) {
       this.usernameTaken = false;
       return;
@@ -65,6 +80,10 @@ export class ProfileComponent implements OnInit {
     );
   }
 
+  /*
+    This method is called everytime we make changes to the user. It repulls their information from the api
+    so that we can ensure the integrity of their data
+  */
   private repullUser(){
     let s: Subscription = this._apiService.validateToken().subscribe(
       d => this.user = d,
@@ -82,6 +101,11 @@ export class ProfileComponent implements OnInit {
     );
   }
 
+  /*
+    This method is called if the user clicks the cancel button. It will set all of their values to the last entry in the database
+    @param isCanceling: boolean - (Default = true) if the user is canceling, meaning they don't want to update we let them notify that we reset their values
+      otherwise we don't say anyting
+  */
   public resetValues(isCanceling: boolean = true){
     this.newPassword = "";
     this.confirmPassword = "";
@@ -98,14 +122,24 @@ export class ProfileComponent implements OnInit {
     return this.newPassword.toLocaleLowerCase() === this.confirmPassword.toLocaleLowerCase();
   }
 
+  /*
+    Called when trying to click submit, returns true iff the first/last name fields are filled
+    @return boolean - If the first AND last name fields are non-empty
+  */
   public firstAndLastNameFilled(): boolean{
     return this.user.firstName.length > 0 && this.user.lastName.length > 0;
   }
 
+  /*
+    Called when trying to click submit, returns true iff the names are filled, the passwords match, and the username isnt taken
+  */
   public canUpdateInfo(): boolean{
     return this.firstAndLastNameFilled() && this.passwordsMatch() && !this.usernameTaken;
   }
 
+  /*
+    Used to trigger snackbar events
+  */
   public triggerMessage(message: string, action: string, level: MessageType){
     let out: MessageOutput = {
       message: message,

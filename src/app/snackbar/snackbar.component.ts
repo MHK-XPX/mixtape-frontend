@@ -1,3 +1,10 @@
+/*
+  Written by: Ryan Kruse
+  This component is used to show events by having a snackbar appear on the page with a message to notify the user of 
+  the level of success of an event (IE "Playlist successfully deleted"). Interval changed how interval works which causes
+  unknown side-effects to the snackbar. This will be rewritten later
+*/
+
 import { Component, OnInit, Input } from '@angular/core';
 import { trigger, state, animate, transition, style, sequence } from '@angular/animations';
 
@@ -7,6 +14,9 @@ import { debounceTime } from 'rxjs/operator/debounceTime';
 import { DataShareService } from '../services/services';
 
 import { MessageType, MessageOutput } from '../interfaces/interfaces';
+
+import 'rxjs/add/operator/finally';
+import 'rxjs/add/operator/takeWhile';
 
 @Component({
   selector: 'app-snackbar',
@@ -50,27 +60,29 @@ export class SnackbarComponent implements OnInit {
 
   constructor(private _dataShareService: DataShareService) { }
 
-  ngOnInit() { 
+  ngOnInit() {
     this._dataShareService.message.subscribe(res => this.onMessageChange(res));
     // this.timer = this.maxTime;
   }
 
-  private onMessageChange(message: MessageOutput){
-    // console.log("message changed to: ", message);
+  /*
+    This methood is called whenever the data service for the message is changed, it allows for us to display
+    the snackbar messsage in the view
+    @param message: MessageOutput - The message to display on screen
+  */
+  private onMessageChange(message: MessageOutput) {
     this.messageOut = message;
 
-    if(this.messageOut){      
-      // if(this.s && !this.s.closed) this.s.unsubscribe();
-
+    if (this.messageOut) {
       this.timer = this.maxTime;
 
       let successMessage = this.messageOut.message;
       let action = this.messageOut.action;
-       this.messageLevel = this.messageOut.level;
+      this.messageLevel = this.messageOut.level;
 
-      if(successMessage.length <= 0){
+      if (successMessage.length <= 0) {
         this.messageToDisplay = action;
-      }else{
+      } else {
         this.messageToDisplay = this.fixMessageString(successMessage) + action;
       }
 
@@ -78,6 +90,28 @@ export class SnackbarComponent implements OnInit {
     }
   }
 
+  /*
+    This method is called once we display the message in the view. It reduces our local field timer that
+    will reduce the progress bar on the snackbar. (This needs to be fixed due to the change of .interval)
+  */
+  private startTimer() {
+    this.s = this.interval
+    .takeWhile(() => this.timer > 0)
+    .finally(() => {
+      this.timer = this.maxTime;
+      this.messageOut = null;
+    })
+    .subscribe(() => {
+        if(!this.hovering) this.timer--;
+      }
+    );
+  }
+
+  /*
+    This method is called when we need to reduce the size of our message string to make sure
+    that the snackbar looks nice in the view
+    @param message: string - The message to display (and fix)
+  */
   public fixMessageString(message: string): string {
     message = message.trim();
     let tmp: string = "";
@@ -116,30 +150,11 @@ export class SnackbarComponent implements OnInit {
     return tmp;
   }
 
-  private startTimer() {
-    // console.log("timer started!");
-    try {
-      this.s.unsubscribe();
-    } catch (e) {
-
-    }
-
-
-    this.s = this.interval.subscribe(x => { //250, -10
-      if (!this.hovering) this.timer--;
-
-      if (this.timer <= 0) {
-        // this.messageOut = null;
-        this.s.unsubscribe();
-        // console.log("timer done, unsub!");
-        this.timer = this.maxTime;
-        this.messageOut = null;
-      }
-    });
-  }
-
+  /*
+    This method is called when the user hovers over the snackbar
+    @param boolean - If we want to keep the snackbar on the screen or not
+  */
   public hoverToKeepMessage(keep: boolean) {
     this.hovering = keep;
   }
-
 }
