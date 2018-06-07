@@ -9,7 +9,7 @@ import { Subscription, Subject } from 'rxjs';
 import 'rxjs/add/operator/debounceTime.js';
 
 
-import { LoginComponent, SidebarComponent, SnackbarComponent } from './components';
+import { LoginComponent, SidebarComponent, SnackbarComponent, GlobalYoutubeComponent } from './components';
 import { YoutubeComponent } from './youtube/youtube.component';
 
 import { User, Playlist } from './interfaces/interfaces';

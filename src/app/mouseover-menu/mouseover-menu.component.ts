@@ -14,8 +14,8 @@ attempts to mouse over something that would get covered by other elements it won
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-import { ApiService, DataShareService } from '../services/services';
-import { User, Playlist, PlaylistSong, Song, MessageType, MessageOutput } from '../interfaces/interfaces';
+import { ApiService, DataShareService, MessageService } from '../services/services';
+import { User, Playlist, PlaylistSong, Song, MessageType, MessageOutput, GlobalPlaylistSong } from '../interfaces/interfaces';
 
 @Component({
   selector: 'app-mouseover-menu',
@@ -43,7 +43,7 @@ export class MouseoverMenuComponent implements OnInit {
 
   messageLevel: MessageType = MessageType.Notification;
 
-  constructor(private _apiService: ApiService, private _dataShareService: DataShareService) { }
+  constructor(private _apiService: ApiService, private _dataShareService: DataShareService, private _msgService: MessageService) { }
 
   ngOnInit() {
     this._dataShareService.user.subscribe(res => this.user = res);
@@ -79,6 +79,18 @@ export class MouseoverMenuComponent implements OnInit {
         this.outputMessage(this.selectedSong.name, "added to playlist", MessageType.Success);
       }
     );
+  }
+
+  public addToGlobalPlaylist(event){
+    event.stopPropagation();
+    let gpls = {
+      songId: this.selectedSong.songId,
+      userId: this.user.userId,
+      votes: 0,
+      isStatic: false
+    }
+
+    this._msgService.postSong(gpls);
   }
 
   /*

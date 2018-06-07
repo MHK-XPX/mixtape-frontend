@@ -15,6 +15,7 @@
         <li class="dropdown-item" *ngFor="let playlist of this.playlists index as i" (click)="addToPlaylist(playlist, i, $event); myDrop.close();">
           {{ playlist.name }}
         </li>
+        <li class="dropdown-item" (click)="addToGlobalPlaylist($event)">Global Playlist</li>
         <button class="dropdown-item btn-danger" (click)="cancelDropdown($event); myDrop.close();">Cancel</button>
       </ul>
     </div>

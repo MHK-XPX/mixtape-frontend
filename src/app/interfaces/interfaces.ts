@@ -17,6 +17,11 @@ import { YoutubeResult } from './non-local/youtuberesult';
 //Misc interfaces/enums
 import { MessageType } from './misc/messagetype.enum';
 
+//Messages:
+import { GlobalPlaylistSong } from './messages/globalplaylistsong';
+import { Message } from './messages/message';
+import { VotedOn } from './messages/votedon';
+
 export {
     Album,
     AlbumRating,
@@ -30,5 +35,8 @@ export {
     LastfmTrack,
     MessageOutput,
     YoutubeResult,
-    MessageType
+    MessageType,
+    GlobalPlaylistSong,
+    Message,
+    VotedOn
 };
