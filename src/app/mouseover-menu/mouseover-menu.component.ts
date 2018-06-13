@@ -90,7 +90,8 @@ export class MouseoverMenuComponent implements OnInit {
       isStatic: false
     }
 
-    this._msgService.postSong(gpls);
+    // this._msgService.postSong(gpls);
+    this._apiService.postSong(gpls);
   }
 
   /*

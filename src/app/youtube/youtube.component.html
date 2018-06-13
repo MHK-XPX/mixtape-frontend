@@ -1,11 +1,12 @@
 <div clas="container-fluid">
     <div class="row">
         <div class="col-sm-7 embed-responsive half-height">
-            <youtube-player [videoId]="this.videoId" [height]="getScreenHeight()" [width]="getScreenWidth()" (ready)="savePlayer($event)" (change)="onStateChange($event)"></youtube-player>
+            <youtube-player [height]="getScreenHeight()" [width]="getScreenWidth()" (ready)="savePlayer($event)"
+                (change)="onStateChange($event)"></youtube-player>
         </div>
 
-        <div class="col-sm-5 playlist-container playlist-song-list shadow no-padding half-height">
-            <div class="card mh-100" *ngIf="this.playlist" >
+        <!-- <div class="col-sm-5 playlist-container playlist-song-list shadow no-padding half-height">
+            <div class="card mh-100" *ngIf="this.playlist">
                 <div class="card-header text-center current-playlist-holder">
                     <h5 class="text-center font-weight-bold d-inline" placement="top" ngbTooltip="Edit Playlist Name" (click)="openModal(content)">{{ this.playlist.name }}</h5>
                     <div ngbDropdown placement="left-top">
@@ -18,7 +19,7 @@
                         </div>
                     </div>
                 </div>
-                <ul class="list-group list-group-flush playlist-list scrollable-content" >
+                <ul class="list-group list-group-flush playlist-list scrollable-content">
                     <li class="list-group-item" [style.background-color]="this.onSong === i ? '#918A8A' : '#BEBEBE'" (mouseover)="this.mouseOver = i"
                         (mouseout)="this.mouseOver = -1" (click)="playGivenVideo('', i)" *ngFor="let pls of this.playlist.playlistSong index as i">
                         <img class="d-none d-md-none d-lg-inline" [src]="this.getThumbnail(pls.song.url)" /> {{ i+1 }}. {{ pls.song.name }}
@@ -30,6 +31,10 @@
             <div class="mx-auto" *ngIf="!this.playlist">
                 <h5 class="text-center">Select Playlist...</h5>
             </div>
+        </div> -->
+        <div class="col-sm-5 no-padding">
+             <app-local-playlist *ngIf="!this.viewingGlobalPlaylist"></app-local-playlist>
+             <app-global-playlist *ngIf="this.viewingGlobalPlaylist"></app-global-playlist>
         </div>
     </div>
 </div>
@@ -39,7 +44,8 @@
         <h4 class="modal-title">Change Playlist Name</h4>
     </div>
     <div class="modal-body">
-        <input [value]="playlistRename" (input)="playlistRename = $event.target.value" type="text" class="form-control col-12" placeholder="Playlist Name" (ngEnter)="c($event)" autofocus="autofocus">
+        <input [value]="playlistRename" (input)="playlistRename = $event.target.value" type="text" class="form-control col-12" placeholder="Playlist Name"
+            (ngEnter)="c($event)" autofocus="autofocus">
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-secondary col-2" (click)="d()">Cancel</button>

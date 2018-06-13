@@ -98,7 +98,13 @@ export class SidebarComponent implements OnInit {
     @param playlist: Playlist - The playlist the user wants to play
   */
   public selectPlaylist(playlist: Playlist) {
+    this._dataShareService.changeUsingGlobalPlaylist(false);    
     this._dataShareService.changeCurrentPlaylist(playlist);
+  }
+
+  public selectGlobalPlaylist(){
+    this._dataShareService.changeUsingGlobalPlaylist(true);    
+    // this._dataShareService.changeCurrentPlaylist(null);
   }
 
   /*

@@ -1,16 +1,17 @@
-import { Injectable, Inject } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { Response } from '@angular/http';
+import { Injectable, EventEmitter } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 
 import { StorageService } from '../session/session-storage.service';
 
-import { User, YoutubeResult, LastfmTrack, SearchResults } from '../../interfaces/interfaces';
+import { User, YoutubeResult, LastfmTrack, SearchResults, GlobalPlaylistSong } from '../../interfaces/interfaces';
 
 @Injectable()
 export class ApiService {
+
+    newSongPosted: EventEmitter<boolean> = new EventEmitter(false); //the user's placement in the queue
 
     constructor(private _http: HttpClient, private _storage: StorageService) { }
 
@@ -118,6 +119,21 @@ export class ApiService {
         );
 
         return this._http.delete(environment.api + path + "/" + id, { headers }) as Observable<T>;
+    }
+
+    public postSong(gpls: any) {
+        let headers: HttpHeaders = new HttpHeaders(
+            { "Authorization": "Bearer " + this._storage.getValue("token") }
+        );
+        this._http.post<GlobalPlaylistSong>(environment.api + "GlobalPlaylistSongs", gpls, { headers }).subscribe(
+            resp => resp,
+            err => console.log("unable to post", err),
+            () => {
+                // this.getMessages(true);
+                this.newSongPosted.emit(true);
+                this.newSongPosted.emit(false);
+            }
+        );
     }
 
     /*

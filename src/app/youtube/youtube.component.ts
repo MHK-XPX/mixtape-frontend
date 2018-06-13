@@ -4,17 +4,19 @@
   from the current playlist. It also allows the user to view the video on the page.
 */
 
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, ViewChild } from '@angular/core';
 import { trigger, state, animate, transition, style, sequence } from '@angular/animations';
-import { Subscription, Subject } from "rxjs";
+import { Subscription, Subject, } from "rxjs";
 
 import { debounceTime } from 'rxjs/operator/debounceTime';
 
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 
 import { ApiService, DataShareService, StorageService } from '../services/services';
-import { Playlist, PlaylistSong, Song, MessageType, MessageOutput } from '../interfaces/interfaces';
+import { Playlist, PlaylistSong, Song, MessageType, MessageOutput, SongStart } from '../interfaces/interfaces';
 import { MouseoverMenuComponent, SnackbarComponent } from '../components';
+import { LocalPlaylistComponent } from '../local-playlist/local-playlist.component';
+import { GlobalPlaylistComponent } from '../global-playlist/global-playlist.component';
 
 @Component({
   selector: 'youtube',
@@ -39,6 +41,11 @@ import { MouseoverMenuComponent, SnackbarComponent } from '../components';
 })
 
 export class YoutubeComponent implements OnInit {
+  @ViewChild(LocalPlaylistComponent) localPlaylist;
+  @ViewChild(GlobalPlaylistComponent) globalPlaylist;
+
+  viewingGlobalPlaylist: boolean;
+
   playlist: Playlist;
   previewSong: Song;
 
@@ -50,43 +57,41 @@ export class YoutubeComponent implements OnInit {
   private url: string = "";
   videoId;
 
-
   mouseOver: number = -1;
 
   private onSong: number = this._storage.getValue('onSong') ? this._storage.getValue('onSong') : -1;
   private repeat: boolean = false;
   private paused: boolean = false;
 
+  currentSongURL: string = "";
+
   constructor(private _apiService: ApiService, private _dataShareService: DataShareService, private _storage: StorageService, private _modalService: NgbModal) { }
 
-  @HostListener('window:resize') onResize(){
-    if(this.player){
+  @HostListener('window:resize') onResize() {
+    if (this.player) {
       this.player.setSize(this.getScreenWidth(), this.getScreenHeight());
     }
   }
 
   ngOnInit() {
-    this._dataShareService.currentPlaylist.subscribe(res => this.setPlaylist(res));
-    this._dataShareService.previewSong.subscribe(res => this.tryToPreviewSong(res));
+    this._dataShareService.usingGlobalPlaylist.subscribe(res => this.switchFromLocalToGlobal(res));
+    this._dataShareService.nextSong.subscribe(res => this.changeSong(res));
   }
 
-  /*
-    This method is called whenver the current playlist is updated, it auto plays it iff 
-    it isn't the last playlist played
-    @param playlist: Playlist - The new playlist to play
-  */
-  private setPlaylist(playlist: Playlist) {
-    this.playlist = playlist;
+  public changeSong(ss: SongStart) {
+    this.videoId = "";
+    if (ss) {
+      this.parseAndSetVideoId(ss.url);
+      this.player.loadVideoById(this.videoId, ss.time);
+      this.player.playVideo();
+    }
+  }
 
-    if (!this.playlist) return;
+  private switchFromLocalToGlobal(onGlobal: boolean) {
+    this.viewingGlobalPlaylist = onGlobal;
 
-    if (this.lastPlaylistID === this.playlist.playlistId || (this.lastPlaylistID && (this.lastPlaylistID === this.playlist.playlistId))) {
-      this.onSong = this._storage.getValue('onSong') ? this._storage.getValue('onSong') : 0;
-    } else {
-      this.clearPreviewSong();
-      this.onSong = -1;
-      this.lastPlaylistID = this.playlist.playlistId;
-      this.changeSong(1);
+    if (this.viewingGlobalPlaylist) {
+      this.pauseClicked();
     }
   }
 
@@ -108,10 +113,11 @@ export class YoutubeComponent implements OnInit {
       case -1:
         break;
       case 0:
-        if(this.previewSong){
-          this.clearPreviewSong();
+        if (this.viewingGlobalPlaylist) {
+          this.globalPlaylist.nextSong();
+        } else {
+          this.localPlaylist.nextSong(1);
         }
-        if(this.playlist) this.changeSong(1);
         break;
       case 1:
         this.paused = false;
@@ -126,74 +132,10 @@ export class YoutubeComponent implements OnInit {
     }
   }
 
-  /*
-    This method is called when the user clicks the next/last song of button.
-    It moves our currently playing (onSong) value in a given direction
-    @param dir: number - the direction to move in our playlist
-  */
-  private changeSong(dir: number){
-    this.onSong += dir;
-
-    if(this.onSong >= this.playlist.playlistSong.length){
-      if(this.repeat) this.onSong = 0; else return;
-    }else if(this.onSong < 0)
-      this.onSong = this.playlist.playlistSong.length - 1;
-    
-    this.playVideo();
-  }
-
-  /*
-    This method is called when we want to play a specific video or the next video. This is decided by if the songURl param
-    is given or not. If it is not given then we play the video at the onSong index; otherwise, we play the video with
-    the given url
-    @param? songUrl: string - The video url to play
-  */
-  private playVideo(songUrl?: string) {
-    if (songUrl) {
-      this.parseAndSetVideoId(songUrl);
-    } else {
-      this._storage.setValue('onSong', this.onSong);
-      this.parseAndSetVideoId(this.playlist.playlistSong[this.onSong].song.url);
-    }
-
-    this.player.loadVideoById(this.videoId, 0);
-    this.player.playVideo();
-  }
-
-  /*
-    This method is called when the user wants to play a song at a specific index (IE when the user clicks on a specific song in the playlist)
-    @param songUrl: string - The song url we want to play
-    @param index?: number - The index in the playlist we want to move to
-  */
-  private playGivenVideo(songUrl: string, index?: number) {
-    if(index){
-      this.onSong = index;
-      this.playVideo();
-      return;
-    }
-    
-    this.parseAndSetVideoId(songUrl);
-    this.player.loadVideoById(this.videoId, 0);
-    this.player.playVideo();
-  }
-
-  /*
-    This method is called when we try to preview a song (when the user clicks a song on the search component)
-    @param song: Song - The song we want to preview
-  */
-  private tryToPreviewSong(song: Song) {
-    if ((!this.previewSong && song) || this.previewSong && song && song.songId !== this.previewSong.songId) {
-      this.previewSong = song;
-      this.playVideo(this.previewSong.url);
-    }else{
-      this.previewSong = null;
-    }
-  }
-
-  public pauseClicked(){
+  public pauseClicked() {
     this.paused = !this.paused;
 
-    if(this.paused)
+    if (this.paused)
       this.player.pauseVideo();
     else
       this.player.playVideo();
@@ -201,41 +143,18 @@ export class YoutubeComponent implements OnInit {
 
   public repeatClicked(){
     this.repeat = !this.repeat;
+    this.localPlaylist.repeat = this.repeat;
   }
 
-  private clearPreviewSong(){
-    this._dataShareService.changePreviewSong(null);
+  public moveInPlaylist(dir: number) {
+    this.localPlaylist.nextSong(dir);
   }
 
-  openModal(content){
-    this._modalService.open(content).result.then((result) => {
-      if(this.playlistRename.length > 0)
-        this.playlist.name = this.playlistRename;
-      this.renamePlaylist();
-      this.playlistRename = "";
-    }, (reason) => {
-      this.playlistRename = "";
-    });
-  }
-
-  private renamePlaylist(){
-    if (!this.playlist.playlistId) return; //The user shouldnt be allowed to rename a queue
-
-    let s: Subscription = this._apiService.putEntity<Playlist>("Playlists", this.playlist.playlistId, this.playlist).subscribe(
-      d => d = d,
-      err => this.triggerMessage("", "Unable to change name of playlist", MessageType.Failure),
-      () => {
-        s.unsubscribe();
-        this.triggerMessage("", "Playlist name updated!", MessageType.Success);
-      }
-    );
-  }
-  
   /*
    This method is called when we load a video, it parses the video ID from the youtube link
    @Input url: string - The url to parse
    @POST: sets this.videoId to the parsed string
- */
+  */
   private parseAndSetVideoId(url: string) {
     if (url !== '') {
       var fixedUrl = url.replace(/(>|<)/gi, '').split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/);
@@ -246,41 +165,6 @@ export class YoutubeComponent implements OnInit {
         this.videoId = url;
       }
     }
-  }
-
-  /*
-    This method is called everytime we display a song on the DOM, it requests the thumbnail saved via youtube's api
-    and returns the source string to load the image from
-    @Input url: string - The video url to get the thumbnail for
-    @Output string - The thumbnail source link from the youtube api
-  */
-  private getThumbnail(url: string): string {
-    var prefixImgUrl: string = "https://img.youtube.com/vi/";
-    var suffixImgUrl: string = "/default.jpg";
-    var ID;
-    var imgURL: string = '';
-    //Pull the video ID from the link so we can embed the video
-    if (url !== '') {
-      var fixedUrl = url.replace(/(>|<)/gi, '').split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/);
-      if (fixedUrl !== undefined) {
-        ID = fixedUrl[2].split(/[^0-9a-z_\-]/i);
-        ID = ID[0];
-      } else {
-        ID = url;
-      }
-      imgURL = prefixImgUrl + ID + suffixImgUrl;
-    }
-    return imgURL;
-  }
-
-  private triggerMessage(message: string, action: string, level: MessageType){
-    let out: MessageOutput = {
-      message: message,
-      action: action,
-      level: level
-    };
-
-    this._dataShareService.changeMessage(out);
   }
 
   /*

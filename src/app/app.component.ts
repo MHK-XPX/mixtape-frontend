@@ -9,7 +9,7 @@ import { Subscription, Subject } from 'rxjs';
 import 'rxjs/add/operator/debounceTime.js';
 
 
-import { LoginComponent, SidebarComponent, SnackbarComponent, GlobalYoutubeComponent } from './components';
+import { LoginComponent, SidebarComponent, SnackbarComponent, GlobalPlaylistComponent } from './components';
 import { YoutubeComponent } from './youtube/youtube.component';
 
 import { User, Playlist } from './interfaces/interfaces';
@@ -33,6 +33,8 @@ export class AppComponent implements OnInit {
 
   currentPlaylist: Playlist;
 
+  viewingGlobalPlaylists: boolean;
+
   constructor(private _apiService: ApiService, private _dataShareService: DataShareService, private _storage: StorageService, private _router: Router) { }
 
   ngOnInit() {
@@ -54,6 +56,8 @@ export class AppComponent implements OnInit {
     this._dataShareService.currentPlaylist.subscribe(res => this.currentPlaylist = res);
 
     let j: Subscription = this.searchStringChanged.debounceTime(250).subscribe(res => this.changeSearchString(res)); //Setup our debounce time so that we can reduce our # of requests
+
+    this._dataShareService.usingGlobalPlaylist.subscribe(res => this.viewingGlobalPlaylists = res);
   }
   
   /*

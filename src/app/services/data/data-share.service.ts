@@ -6,7 +6,7 @@
 import { Injectable, Inject } from '@angular/core';
 import { Subject, BehaviorSubject } from 'rxjs';
 
-import { User, Playlist, Song, MessageType, MessageOutput } from '../../interfaces/interfaces';
+import { User, Playlist, Song, MessageType, MessageOutput, SongStart } from '../../interfaces/interfaces';
 
 @Injectable()
 export class DataShareService{
@@ -15,12 +15,18 @@ export class DataShareService{
 
     public playlists: Subject<Playlist[]> = new BehaviorSubject<Playlist[]>([]);
     public currentPlaylist: Subject<Playlist> = new BehaviorSubject<Playlist>(null);
+    public currentSong: Subject<Song> = new BehaviorSubject<Song>(null);
+    public currentTime: number;
+
+    public nextSong: Subject<SongStart> = new BehaviorSubject<SongStart>(null);
 
     public searchString: Subject<string> = new BehaviorSubject<string>(null);
 
     public previewSong: Subject<Song> = new BehaviorSubject<Song>(null);
 
     public message: Subject<MessageOutput> = new BehaviorSubject<MessageOutput>(null);
+
+    public usingGlobalPlaylist: Subject<boolean> = new BehaviorSubject<boolean>(false);
 
     constructor() {}
 
@@ -38,6 +44,14 @@ export class DataShareService{
     */
     public changeCurrentPlaylist(playlist: Playlist){
         this.currentPlaylist.next(playlist);
+    }
+
+    /*
+        Called whenever the user switches the current song
+        @param song: Song - The new song
+    */
+    public changeCurrentSong(song: Song){
+        this.currentSong.next(song);
     }
 
     /*
@@ -71,6 +85,18 @@ export class DataShareService{
     public changeMessage(message: MessageOutput){
         this.message.next(message);
     }
+
+    /*
+        Called whenever the user wants to switch between the global and their playlists
+        @param switchTo: boolean - The value to switch to
+    */
+   public changeUsingGlobalPlaylist(switchTo: boolean){
+       this.usingGlobalPlaylist.next(switchTo);
+   }
+
+   public setCurrentTime(time: number){
+       this.currentTime = time;
+   }
 
     /*
         Called when we logout, it clears all values on our subjects so that if we were to log back in, we wouldn't

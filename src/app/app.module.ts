@@ -13,7 +13,11 @@ import { NgProgressHttpClientModule } from '@ngx-progressbar/http-client';
 import { YoutubePlayerModule } from 'ngx-youtube-player';
 
 //Components:
-import { AppComponent, GlobalYoutubeComponent, LoginComponent, MouseoverMenuComponent, ProfileComponent, SearchResultsComponent, SidebarComponent, SnackbarComponent, YoutubeComponent } from './components';
+import { 
+    AppComponent, GlobalPlaylistComponent, LocalPlaylistComponent, 
+    LoginComponent, MouseoverMenuComponent, ProfileComponent, SearchResultsComponent, 
+    SidebarComponent, SnackbarComponent, YoutubeComponent 
+} from './components';
 
 //Services:
 import { ApiService, DataShareService, SessionGuard, StorageService, UserResolver, HubService, MessageService } from './services/services';
@@ -36,7 +40,8 @@ import { NgEnterDirective } from './directives/directives';
     SearchResultsComponent,
     MouseoverMenuComponent,
     ProfileComponent,
-    GlobalYoutubeComponent
+    GlobalPlaylistComponent,
+    LocalPlaylistComponent
   ],
   imports: [
     BrowserModule,

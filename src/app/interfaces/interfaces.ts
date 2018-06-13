@@ -13,6 +13,7 @@ import { User } from './api/user';
 import { LastfmTrack } from './non-local/lastfmtrack';
 import { MessageOutput } from './non-local/messageoutput';
 import { YoutubeResult } from './non-local/youtuberesult';
+import { SongStart } from './non-local/songstart';
 
 //Misc interfaces/enums
 import { MessageType } from './misc/messagetype.enum';
@@ -21,6 +22,7 @@ import { MessageType } from './misc/messagetype.enum';
 import { GlobalPlaylistSong } from './messages/globalplaylistsong';
 import { Message } from './messages/message';
 import { VotedOn } from './messages/votedon';
+import { Connection } from './messages/connection';
 
 export {
     Album,
@@ -35,8 +37,10 @@ export {
     LastfmTrack,
     MessageOutput,
     YoutubeResult,
+    SongStart,
     MessageType,
     GlobalPlaylistSong,
     Message,
-    VotedOn
+    VotedOn,
+    Connection
 };

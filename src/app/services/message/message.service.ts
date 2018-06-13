@@ -2,108 +2,102 @@ import { Injectable, EventEmitter } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { HubConnection } from '@aspnet/signalr';
 import { environment } from '../../../environments/environment';
-import { Message, GlobalPlaylistSong } from '../../interfaces/interfaces';
+import { Message, GlobalPlaylistSong, Connection } from '../../interfaces/interfaces';
 import { Subject, BehaviorSubject } from 'rxjs';
 import { HubService } from '../message/hub.service';
+import { StorageService } from '../session/session-storage.service';
+import { ApiService } from '../api/api.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MessageService {
 
-  isLoading: EventEmitter<boolean> = new EventEmitter(true);
-
   private MESSAGE_URL = environment.api + 'messages';
 
+  public connection: Connection; //Given when we connect to the hub
+
   public storedSongsSubject: Subject<Message[]> = new BehaviorSubject<Message[]>([]);
-  public storedSongs: Message[] = []; //Holds a list of all song
-  
-  public lastUpdated: Subject<Message> = new BehaviorSubject<Message>(null); //Holds the last updated song (NOT USED??)
+  public storedSongs: Message[] = [];
 
-  constructor(private _http: HttpClient, private _hub: HubService) {
-    this._hub.allMessages.subscribe(
-      message => {
-        this.storedSongs = message;
-        this.storedSongsSubject.next(this.storedSongs);
-      }
-    );
+  constructor(private _http: HttpClient, private _hub: HubService, private _storage: StorageService, private _apiService: ApiService) {
+    this._hub.placement.subscribe(res => this.updateConnection(res));
 
-    this._hub.newMessage.subscribe(
-      msg => this.updateSpecificSong(msg)
-    );
+    this._hub.allSongs.subscribe(res => this.updateSongList(res));
+
+    this._hub.newSong.subscribe(res => this.updateSongDetails(res));
+
+    this._apiService.newSongPosted.subscribe(res => {
+      this.getAllSongs(true);
+    })
   }
 
-
-  /*
-    This will return a list of all G-PL songs from the database, if the sendToAll param is true, then we will send the updated list to everyone
-  */
-  public getMessages(sendToAll?: boolean) {
+  public getAllSongs(sendToAll?: boolean) {
     let headers: HttpHeaders = new HttpHeaders(
-      { 'Content-Type': 'application/json' }
+      { "Authorization": "Bearer " + this._storage.getValue("token") }
     );
 
     this._hub.setConnection();
-    this.isLoading.emit(true);
     this._http.get<Message[]>(this.MESSAGE_URL, { headers }).subscribe(
       resp => {
-        this.isLoading.emit(false);
         this.storedSongs = resp;
+        if (sendToAll) this._hub.invokeListUpdate(resp);
         this.storedSongsSubject.next(this.storedSongs);
-        // this.messageSubject.next(resp);
-        if(sendToAll) this._hub.invokeListUpdate(resp);
       },
-      err => console.log("UNABLE TO GET MESSAGES")
+      err => console.log("Unable to get all messages")
     );
   }
 
-
-  public patchMessage(message: Message) {
+  public patchSong(msg: Message) {
     let headers: HttpHeaders = new HttpHeaders(
-      { 'Content-Type': 'application/json' }
+      { "Authorization": "Bearer " + this._storage.getValue("token") }
     );
-    this.isLoading.emit(true);
-    this._http.patch<Message>(this.MESSAGE_URL, message, { headers }).subscribe(
-      resp => {
-        this.isLoading.emit(false);
-        this._hub.invokeSongUpdate(resp);
-      },
+
+    this._http.patch<Message>(this.MESSAGE_URL, msg, { headers }).subscribe(
+      resp => this._hub.invokeSongUpdate(resp),
       err => console.log("Unable to patch message")
     );
   }
 
-  public postSong(gpls: any){
+  public deleteSong(msg: Message){
     let headers: HttpHeaders = new HttpHeaders(
-      { 'Content-Type': 'application/json' }
+      { "Authorization": "Bearer " + this._storage.getValue("token") }
     );
-    this.isLoading.emit(true);
-    this._http.post<GlobalPlaylistSong>(environment.api + "GlobalPlaylistSongs", gpls, { headers }).subscribe(
-      resp => this.isLoading.emit(false),
-      err => console.log("unable to post", err),
-      () => {
-        this.getMessages(true);
-      }
+    
+    this._http.delete<Message[]>(this.MESSAGE_URL + '/' + msg.globalPlaylistSongId, { headers }).subscribe(
+      resp => this._hub.invokeListUpdate(resp),
+      err => console.log("unable to delete song", err)
     );
   }
 
-  public deleteMessage(message: Message){
+  public moveToNextSongAndResetHeartbeat(){
     let headers: HttpHeaders = new HttpHeaders(
-      { 'Content-Type': 'application/json' }
+      { "Authorization": "Bearer " + this._storage.getValue("token") }
     );
-    this.isLoading.emit(true);
-    this._http.delete<Message[]>(this.MESSAGE_URL + '/' + message.globalPlaylistSongId, { headers }).subscribe(
-      resp => {
-        this.isLoading.emit(false);
-        this._hub.invokeListUpdate(resp);
-        // this.getMessages();
-      },
-      err => console.log("error on delete", err)
+
+    this._http.delete<Message[]>(this.MESSAGE_URL + '/' + this.storedSongs[0].globalPlaylistSongId, { headers }).subscribe(
+      resp => this._hub.invokeNextSongUpdate(resp),
+      err => console.log("unable to delete and move to next song", err)
     );
   }
 
-  private updateSpecificSong(msg: Message){
+  private updateConnection(connection: Connection) {
+    this.connection = connection;
+  }
+
+  private updateSongList(msgs: Message[]){
+    this.storedSongs = msgs;
+    this.storedSongsSubject.next(this.storedSongs);
+  }
+  private updateSongDetails(msg: Message) {
+    if (!msg) return;
+
     let index: number = this.storedSongs.findIndex(x => x.globalPlaylistSongId === msg.globalPlaylistSongId);
-    console.log(msg);
     this.storedSongs[index] = msg;
   }
 
+  public disconnectFromHub() {
+    this._hub.stopConnection();
+    this.storedSongsSubject.next([]);
+  }
 }

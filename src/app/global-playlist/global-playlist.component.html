@@ -1,0 +1,20 @@
+<div class="col-12 playlist-container playlist-song-list shadow no-padding half-height">
+  <div class="card mh-100">
+    <div class="card-header text-center current-playlist-holder">
+      <h5 class="text-center font-weight-bold d-inline">Global Playlist</h5>
+    </div>
+    <ul class="list-group list-group-flush playlist-list scrollable-content" *ngIf="!this._msgService.storedSongs || this._msgService.storedSongs.length">
+      <li class="list-group-item" *ngFor="let msg of this._msgService.storedSongs index as i" [style.background-color]="this.onSong === i ? '#918A8A' : '#BEBEBE'">
+        <img class="d-none d-md-none d-lg-inline" [src]="this.getThumbnail(msg.song.url)" /> {{ i+1 }}. {{ msg.song.name }}
+        <div class="float-right">
+          <button type="button" class="btn btn-danger" (click)="downVote(msg)" [disabled]="msg.isStatic || checkHasVotedOn(msg.globalPlaylistSongId)">-</button>
+          <b>Votes:</b> {{ msg.votes }}
+          <button type="button" class="btn btn-success" (click)="upVote(msg)" [disabled]="msg.isStatic || checkHasVotedOn(msg.globalPlaylistSongId)">+</button>
+        </div>
+        <div class="mx-auto">
+          <body [style.background-color]="this.onSong === i ? '#918A8A' : '#BEBEBE'">Posted by: {{ msg.username }}</body>
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>
