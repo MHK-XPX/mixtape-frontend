@@ -14,7 +14,7 @@
     </div>
     <ul class="list-group list-group-flush playlist-list scrollable-content">
       <li class="list-group-item" [style.background-color]="this.onSong === i ? '#918A8A' : '#BEBEBE'" (mouseover)="this.mouseOver = i"
-        (mouseout)="this.mouseOver = -1" (click)="playGivenVideo('', i)" *ngFor="let pls of this.playlist.playlistSong index as i">
+        (mouseout)="this.mouseOver = -1" (click)="playGivenVideo(i, pls.song.url)" *ngFor="let pls of this.playlist.playlistSong index as i">
         <img class="d-none d-md-none d-lg-inline" [src]="this.getThumbnail(pls.song.url)" /> {{ i+1 }}. {{ pls.song.name }}
         <app-mouseover-menu [@showState]="this.mouseOver === i ? 'show' : 'hide'" [addToPL]="true" [addToQ]="true" [deleteFromPL]="true"
           [selectedSong]="pls.song" [selectedPLS]="pls"></app-mouseover-menu>

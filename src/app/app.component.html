@@ -14,7 +14,7 @@
         <span class="navbar-toggler-icon"></span>
     </button>
     <div [ngbCollapse]="isNavbarCollapsed" class="collapse navbar-collapse" id="navbarSupportedContent">
-        <input type="search" class="nav-item form-control md-input" [value]="searchString" placeholder="Search..." (input)="typedSearch($event.target.value)"/>
+        <input type="search" class="nav-item form-control md-input" [value]="searchString" placeholder="Search..." (input)="typedSearch($event.target.value)" *ngIf="this.isLoggedIn()"/>
 
         <div class="nav-item" *ngIf="this.currentPlaylist !== null && this.isLoggedIn() && !this.viewingGlobalPlaylists && this.YT">
             <img id="lastSongButton" class='icon icon-middle icon-md float-left' src="assets/playlist/last_song.png" placement="bottom"

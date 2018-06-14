@@ -38,23 +38,30 @@ import { Playlist, Song, MessageType, MessageOutput, SongStart } from '../interf
 })
 
 export class LocalPlaylistComponent implements OnInit {
+  private alive: boolean = true;
+
   public playlist: Playlist;
+  private lastPlaylistID: number;
+
   previewSong: Song;
 
   playlistRename: string = "";
-
-  private lastPlaylistID: number;
 
   mouseOver: number = -1;
 
   private onSong: number = this._storage.getValue('onSong') ? this._storage.getValue('onSong') : 0;
   private repeat: boolean = false;
-  private paused: boolean = false;
 
   constructor(private _apiService: ApiService, private _dataShareService: DataShareService, private _storage: StorageService, private _modalService: NgbModal) { }
 
   ngOnInit() {
-    this._dataShareService.currentPlaylist.subscribe(res => this.setPlaylist(res));
+    this._dataShareService.currentPlaylist
+      .takeWhile(() => this.alive)
+      .subscribe(res => this.setPlaylist(res));
+
+    this._dataShareService.previewSong
+      .takeWhile(() => this.alive)
+      .subscribe(res => this.playPreviewSong(res));
   }
 
   /*
@@ -68,9 +75,37 @@ export class LocalPlaylistComponent implements OnInit {
     let ss: SongStart;
 
     if (this.playlist && this.playlist.playlistSong.length) {
-      this.setCurrentSong(this.playlist.playlistSong[0].song.url);
+      if (this.lastPlaylistID === null || this.lastPlaylistID !== this.playlist.playlistId) {
+        this.setCurrentSong(this.playlist.playlistSong[0].song.url);
+        this.lastPlaylistID = this.playlist.playlistId;
+      }
     }
 
+  }
+
+  /*
+    This method is called when the user clicks a song on the playlist,
+    it skips to that song and starts to play it
+    @param index: number - The index of the song in the playlist
+    @param url: string - The url of the song to play
+  */
+  public playGivenVideo(index: number, url: string) {
+    this.onSong = index;
+
+    this.setCurrentSong(url);
+  }
+
+  /*
+    This method is called when the user clicks a song from the search results
+    to preview. It will start playing it on the youtube player
+    @param song: Song - The song to preview
+  */
+  public playPreviewSong(song: Song) {
+    this.previewSong = song;
+
+    if (!this.previewSong) return;
+
+    this.setCurrentSong(this.previewSong.url);
   }
 
   /*
@@ -78,6 +113,12 @@ export class LocalPlaylistComponent implements OnInit {
     @dir: number - The direction to move in the playlist (1) forward (-1) back
   */
   public nextSong(dir: number) {
+    //This is called after we preview a song and it ends (or we click the next button on a song)
+    if (this.previewSong) {
+      this.previewSong = null;
+      dir = 0;
+    }
+
     this.onSong += dir;
 
     if (this.onSong >= this.playlist.playlistSong.length) {
@@ -168,6 +209,10 @@ export class LocalPlaylistComponent implements OnInit {
     };
 
     this._dataShareService.changeMessage(out);
+  }
+
+  ngOnDestroy() {
+    this.alive = false;
   }
 
 }
