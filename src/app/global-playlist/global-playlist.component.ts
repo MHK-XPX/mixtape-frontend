@@ -103,6 +103,7 @@ export class GlobalPlaylistComponent implements OnInit {
   public upVote(msg: Message) {
     let index: number = this.getVoteIndex(msg.globalPlaylistSongId);
     this.hasVotedOn[index].voted = true;
+
     msg.votes++;
 
     if (msg.votes >= this.maxVotes) {
@@ -110,6 +111,7 @@ export class GlobalPlaylistComponent implements OnInit {
       msg.votes = this.maxVotes;
     }
 
+    this._storage.setValue("votedOn", this.hasVotedOn);
     this._msgService.patchSong(msg);
   }
 
@@ -123,6 +125,8 @@ export class GlobalPlaylistComponent implements OnInit {
     let index: number = this.getVoteIndex(msg.globalPlaylistSongId);
     this.hasVotedOn[index].voted = true;
     msg.votes--;
+    
+    this._storage.setValue("votedOn", this.hasVotedOn);
 
     if (msg.votes <= -this.maxVotes) {
       this._msgService.deleteSong(msg);
