@@ -76,6 +76,7 @@ export class LocalPlaylistComponent implements OnInit {
 
     if (this.playlist && this.playlist.playlistSong.length) {
       if (this.lastPlaylistID === null || this.lastPlaylistID !== this.playlist.playlistId) {
+        this.onSong = 0;
         this.setCurrentSong(this.playlist.playlistSong[0].song.url);
         this.lastPlaylistID = this.playlist.playlistId;
       }

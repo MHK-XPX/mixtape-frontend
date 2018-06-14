@@ -14,7 +14,8 @@
         <span class="navbar-toggler-icon"></span>
     </button>
     <div [ngbCollapse]="isNavbarCollapsed" class="collapse navbar-collapse" id="navbarSupportedContent">
-        <input type="search" class="nav-item form-control md-input" [value]="searchString" placeholder="Search..." (input)="typedSearch($event.target.value)" *ngIf="this.isLoggedIn()"/>
+        <input type="search" class="nav-item form-control md-input" [value]="searchString" placeholder="Search..." (input)="typedSearch($event.target.value)"
+            *ngIf="this.isLoggedIn()" />
 
         <div class="nav-item" *ngIf="this.currentPlaylist !== null && this.isLoggedIn() && !this.viewingGlobalPlaylists && this.YT">
             <img id="lastSongButton" class='icon icon-middle icon-md float-left' src="assets/playlist/last_song.png" placement="bottom"
@@ -24,7 +25,7 @@
             <img id="nextSongButton" class="icon icon-middle icon-md" src="assets/playlist/next_song.png" placement="bottom" ngbTooltip="Next Song"
                 (click)="this.YT.moveInPlaylist(1)" />
             <img id="repeatButton" class="icon icon-middle icon-md" [src]="this.YT.repeat ? 'assets/playlist/repeat_song_on.png' : 'assets/playlist/repeat_song_off.png'"
-                placement="button" ngbTooltip="Repeat" (click)="this.YT.repeatClicked()" />
+                placement="bottom" ngbTooltip="Repeat" (click)="this.YT.repeatClicked()" />
         </div>
     </div>
 
@@ -47,9 +48,9 @@
     </div>
 
     <div class="row" *ngIf="this.isLoggedIn()">
+        <img id="hideSidebar" class="icon-sm toggle" [src]="this.isSidebarCollapsed ? 'assets/shared/hide_sidebar.png' : 'assets/shared/show_sidebar.png'"
+            (click)="isSidebarCollapsed = !isSidebarCollapsed" />
 
-        <button type="button" class="btn btn-success toggle" id="toggle" (click)="isSidebarCollapsed = !isSidebarCollapsed" *ngIf="!isSidebarCollapsed"><=</button>
-        <button type="button" class="btn btn-success toggle" id="toggle" (click)="isSidebarCollapsed = !isSidebarCollapsed" *ngIf="isSidebarCollapsed">=></button>
         <div class="col-sm-2 no-padding" *ngIf="!isSidebarCollapsed">
             <sidebar *ngIf="this.getUser()"></sidebar>
         </div>

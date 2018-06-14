@@ -109,5 +109,7 @@ export class DataShareService{
         this.searchString.next(null);
         this.previewSong.next(null);
         this.message.next(null);
+        this.nextSong.next(null);
+        this.currentSong.next(null);
     }
 }

@@ -30,8 +30,7 @@ import { Subscription } from 'rxjs';
         })),
         transition('show => *', animate('200ms')),
         transition('hide => show', animate('400ms')),
-      ]
-    )
+      ])
   ]
 })
 
