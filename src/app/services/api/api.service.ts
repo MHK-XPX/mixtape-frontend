@@ -59,7 +59,6 @@ export class ApiService {
         let headers: HttpHeaders = new HttpHeaders(
             { "Authorization": "Bearer " + this._storage.getValue("token") }
         );
-        console.log(environment.api);
 
         return this._http.get(environment.api + path + "/" + id, { headers }) as Observable<T>;
     }
@@ -73,7 +72,6 @@ export class ApiService {
         let headers: HttpHeaders = new HttpHeaders(
             { "Authorization": "Bearer " + this._storage.getValue("token") }
         );
-        console.log(environment.api);
 
         return this._http.get(environment.api + path, { headers }) as Observable<T[]>;
     }

@@ -3,10 +3,10 @@
     This service is used to share data accross components. Any component that wants to use data from this service must subscribe to the subject they would
     like to keep track up. Each time a different component calls change__(value) it will emit the next value and notify all components subscribed.
 */
-import { Injectable, Inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Subject, BehaviorSubject } from 'rxjs';
 
-import { User, Playlist, Song, MessageType, MessageOutput, SongStart } from '../../interfaces/interfaces';
+import { User, Playlist, Song, MessageOutput, SongStart } from '../../interfaces/interfaces';
 
 @Injectable()
 export class DataShareService{

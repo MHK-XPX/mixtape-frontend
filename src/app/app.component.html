@@ -3,7 +3,7 @@
 <ng-progress [thick]="true" color="red" [spinner]="false"></ng-progress>
 <nav class="navbar sticky-top navbar-expand-md navbar-dark">
     <a class="navbar-brand">
-        <div class="d-inline" [routerLink]="['/home']" (click)="this.showPlaylist = false">
+        <div class="d-inline" [routerLink]="['/home']">
             <h4 class="font-weight-bold text-light d-inline">Mi</h4>
             <img class="text-light" src="favicon.ico" width="30" height="30" />
             <h4 class="font-weight-bold text-light d-inline">Tape</h4>
@@ -32,7 +32,7 @@
         <div ngbDropdown placement="bottom-right" *ngIf="this.getUser()">
             <h6 class="font-weight-bold text-light" ngbDropdownToggle>{{this.getUser().username}}</h6>
             <div ngbDropdownMenu>
-                <button class="dropdown-item" [routerLink]="['/profile']" (click)="this.showPlaylist = false">Profile</button>
+                <button class="dropdown-item" [routerLink]="['/profile']">Profile</button>
                 <button class="dropdown-item" [routerLink]="['/login']" (click)="this.logout()">Logout</button>
             </div>
         </div>
@@ -58,14 +58,6 @@
             <div class="col-md-12 shadow">
                 <youtube></youtube>
             </div>
-
-            <!-- <div class="col-md-12 shadow" *ngIf="!this.viewingGlobalPlaylists">
-                <app-local-playlist></app-local-playlist>
-            </div>
-
-            <div class="col-md-12 shadow" *ngIf="this.viewingGlobalPlaylists">
-                <app-global-playlist></app-global-playlist>
-            </div> -->
 
             <div class="col-md-7 margin-top mx-auto">
                 <router-outlet></router-outlet>

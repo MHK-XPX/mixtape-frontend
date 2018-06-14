@@ -4,34 +4,6 @@
             <youtube-player [height]="getScreenHeight()" [width]="getScreenWidth()" (ready)="savePlayer($event)"
                 (change)="onStateChange($event)"></youtube-player>
         </div>
-
-        <!-- <div class="col-sm-5 playlist-container playlist-song-list shadow no-padding half-height">
-            <div class="card mh-100" *ngIf="this.playlist">
-                <div class="card-header text-center current-playlist-holder">
-                    <h5 class="text-center font-weight-bold d-inline" placement="top" ngbTooltip="Edit Playlist Name" (click)="openModal(content)">{{ this.playlist.name }}</h5>
-                    <div ngbDropdown placement="left-top">
-                        <img ngbDropdownToggle class="icon float-right img-margin" align="bottom" style="width: 32px; height: 32px;" placement="left"
-                            ngbTooltip="Save" src='assets/playlist/save_playlist_black.png' />
-                        <div ngbDropdownMenu>
-                            <button class="dropdown-item" (click)="savePlaylist(false)" [disabled]="true">Save to Current Playlist (coming soon!)</button>
-                            <button class="dropdown-item" (click)="savePlaylist(true)" [disabled]="true">Save to New Playlist (coming soon!)</button>
-                            <button class="dropdown-item btn-danger">Cancel</button>
-                        </div>
-                    </div>
-                </div>
-                <ul class="list-group list-group-flush playlist-list scrollable-content">
-                    <li class="list-group-item" [style.background-color]="this.onSong === i ? '#918A8A' : '#BEBEBE'" (mouseover)="this.mouseOver = i"
-                        (mouseout)="this.mouseOver = -1" (click)="playGivenVideo('', i)" *ngFor="let pls of this.playlist.playlistSong index as i">
-                        <img class="d-none d-md-none d-lg-inline" [src]="this.getThumbnail(pls.song.url)" /> {{ i+1 }}. {{ pls.song.name }}
-                        <app-mouseover-menu [@showState]="this.mouseOver === i ? 'show' : 'hide'" [addToPL]="true" [addToQ]="true" [deleteFromPL]="true"
-                            [selectedSong]="pls.song" [selectedPLS]="pls"></app-mouseover-menu>
-                    </li>
-                </ul>
-            </div>
-            <div class="mx-auto" *ngIf="!this.playlist">
-                <h5 class="text-center">Select Playlist...</h5>
-            </div>
-        </div> -->
         <div class="col-sm-5 no-padding">
              <app-local-playlist *ngIf="!this.viewingGlobalPlaylist"></app-local-playlist>
              <app-global-playlist *ngIf="this.viewingGlobalPlaylist"></app-global-playlist>

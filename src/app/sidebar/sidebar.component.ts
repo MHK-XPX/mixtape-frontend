@@ -5,12 +5,11 @@
   playlist
 */
 
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { trigger, state, animate, transition, style, sequence } from '@angular/animations';
 
 import { ApiService, DataShareService } from '../services/services';
 import { Playlist, User, MessageType, MessageOutput } from '../interfaces/interfaces';
-import { MouseoverMenuComponent, SnackbarComponent } from '../components';
 
 import { Subscription } from 'rxjs';
 
@@ -104,7 +103,6 @@ export class SidebarComponent implements OnInit {
 
   public selectGlobalPlaylist(){
     this._dataShareService.changeUsingGlobalPlaylist(true);    
-    // this._dataShareService.changeCurrentPlaylist(null);
   }
 
   /*

@@ -111,7 +111,6 @@ export class LoginComponent implements OnInit {
       return;
 
     let s: Subscription;
-    console.log(this.displayName);
     s = this._apiService.validateUsername(this.displayName).subscribe(
       d => d = d,
       err => {

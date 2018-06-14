@@ -6,7 +6,7 @@
 import { Component, ViewChild, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription, Subject } from 'rxjs';
-import 'rxjs/add/operator/debounceTime.js';
+import 'rxjs/add/operator/debounceTime';
 
 
 import { LoginComponent, SidebarComponent, SnackbarComponent, GlobalPlaylistComponent } from './components';

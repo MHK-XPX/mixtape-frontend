@@ -6,15 +6,11 @@
 
 import { Component, OnInit, HostListener, ViewChild } from '@angular/core';
 import { trigger, state, animate, transition, style, sequence } from '@angular/animations';
-import { Subscription, Subject, } from "rxjs";
 
-import { debounceTime } from 'rxjs/operator/debounceTime';
-
-import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { ApiService, DataShareService, StorageService } from '../services/services';
-import { Playlist, PlaylistSong, Song, MessageType, MessageOutput, SongStart } from '../interfaces/interfaces';
-import { MouseoverMenuComponent, SnackbarComponent } from '../components';
+import { Playlist, Song, SongStart } from '../interfaces/interfaces';
 import { LocalPlaylistComponent } from '../local-playlist/local-playlist.component';
 import { GlobalPlaylistComponent } from '../global-playlist/global-playlist.component';
 
@@ -59,7 +55,6 @@ export class YoutubeComponent implements OnInit {
 
   mouseOver: number = -1;
 
-  private onSong: number = this._storage.getValue('onSong') ? this._storage.getValue('onSong') : -1;
   private repeat: boolean = false;
   private paused: boolean = false;
 
@@ -78,6 +73,10 @@ export class YoutubeComponent implements OnInit {
     this._dataShareService.nextSong.subscribe(res => this.changeSong(res));
   }
 
+  /*
+    This method is called whenever the current song changes (from dataShareService)
+    @param ss: SongStart - The song we are changing to
+  */
   public changeSong(ss: SongStart) {
     this.videoId = "";
     if (ss) {
@@ -87,6 +86,10 @@ export class YoutubeComponent implements OnInit {
     }
   }
 
+  /*
+    This method is called when the user switches between the global and local playlist
+    @param onGlobal: boolean - if we are on the global playlist or not
+  */
   private switchFromLocalToGlobal(onGlobal: boolean) {
     this.viewingGlobalPlaylist = onGlobal;
 
@@ -132,6 +135,10 @@ export class YoutubeComponent implements OnInit {
     }
   }
 
+  /*
+    This method is called when the user clicks the pause button, it will pause
+    or play
+  */
   public pauseClicked() {
     this.paused = !this.paused;
 
@@ -141,11 +148,19 @@ export class YoutubeComponent implements OnInit {
       this.player.playVideo();
   }
 
+  /*
+    This method is called whenever the user clicks repeat
+  */
   public repeatClicked(){
     this.repeat = !this.repeat;
     this.localPlaylist.repeat = this.repeat;
   }
 
+  /*
+    This method is called when the user moves in the 
+    playlist
+    @param dir: number - The direction to move in the playlist
+  */
   public moveInPlaylist(dir: number) {
     this.localPlaylist.nextSong(dir);
   }

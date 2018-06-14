@@ -4,8 +4,8 @@
 
 export const environment = {
   production: false,
-  api: 'http://localhost:54061/api/', /*'https://xpx-mixtape.herokuapp.com/api/',*/
-  messageApi: 'http://localhost:54061/',
+  api: 'https://xpx-mixtape.herokuapp.com/api/', /*'https://xpx-mixtape.herokuapp.com/api/',*/
+  messageApi: 'https://xpx-mixtape.herokuapp.com/', /*'http://localhost:54061/',*/
   youtubeToken: "AIzaSyDYswrJ-YubO8TOqNO0_ictO1RnTh8FC-4",
   lastFMKey: "1e231c3b75baee47b9c947ce5b806e0c"
 };

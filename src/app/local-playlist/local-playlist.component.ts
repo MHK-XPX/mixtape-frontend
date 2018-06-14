@@ -1,6 +1,14 @@
+/*
+  Written by: Ryan Kruse
+
+  This component is used to control the local playlist. It allows the user to 
+  move up and down in the playlist, remove a song from the playlist and view 
+  a playlist
+*/
+
 import { Component, OnInit, Output } from '@angular/core';
-import { trigger, state, animate, transition, style, sequence } from '@angular/animations';
-import { Subscription, Subject } from "rxjs";
+import { trigger, state, animate, transition, style } from '@angular/animations';
+import { Subscription } from "rxjs";
 
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -49,25 +57,26 @@ export class LocalPlaylistComponent implements OnInit {
     this._dataShareService.currentPlaylist.subscribe(res => this.setPlaylist(res));
   }
 
+  /*
+    This method is called when the user clicks a local playlist. It sets it to the view
+    and it sets the current song to the first song in the playlist
+    @param playlist: Playlist - The playlist to set the view to
+  */
   public setPlaylist(playlist: Playlist) {
     this.playlist = playlist;
 
     let ss: SongStart;
 
     if (this.playlist && this.playlist.playlistSong.length) {
-      // ss = {
-      //   url: this.playlist.playlistSong[0].song.url,
-      //   time: 0
-      // };
-
-      // this.onSong = 0;
-      //this._dataShareService.nextSong.next(ss);
-
       this.setCurrentSong(this.playlist.playlistSong[0].song.url);
     }
 
   }
 
+  /*
+    This method is called when the user tries to move to or back to a song
+    @dir: number - The direction to move in the playlist (1) forward (-1) back
+  */
   public nextSong(dir: number) {
     this.onSong += dir;
 
@@ -84,6 +93,11 @@ export class LocalPlaylistComponent implements OnInit {
     this.setCurrentSong(this.playlist.playlistSong[this.onSong].song.url);
   }
 
+  /*
+    This method will create a new SongStart object, it sets the URL and has
+    our video start playing the song
+    @param url: string - The url of the song to set to
+  */
   private setCurrentSong(url: string) {
     if (!url) return;
 
