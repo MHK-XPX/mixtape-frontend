@@ -27,6 +27,9 @@ import { YoutubePipe } from './pipes/pipes';
 
 //Directives:
 import { NgEnterDirective } from './directives/directives';
+import { SortableListDirective } from './directives/sortable-list.directive';
+import { SortableDirective } from './directives/sortable.directive';
+import { DraggableDirective } from './directives/draggable.directive';
 
 @NgModule({
   declarations: [
@@ -41,7 +44,10 @@ import { NgEnterDirective } from './directives/directives';
     MouseoverMenuComponent,
     ProfileComponent,
     GlobalPlaylistComponent,
-    LocalPlaylistComponent
+    LocalPlaylistComponent,
+    SortableListDirective,
+    SortableDirective,
+    DraggableDirective
   ],
   imports: [
     BrowserModule,

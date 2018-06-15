@@ -3,20 +3,33 @@
     <div class="card-header text-center current-playlist-holder">
       <h5 class="text-center font-weight-bold d-inline" placement="top" ngbTooltip="Edit Playlist Name" (click)="openModal(content)">{{ this.playlist.name }}</h5>
       <div ngbDropdown placement="left-top">
-        <img ngbDropdownToggle class="icon float-right img-margin" align="bottom" style="width: 32px; height: 32px;" placement="left"
-          ngbTooltip="Save" src='assets/playlist/save_playlist_black.png' />
+        <img ngbDropdownToggle class="icon float-right img-margin icon-sm" align="bottom" placement="left" ngbTooltip="Save" src='assets/playlist/save_playlist_black.png'
+        />
         <div ngbDropdownMenu>
           <button class="dropdown-item" (click)="savePlaylist(false)" [disabled]="true">Save to Current Playlist (coming soon!)</button>
           <button class="dropdown-item" (click)="savePlaylist(true)" [disabled]="true">Save to New Playlist (coming soon!)</button>
           <button class="dropdown-item btn-danger">Cancel</button>
         </div>
       </div>
+
+      <!-- Sort menu (pot. feature) -->
+      <!--<div ngbDropdown placement="right-top">
+        <img ngbDropdownToggle class="icon float-left img-margin icon-sm align-bottom" align="bottom" placement="top" ngbTooltip="Sort"
+          src="assets/playlist/sort_playlist.png" />
+        <div ngbDropdownMenu>
+          <button class="dropdown-item" (click)="sortPlaylist(0)">Alphabetically</button>
+          <button class="dropdown-item" (click)="sortPlaylist(1)">Randomly</button>
+          <button class="dropdown-item">Cancel</button>
+        </div>
+      </div>-->
     </div>
-    <ul class="list-group list-group-flush playlist-list scrollable-content">
-      <li class="list-group-item" [style.background-color]="this.onSong === i ? '#918A8A' : '#BEBEBE'" (mouseover)="this.mouseOver = i"
-        (mouseout)="this.mouseOver = -1" (click)="playGivenVideo(i, pls.song.url)" *ngFor="let pls of this.playlist.playlistSong index as i">
-        <img class="d-none d-md-none d-lg-inline" [src]="this.getThumbnail(pls.song.url)" /> {{ i+1 }}. {{ pls.song.name }}
-        <app-mouseover-menu [@showState]="this.mouseOver === i ? 'show' : 'hide'" [addToPL]="true" [addToQ]="true" [deleteFromPL]="true"
+    <ul appSortableList (sort)="sort($event)" class="list-group list-group-flush playlist-list scrollable-content">
+      <li class="box list-group-item" [style.background-color]="this.onSong === i ? '#918A8A' : '#BEBEBE'" (mousedown)="this.dragging = true"
+        (mouseup)="this.dragging=fals" (dblclick)="playGivenVideo(i, pls.song.url)" (mouseover)="this.mouseOver = i" (mouseout)="this.mouseOver = -1"
+        *ngFor="let pls of this.playlist.playlistSong index as i" appSortable>
+        {{i+1}}. 
+        <img class="d-none d-md-none d-lg-inline" [src]="this.getThumbnail(pls.song.url)" /> {{ pls.song.name }}
+        <app-mouseover-menu [@showState]="this.mouseOver === i && !this.dragging ? 'show' : 'hide'" [addToPL]="true" [addToQ]="true" [deleteFromPL]="true"
           [selectedSong]="pls.song" [selectedPLS]="pls"></app-mouseover-menu>
       </li>
     </ul>

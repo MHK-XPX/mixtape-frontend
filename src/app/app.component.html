@@ -49,7 +49,7 @@
 
     <div class="row" *ngIf="this.isLoggedIn()">
         <img id="hideSidebar" class="icon-sm toggle" [src]="this.isSidebarCollapsed ? 'assets/shared/hide_sidebar.png' : 'assets/shared/show_sidebar.png'"
-            (click)="isSidebarCollapsed = !isSidebarCollapsed" />
+            (click)="isSidebarCollapsed = !isSidebarCollapsed"/>
 
         <div class="col-sm-2 no-padding" *ngIf="!isSidebarCollapsed">
             <sidebar *ngIf="this.getUser()"></sidebar>

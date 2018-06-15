@@ -42,6 +42,11 @@ export class SidebarComponent implements OnInit {
 
   mouseOver: number = -1;
 
+
+  dropDown: number = -1;
+  dropDownMouseOver: number = -1;
+  expandedPlaylist: Playlist;
+
   doneLoading: boolean = false;
 
   private defaultPLName: string = "New Playlist ";
@@ -84,11 +89,17 @@ export class SidebarComponent implements OnInit {
         this.userPlaylists.push(returnedPL);
         this._dataShareService.changePlaylists(this.userPlaylists);
         this.triggerMessage("", "Playlist created!", MessageType.Success);
-
-        //this.selectPlaylist(returnedPL); //Add this if we want to auto swap to the new PL
       }
     );
   }
+
+  public expandPlaylist(playlist: Playlist, index: number, event){
+    event.stopPropagation();
+
+    this.dropDown = this.dropDown !== index ? index : -1;
+    this.expandedPlaylist = playlist;
+  }
+
 
   /*
     This method is called when the user clicks a playlist to play. It updates the datashare subject so that

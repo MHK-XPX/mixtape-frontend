@@ -2,8 +2,7 @@
   Written by: Ryan Kruse
 
   This component is used to control the local playlist. It allows the user to 
-  move up and down in the playlist, remove a song from the playlist and view 
-  a playlist
+  move up and down in the playlist, remove a song from the playlist and view a playlist
 */
 
 import { Component, OnInit, Output } from '@angular/core';
@@ -13,12 +12,14 @@ import { Subscription } from "rxjs";
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { DataShareService, StorageService, ApiService } from '../services/services';
-import { Playlist, Song, MessageType, MessageOutput, SongStart } from '../interfaces/interfaces';
+import { Playlist, Song, MessageType, MessageOutput, SongStart, PlaylistSong } from '../interfaces/interfaces';
+
+import { SortEvent } from '../directives/sortable-list.directive';
 
 @Component({
   selector: 'app-local-playlist',
   templateUrl: './local-playlist.component.html',
-  styleUrls: ['./local-playlist.component.css', '../global-style.css'],
+  styleUrls: ['./local-playlist.component.css', './local-playlist.component.scss', '../global-style.css'],
   animations: [
     trigger(
       'showState', [
@@ -48,6 +49,7 @@ export class LocalPlaylistComponent implements OnInit {
   playlistRename: string = "";
 
   mouseOver: number = -1;
+  dragging: boolean = false;
 
   private onSong: number = this._storage.getValue('onSong') ? this._storage.getValue('onSong') : 0;
   private repeat: boolean = false;
@@ -133,6 +135,48 @@ export class LocalPlaylistComponent implements OnInit {
     }
 
     this.setCurrentSong(this.playlist.playlistSong[this.onSong].song.url);
+  }
+
+  /*
+    This method is called when the user wants to sort their playlist in a given way
+    @param sortType: number - The way the user wants to sort
+      1) sortType = 0: Alpha
+      2) sortType = 1: Random
+
+      TODO: Change each of these below to methods
+  */
+  /*public sortPlaylist(sortType: number){
+    switch(sortType){
+      case 0:
+        this.playlist.playlistSong.sort();
+        break;
+      case 1:
+        let len: number = this.playlist.playlistSong.length - 1;
+        for(let i=0; i<this.playlist.playlistSong.length; i++){
+          let r = Math.floor(Math.random() * len);
+          let pls: PlaylistSong = this.playlist.playlistSong[i];
+
+          this.playlist.playlistSong[i] = this.playlist.playlistSong[r];
+          this.playlist.playlistSong[r] = pls;
+        }
+        break;
+      default:
+        break;
+    }
+  }*/
+
+  sort(event: SortEvent){
+    this.mouseOver = -1;
+    const current = this.playlist.playlistSong[event.currentIndex];
+    const swapWith = this.playlist.playlistSong[event.newIndex];
+
+    this.playlist.playlistSong[event.newIndex] = current;
+    this.playlist.playlistSong[event.currentIndex] = swapWith;
+
+    if(event.currentIndex === this.onSong) 
+      this.onSong = event.newIndex;
+    else if(event.newIndex == this.onSong)
+      this.onSong = event.currentIndex;
   }
 
   /*
