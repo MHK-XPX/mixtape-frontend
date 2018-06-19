@@ -5,7 +5,7 @@
   move up and down in the playlist, remove a song from the playlist and view a playlist
 */
 
-import { Component, OnInit, Output } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { trigger, state, animate, transition, style } from '@angular/animations';
 import { Subscription } from "rxjs";
 
@@ -51,6 +51,8 @@ export class LocalPlaylistComponent implements OnInit {
   mouseOver: number = -1;
   dragging: boolean = false;
 
+  helpMouseover: boolean = false;
+
   private onSong: number = this._storage.getValue('onSong') ? this._storage.getValue('onSong') : 0;
   private repeat: boolean = false;
 
@@ -74,8 +76,6 @@ export class LocalPlaylistComponent implements OnInit {
   public setPlaylist(playlist: Playlist) {
     this.playlist = playlist;
 
-    let ss: SongStart;
-
     if (this.playlist && this.playlist.playlistSong.length) {
       if (this.lastPlaylistID === null || this.lastPlaylistID !== this.playlist.playlistId) {
         this.onSong = 0;
@@ -83,7 +83,6 @@ export class LocalPlaylistComponent implements OnInit {
         this.lastPlaylistID = this.playlist.playlistId;
       }
     }
-
   }
 
   /*
@@ -138,6 +137,100 @@ export class LocalPlaylistComponent implements OnInit {
   }
 
   /*
+    This method is called whenever the user clicks save current playlist or save to new playlist
+  */
+  public savePlaylist(newPlaylist: boolean) {
+    if (newPlaylist || !this.playlist.playlistId) { //If we are saving it to a new playlist OR we are trying to save our current custom queue
+      this.addNewPlaylist();
+    } else {
+      this.updatePlaylist();
+    }
+  }
+
+  /*
+    This method is called when the user attempts to save the current playlist (or queue) to a new playlist.
+    The method creates a new playlist and adds it to the DB, once added, it calls addSongToNewPlaylist
+    and will add all the songs to the new playlist
+  */
+  private addNewPlaylist() {
+    let userPlaylists: Playlist[];
+    this._dataShareService.playlists.subscribe(res => userPlaylists = res);
+
+    let nPL = {
+      active: true,
+      name: "New Playlist " + (userPlaylists.length + 1),
+      userId: this.playlist.userId
+    };
+
+    let returnedPL: Playlist;
+    let s: Subscription = this._apiService.postEntity<Playlist>("Playlists", nPL).subscribe(
+      d => returnedPL = d,
+      err => this.triggerMessage("", "Unable to create a new playlist", MessageType.Failure),
+      () => {
+        s.unsubscribe();
+        userPlaylists.push(returnedPL);
+        this._dataShareService.changePlaylists(userPlaylists);
+
+        this.addSongsToNewPlaylist(returnedPL, this.playlist.playlistSong);
+
+        if (this.playlist.playlistSong.length <= 0)
+          this.triggerMessage("", "New Playlist Saved!", MessageType.Success);
+      }
+    );
+  }
+
+  /*
+    This method is called when the user saves an already saved playlist (IE they are patching it)
+  */
+  private updatePlaylist() {
+    let allNotAdded = this.playlist.playlistSong.filter(s => !s.playlistSongId); //Get all of the songs that they added but didn't save to the playlist (queued songs)
+
+    this.addSongsToNewPlaylist(null, allNotAdded);
+  }
+
+  /*
+    This method is called whenever the user creates or saves songs to a playlist.
+    @newPlaylist: Playlist - The new playlist to add songs to
+    @songsToAdd: PlaylistSong[] - An array of songs to add to the given playlist
+  */
+  private addSongsToNewPlaylist(newPlaylist: Playlist, songsToAdd: PlaylistSong[]) {
+    let playlist: Playlist = newPlaylist ? newPlaylist : this.playlist;
+
+    let userPlaylists: Playlist[];
+
+    this._dataShareService.playlists.subscribe(res => userPlaylists = res);
+
+    let index: number = userPlaylists.findIndex(p => p.playlistId === playlist.playlistId);
+
+    for (let i = 0; i < songsToAdd.length; i++) {
+      let pls: PlaylistSong = songsToAdd[i];
+
+      let toSendPLS = {
+        playlistId: playlist.playlistId,
+        songId: pls.songId
+      };
+
+      let actPLS: PlaylistSong;
+
+      let s: Subscription = this._apiService.postEntity<PlaylistSong>("PlaylistSongs", toSendPLS).subscribe(
+        d => actPLS = d,
+        err => this.triggerMessage("", "Unable to save playlist", MessageType.Failure),
+        () => {
+          s.unsubscribe();
+          actPLS.song = pls.song;
+          playlist.playlistSong[i] = actPLS;
+
+          if (i === songsToAdd.length - 1) {
+            userPlaylists[index] = playlist;
+            this._dataShareService.changePlaylists(userPlaylists);
+            this.triggerMessage("", "Playlist Saved!", MessageType.Success);
+          }
+        }
+      );
+    }
+  }
+
+  /*
     This method is called when the user wants to sort their playlist in a given way
     @param sortType: number - The way the user wants to sort
       1) sortType = 0: Alpha
@@ -165,7 +258,7 @@ export class LocalPlaylistComponent implements OnInit {
     }
   }*/
 
-  sort(event: SortEvent){
+  sort(event: SortEvent) {
     this.mouseOver = -1;
     const current = this.playlist.playlistSong[event.currentIndex];
     const swapWith = this.playlist.playlistSong[event.newIndex];
@@ -173,9 +266,9 @@ export class LocalPlaylistComponent implements OnInit {
     this.playlist.playlistSong[event.newIndex] = current;
     this.playlist.playlistSong[event.currentIndex] = swapWith;
 
-    if(event.currentIndex === this.onSong) 
+    if (event.currentIndex === this.onSong)
       this.onSong = event.newIndex;
-    else if(event.newIndex == this.onSong)
+    else if (event.newIndex == this.onSong)
       this.onSong = event.currentIndex;
   }
 

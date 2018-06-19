@@ -7,23 +7,39 @@
             <b>Top Results For:</b> {{ searchString }}</div>
         </div>
         <ul class="list-group list-group-flush" *ngIf="this.searchResults">
-          <h5 class="mb-1">Artists</h5>
-          <li class="list-group-item list-group-item-action" *ngFor="let artist of searchResults.artists" (click)="createNewSearch(artist.name)">
-            {{ artist.name }}
-          </li>
+          <h5 class="mb-1">Artists
+            <img class="icon icon-middle icon-ex-sm  no-padding d-inline" src="assets/shared/expand_button.png" placement="bottom" ngbTooltip="Hide/Show"
+              (click)="showArtistList = !showArtistList" />
+          </h5>
 
-          <h5 class="mb-1">Albums</h5>
-          <li class="list-group-item list-group-item-action" *ngFor="let album of searchResults.albums index as i">
-            {{ album.name }}
-          </li>
+          <div *ngIf="showArtistList">
+            <li class="list-group-item list-group-item-action" *ngFor="let artist of searchResults.artists" (click)="createNewSearch(artist.name)">
+              {{ artist.name }}
+            </li>
+          </div>
 
-          <h5 class="mb-1">Songs</h5>
-          <li class="list-group-item list-group-item-action" (mouseover)="this.mouseOver = i" (mouseout)="this.mouseOver = -1" *ngFor="let song of searchResults.songs index as i"
-            (click)="previewSong(song)">
-            {{ song.name }}
-            <app-mouseover-menu [@showState]="this.mouseOver === i ? 'show': 'hide'" [addToPL]="true" [addToQ]="true" [deleteFromPL]="false"
-              [selectedSong]="song"></app-mouseover-menu>
-          </li>
+          <h5 class="mb-1">Albums
+            <img class="icon icon-middle icon-ex-sm  no-padding d-inline" src="assets/shared/expand_button.png" placement="bottom" ngbTooltip="Hide/Show"
+              (click)="showAlbumList = !showAlbumList" />
+          </h5>
+          <div *ngIf="showAlbumList">
+            <li class="list-group-item list-group-item-action" *ngFor="let album of searchResults.albums index as i" (click)="createNewSearch(album.name)">
+              {{ album.name }}
+            </li>
+          </div>
+
+          <h5 class="mb-1">Songs
+            <img class="icon icon-middle icon-ex-sm  no-padding d-inline" src="assets/shared/expand_button.png" placement="bottom" ngbTooltip="Hide/Show"
+              (click)="showSongList = !showSongList" />
+          </h5>
+          <div *ngIf="showSongList">
+            <li class="list-group-item list-group-item-action" (mouseover)="this.mouseOver = i" (mouseout)="this.mouseOver = -1" *ngFor="let song of searchResults.songs index as i"
+              (click)="previewSong(song)">
+              {{ song.name }}
+              <app-mouseover-menu [@showState]="this.mouseOver === i ? 'show': 'hide'" [addToPL]="true" [addToQ]="true" [deleteFromPL]="false"
+                [selectedSong]="song"></app-mouseover-menu>
+            </li>
+          </div>
         </ul>
       </ng-template>
     </ngb-tab>
@@ -116,7 +132,8 @@
             <label for="finalArtist" class="col-xl-4 col-form-label font-weight-bold">Artist:</label>
             <div class="col-md-7">
               <input [value]="this.lastFMArtist" (input)="this.lastFMArtist = $event.target.value" type="text" class="form-control" id="finalArtist"
-                placeholder="Artist Name" [ngClass]="{ 'is-invalid': !this.lastFMArtist.length, 'is-valid': this.lastFMArtist.length }" [disabled]="this.finalArtistInDB">
+                placeholder="Artist Name" [ngClass]="{ 'is-invalid': !this.lastFMArtist.length, 'is-valid': this.lastFMArtist.length }"
+                [disabled]="this.finalArtistInDB">
               <small id="artistHelpBlock" class="form-text text-muted" *ngIf="!this.lastFMArtist.length">Please insert artist name</small>
               <small id="artistHelpBlock2" class="form-text text-muted" *ngIf="this.finalArtist">Found in database!</small>
             </div>
@@ -126,7 +143,8 @@
             <label for="finalAlbum" class="col-xl-4 col-form-label font-weight-bold">Album:</label>
             <div class="col-md-7">
               <input [value]="this.lastFMAlbum" (input)="this.lastFMAlbum = $event.target.value" type="text" class="form-control" id="finalAlbum"
-                placeholder="Album Name" [ngClass]="{ 'is-invalid': !this.lastFMAlbum.length, 'is-valid': this.lastFMAlbum.length }" [disabled]="this.finalAlbumInDB">
+                placeholder="Album Name" [ngClass]="{ 'is-invalid': !this.lastFMAlbum.length, 'is-valid': this.lastFMAlbum.length }"
+                [disabled]="this.finalAlbumInDB">
               <small id="albumHelpBlock" class="form-text text-muted" *ngIf="!this.lastFMAlbum.length">Please insert album title</small>
               <small id="albumHelpBlock2" class="form-text text-muted" *ngIf="this.finalAlbum">Found in database!</small>
             </div>
@@ -136,7 +154,8 @@
             <label for="finalSong" class="col-xl-4 col-form-label font-weight-bold">Song:</label>
             <div class="col-md-7">
               <input [value]="this.lastFMSong" (input)="this.lastFMSong = $event.target.value" type="text" class="form-control" id="finalSong"
-                placeholder="Song Title" [ngClass]="{ 'is-invalid': !this.lastFMSong.length, 'is-valid': this.lastFMSong.length }" [disabled]="this.finalSongInDB">
+                placeholder="Song Title" [ngClass]="{ 'is-invalid': !this.lastFMSong.length, 'is-valid': this.lastFMSong.length }"
+                [disabled]="this.finalSongInDB">
               <small id="songHelpBlock" class="form-text text-muted" *ngIf="!this.lastFMSong.length">Please insert song title</small>
               <small id="songHelpBlock2" class="form-text text-muted" *ngIf="this.finalSong">Found in database!</small>
             </div>
@@ -148,7 +167,8 @@
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-primary col-2" (click)="this.doActionOnStepChange(-1)" [disabled]="this.currentStep === 1 || (this.currentStep === 1 && !canMoveToNewStep())">Back</button>
-    <button type="button" class="btn btn-primary col-2" (click)="this.doActionOnStepChange(1)" [disabled]="!canMoveToNewStep()" *ngIf="this.currentStep !== 3">Next</button>
+    <button type="button" class="btn btn-primary col-2" (click)="this.doActionOnStepChange(1)" [disabled]="!canMoveToNewStep()"
+      *ngIf="this.currentStep !== 3">Next</button>
     <button type="button" class="btn btn-success col-2" (click)="c()" [disabled]="!canMoveToNewStep()" *ngIf="this.currentStep == 3">Save</button>
   </div>
 </ng-template>

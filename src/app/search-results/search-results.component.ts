@@ -7,11 +7,10 @@
     This component is very crazy right now, it will be refactored later! --Ryan Kruse
 */
 import { Component, OnInit } from '@angular/core';
-import { trigger, state, animate, transition, style, sequence } from '@angular/animations';
+import { trigger, state, animate, transition, style } from '@angular/animations';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Observable, Subscription } from 'rxjs';
 
-import { MouseoverMenuComponent } from '../components';
 import { ApiService, DataShareService } from '../services/services';
 import { Artist, Album, MessageType, SearchResults, Song, YoutubeResult, LastfmTrack, MessageOutput } from '../interfaces/interfaces';
 import { items } from '../interfaces/non-local/youtuberesult';
@@ -57,6 +56,11 @@ export class SearchResultsComponent implements OnInit {
   guessedSong: string;
 
   songId: string;
+
+  //UI Fields:
+  showArtistList: boolean = true;
+  showAlbumList: boolean = true;
+  showSongList: boolean = true;
 
   //Last FM Fields:
   lastFMArtist: string = "";

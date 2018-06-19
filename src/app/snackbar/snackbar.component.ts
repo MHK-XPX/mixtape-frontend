@@ -6,10 +6,9 @@
 */
 
 import { Component, OnInit, Input } from '@angular/core';
-import { trigger, state, animate, transition, style, sequence } from '@angular/animations';
+import { trigger, state, animate, transition, style } from '@angular/animations';
 
-import { Subject, Subscription, Observable, interval } from 'rxjs';
-import { debounceTime } from 'rxjs/operator/debounceTime';
+import { Subject, Subscription, interval } from 'rxjs';
 
 import { DataShareService } from '../services/services';
 

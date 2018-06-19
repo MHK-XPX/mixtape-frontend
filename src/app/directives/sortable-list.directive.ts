@@ -56,7 +56,7 @@ export class SortableListDirective implements AfterContentInit {
       .filter(rect => rect !== currentRect)
       .some(rect => {
         const isHorizontal = rect.top === currentRect.top;
-        const isBefore = isHorizontal ? 
+        const isBefore = isHorizontal ?
           rect.left < currentRect.left :
           rect.top < currentRect.top;
 

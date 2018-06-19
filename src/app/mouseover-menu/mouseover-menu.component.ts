@@ -15,7 +15,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { ApiService, DataShareService, MessageService } from '../services/services';
-import { User, Playlist, PlaylistSong, Song, MessageType, MessageOutput, GlobalPlaylistSong } from '../interfaces/interfaces';
+import { User, Playlist, PlaylistSong, Song, MessageType, MessageOutput } from '../interfaces/interfaces';
 
 @Component({
   selector: 'app-mouseover-menu',

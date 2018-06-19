@@ -6,7 +6,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { Observable, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { ApiService, StorageService, DataShareService } from '../services/services';
 
 import { User } from '../interfaces/interfaces';

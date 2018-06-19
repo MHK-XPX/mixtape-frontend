@@ -5,12 +5,10 @@
 */
 
 import { Component, OnInit, HostListener, ViewChild } from '@angular/core';
-import { trigger, state, animate, transition, style, sequence } from '@angular/animations';
+import { trigger, state, animate, transition, style } from '@angular/animations';
 
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-
-import { ApiService, DataShareService, StorageService } from '../services/services';
-import { Playlist, Song, SongStart } from '../interfaces/interfaces';
+import { DataShareService } from '../services/services';
+import { Playlist, SongStart } from '../interfaces/interfaces';
 import { LocalPlaylistComponent } from '../local-playlist/local-playlist.component';
 import { GlobalPlaylistComponent } from '../global-playlist/global-playlist.component';
 
@@ -43,14 +41,10 @@ export class YoutubeComponent implements OnInit {
   viewingGlobalPlaylist: boolean;
 
   playlist: Playlist;
-  previewSong: Song;
 
   playlistRename: string = "";
 
-  private lastPlaylistID: number;
-
   private player: YT.Player;
-  private url: string = "";
   videoId;
 
   mouseOver: number = -1;
@@ -60,7 +54,7 @@ export class YoutubeComponent implements OnInit {
 
   currentSongURL: string = "";
 
-  constructor(private _apiService: ApiService, private _dataShareService: DataShareService, private _storage: StorageService, private _modalService: NgbModal) { }
+  constructor(private _dataShareService: DataShareService) { }
 
   @HostListener('window:resize') onResize() {
     if (this.player) {
@@ -116,11 +110,7 @@ export class YoutubeComponent implements OnInit {
       case -1:
         break;
       case 0:
-        if (this.viewingGlobalPlaylist) {
-          this.globalPlaylist.nextSong();
-        } else {
-          this.localPlaylist.nextSong(1);
-        }
+        this.handleNextSong();
         break;
       case 1:
         this.paused = false;
@@ -133,6 +123,17 @@ export class YoutubeComponent implements OnInit {
       default:
         console.log("DEFAULT");
     }
+  }
+
+  /*
+    This method is called whenever a song ends and we need to move to the next one 
+    (called from the onStateChange via youtube player)
+  */
+  private handleNextSong() {
+    if (this.viewingGlobalPlaylist)
+      this.globalPlaylist.nextSong();
+    else
+      this.localPlaylist.nextSong(1);
   }
 
   /*
@@ -151,7 +152,7 @@ export class YoutubeComponent implements OnInit {
   /*
     This method is called whenever the user clicks repeat
   */
-  public repeatClicked(){
+  public repeatClicked() {
     this.repeat = !this.repeat;
     this.localPlaylist.repeat = this.repeat;
   }

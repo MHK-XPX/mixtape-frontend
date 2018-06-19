@@ -6,7 +6,7 @@
 */
 
 import { Component, OnInit } from '@angular/core';
-import { trigger, state, animate, transition, style, sequence } from '@angular/animations';
+import { trigger, state, animate, transition, style } from '@angular/animations';
 
 import { ApiService, DataShareService } from '../services/services';
 import { Playlist, User, MessageType, MessageOutput } from '../interfaces/interfaces';
@@ -107,7 +107,7 @@ export class SidebarComponent implements OnInit {
     @param playlist: Playlist - The playlist the user wants to play
   */
   public selectPlaylist(playlist: Playlist) {
-    this._dataShareService.changeUsingGlobalPlaylist(false);    
+    this._dataShareService.changeUsingGlobalPlaylist(false);
     this._dataShareService.changeCurrentPlaylist(playlist);
   }
 

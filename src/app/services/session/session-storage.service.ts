@@ -3,7 +3,6 @@
     This service allows for us to easily save and get data from local ^ session storage
     It uses key value pairs to store and retrieve the data
 */
-import { Observable } from 'rxjs';
 
 export class StorageService {
     constructor() { }

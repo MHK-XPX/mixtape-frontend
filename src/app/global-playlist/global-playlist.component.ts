@@ -7,8 +7,7 @@ import { Component, OnInit } from '@angular/core';
 
 import { DataShareService, MessageService, StorageService } from '../services/services';
 
-import { Message, VotedOn, SongStart, Connection } from '../interfaces/interfaces';
-import { Subscription } from 'rxjs';
+import { Message, VotedOn, SongStart } from '../interfaces/interfaces';
 
 @Component({
   selector: 'app-global-playlist',

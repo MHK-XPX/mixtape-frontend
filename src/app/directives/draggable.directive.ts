@@ -46,7 +46,7 @@ export class DraggableDirective {
   }
 
   // added after YouTube video: pointercancel
-  @HostListener('document:pointercancel', ['$event'])
+  // @HostListener('document:pointercancel', ['$event'])
   @HostListener('document:pointerup', ['$event'])
   onPointerUp(event: PointerEvent): void {
     if (!this.dragging || event.pointerId !== this.pointerId) {
