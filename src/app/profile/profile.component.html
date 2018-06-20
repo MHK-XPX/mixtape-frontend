@@ -34,8 +34,9 @@
           <label for="inputUserName" class="col-xl-4 col-form-label font-weight-bold">Username:</label>
           <div class="col-md-7">
             <input [value]="this.user.username" (input)="this.user.username = $event.target.value" (focusout)="validateUsername()" type="text"
-              class="form-control" id="inputUserName" placeholder="Username" [ngClass]="{ 'is-invalid': usernameTaken, 'is-valid': !usernameTaken }">
+              class="form-control" id="inputUserName" placeholder="Username" [ngClass]="{ 'is-invalid': usernameTaken || !this.user.username.length, 'is-valid': !usernameTaken }">
             <small id="usernameHelpBlock" class="form-text text-muted" *ngIf="usernameTaken">Username is already taken</small>
+            <small id="usernameHelpBlock2" class="form-text text-muted" *ngIf="!this.user.username.length">Must have a username</small>
           </div>
         </div>
 

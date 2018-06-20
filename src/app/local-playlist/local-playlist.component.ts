@@ -230,34 +230,6 @@ export class LocalPlaylistComponent implements OnInit {
     }
   }
 
-  /*
-    This method is called when the user wants to sort their playlist in a given way
-    @param sortType: number - The way the user wants to sort
-      1) sortType = 0: Alpha
-      2) sortType = 1: Random
-
-      TODO: Change each of these below to methods
-  */
-  /*public sortPlaylist(sortType: number){
-    switch(sortType){
-      case 0:
-        this.playlist.playlistSong.sort();
-        break;
-      case 1:
-        let len: number = this.playlist.playlistSong.length - 1;
-        for(let i=0; i<this.playlist.playlistSong.length; i++){
-          let r = Math.floor(Math.random() * len);
-          let pls: PlaylistSong = this.playlist.playlistSong[i];
-
-          this.playlist.playlistSong[i] = this.playlist.playlistSong[r];
-          this.playlist.playlistSong[r] = pls;
-        }
-        break;
-      default:
-        break;
-    }
-  }*/
-
   sort(event: SortEvent) {
     this.mouseOver = -1;
     const current = this.playlist.playlistSong[event.currentIndex];

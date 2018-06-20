@@ -4,7 +4,7 @@
   be updated in the backend
 */
 import { Component, OnInit } from '@angular/core';
-import { Subscription, Observable } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 import { MessageType, User, MessageOutput } from '../interfaces/interfaces';
 import { ApiService, DataShareService, StorageService } from '../services/services';
@@ -134,7 +134,7 @@ export class ProfileComponent implements OnInit {
     Called when trying to click submit, returns true iff the names are filled, the passwords match, and the username isnt taken
   */
   public canUpdateInfo(): boolean{
-    return this.firstAndLastNameFilled() && this.passwordsMatch() && !this.usernameTaken;
+    return this.firstAndLastNameFilled() && this.passwordsMatch() && !this.usernameTaken && this.user.username.length > 0;
   }
 
   /*
