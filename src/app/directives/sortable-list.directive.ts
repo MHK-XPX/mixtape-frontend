@@ -35,7 +35,25 @@ export class SortableListDirective implements AfterContentInit {
 
   private clientRects: ClientRect[];
 
+  private lastLength: number; //This will work unless the user has two playlists with the same length...(FIX ME)
+
   ngAfterContentInit(): void {
+    this.doOnChange();
+
+    this.lastLength = this.sortables.length;
+
+    this.sortables.changes.subscribe(res => this.doOnChange());
+  }
+
+  /*
+    This method is called on init and whenever the playlist changes
+    It will resub each list element => turning it into a sortable list element
+  */
+  private doOnChange(){
+    if(this.sortables.length === this.lastLength) return;
+
+    this.lastLength = this.sortables.length;
+
     this.sortables.forEach(sortable => {
       sortable.dragStart.subscribe(() => this.measureClientRects());
       sortable.dragMove.subscribe(event => this.detectSorting(sortable, event));
