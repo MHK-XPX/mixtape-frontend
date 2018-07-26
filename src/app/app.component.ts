@@ -3,6 +3,22 @@
   This component handles all logic to all other components
 */
 
+/*
+  TODO:
+    FIXES:
+      1) Make it more clear when something is hidden
+      2) Make the back button on add song work (Fix)
+      3) Controls dont exist on global playlist => cannot toggle queue (Fix)
+      4) Adding a song to queue starts it over (Fix)
+      5) Mouse hover toaster gets clipped on top song (Fix)
+      6) Have search results have the artist name in them (for song and album)
+
+    FEATURES:
+      1) Make it so you can share playlist with other users (selected)
+      2) Make it so you can see playlists shared with you
+        --It should show who made it (IE who made the playlist)
+        --Should also have the option to remove yourself from the shared playlist
+*/
 import { Component, ViewChild, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription, Subject } from 'rxjs';
@@ -59,12 +75,13 @@ export class AppComponent implements OnInit {
 
     this._dataShareService.usingGlobalPlaylist.subscribe(res => this.viewingGlobalPlaylists = res);
   }
-  
-  /*
-    This method is called everytime we type a letter into our search box. It calls .next on our subject we do this to limit the number of get 
-    requests to the server (due to our debouce time on the sub.).
-    @param search: string - The string the user is searching for
-  */
+
+  /**
+   * Called everytime we type a letter into our search box It calls .next on our subject. This is done to limit the number of get 
+   * requests to the server (due to our debounce time on the sub.)
+   * 
+   * @param {string} search The string the user is searching for 
+   */
   public typedSearch(search: string){
     if(this.searchString.length && !search.length){
       this.searchString = "";
@@ -76,25 +93,35 @@ export class AppComponent implements OnInit {
     this.searchStringChanged.next(this.searchString);
   }
 
-  /*
-    This method is called after we pass our debounce time on our changed search string subject. Once we have passed the debounce time, we are able to call the get from our
-    api letting the view update to the newest search string. This is used so that we can attempt to do the pull quickly AFTER the user is done typing
-    @param search: string - The string the user is searching
-  */
+  /**
+   * Called after we pass our decounce time on our changed search string subject. Once we have passed the debounce time, we are able to call the get from our api
+   * letting the view update to the newest search string. This is used so that we can attempt to do the pull quickly AFTER the user is done typing
+   * 
+   * @param {string} search The string the user is searching 
+   */
   private changeSearchString(search: string){
     this.searchString = search;
     this._dataShareService.changeSearchString(this.searchString);
     this._router.navigate(['./home']);
   }
 
+  /**
+   * @returns The current user
+   */
   public getUser(): User{
     return this.user;
   }
 
+  /**
+   * @returns If the user is logged in or not
+   */
   public isLoggedIn(): boolean{
     return this._storage.getValue('loggedIn') || this._storage.getValue('token');
   }
 
+  /**
+   * @returns If the youtube player has loaded or not
+   */
   public youtubeIsLoaded(): boolean{
     try{
       return (this.YT.playlist !== null || this.YT.playlist !== undefined);
@@ -104,6 +131,9 @@ export class AppComponent implements OnInit {
     // return this.YT !== undefined && (this.YT.playlist !== null || this.YT.playlist !== undefined);
   }
 
+  /**
+   * Clears all user values from storage on logout
+   */
   public logout(){
     this._storage.setValue("loggedIn", false);
     this._storage.removeValue("token");

@@ -32,9 +32,9 @@ export class HubService {
 
   constructor() { }
 
-  /*
-    This method is called when the user attempts to connect to the signalR hub.
-  */
+  /**
+   * Called when the user attempts to connect to the signalR hub
+   */
   public setConnection(){
     if (this.hubConnection == null){
       //this.hubConnection = new signalR.HubConnectionBuilder().withUrl(this.HUB_URL).build(); //change to this when updating to signalR 2.0
@@ -50,9 +50,9 @@ export class HubService {
     }
   }
 
-  /*
-    This method is called when the user disconnects from the signalR hub
-  */
+  /**
+   * Called when the user disconnects from the signalR hub
+   */
   public stopConnection(){
     this.hubConnection.stop();
     try{ //Since it is very hard for us to tell if we have a heartbeat, we simply try to unsub here
@@ -64,24 +64,29 @@ export class HubService {
     this.placement.emit(null);
   }
 
-  /*
-    This method is called whenver we need to send a new list to all users
-    @param message: Message[] - A list of messages to send to all users
-  */
+  /**
+   * Called whenever we need to send a new list to all users
+   * 
+   * @param {Message} message A list of messages to send to all users 
+   */
   public broadcastMessage(message: Message[]){
     this.allSongs.emit(message);
   }
 
-  //Sends the newest version of a song that is updated
+  /**
+   * Called when a song is updated in signalR
+   * 
+   * @param {Message} message The new song to send out
+   */
   public broadcastSongUpdate(message: Message){
     this.newSong.emit(message);
   }
 
-  /*
-    This method is called when the user connects to the signalR hub, it will tell them where 
-    to start the song. 
-    @param u: Connection - The connection to the signalR hub
-  */
+  /**
+   * Called when the user connects to the singalR hub, it will tell them where to start the song
+   * 
+   * @param {Connection} u The connection to the signalR hub 
+   */
   public startSongAt(u: Connection){
     if(u.first){
       this.s = this.heartbeat.subscribe(resp => {
@@ -91,20 +96,31 @@ export class HubService {
     this.placement.next(u);
   }
 
-  /*
-    This method is called from signalR to tell the user that they are now at the
-    front of the queue and to start sending their heartbeat
-  */
+  /**
+   * Called from signalR to tell the user that they are not at the front of the 
+   * queue and to start sending their heartbeat
+   * 
+   * @param {Connection} u The connection to SignalR 
+   */
   public updateConnectionValue(u: Connection){
     this.startSongAt(u);
   }
 
-  //Tells api to update a song for everyone
+  /**
+   * Tells the api to update a song for everyone
+   * 
+   * @param {Message} message The song to send to everyone 
+   */
   public invokeSongUpdate(message: Message){
     this.hubConnection.invoke('Update', message);
   }
 
-  //Tells api to update list of songs to everyone
+
+  /**
+   * Tells the api to update a list of songs to everyone
+   * 
+   * @param {Message} messages A list of songs to send to everyone 
+   */
   public invokeListUpdate(messages: Message[]){
     this.hubConnection.invoke('ListUpdate', messages);
   }

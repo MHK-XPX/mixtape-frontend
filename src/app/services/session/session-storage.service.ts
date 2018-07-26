@@ -5,96 +5,106 @@
 */
 
 export class StorageService {
-    constructor() { }
+  constructor() { }
 
-    /*
-        This method is called whenever we want to set a value in session storage
-        @param key: string - The key of the value
-        @param value: any - The value for item
-    */
-    public setValue(key: string, value: any): void {
-        if (value) {
-            value = JSON.stringify(value);
-        }
-        sessionStorage.setItem(key, value);
+  /**
+   * Called whenever we want to set a value in session storage
+   * 
+   * @param {string} key The key for the value 
+   * @param {any} value The value of the item
+   */
+  public setValue(key: string, value: any): void {
+    if (value) {
+      value = JSON.stringify(value);
+    }
+    sessionStorage.setItem(key, value);
+  }
+
+  /**
+   * Called whenever we attemp to get a values from session storage
+   * 
+   * @param {string} key The key we want to get
+   * 
+   * @returns The value for the given key 
+   */
+  public getValue(key: string): any {
+    let value: string = sessionStorage.getItem(key);
+
+    if (value && value !== "undefined" && value !== null) {
+      return JSON.parse(value);
     }
 
-    /*
-        This method is called whenever we attempt to get a value from session storage
-        @param key: string - The key we want to get
-        @return any - The value for the given key
-    */
-    public getValue(key: string): any {
-        let value: string = sessionStorage.getItem(key);
+    return null;
+  }
 
-        if (value && value !== "undefined" && value !== null) {
-            return JSON.parse(value);
-        }
-
-        return null;
+  /**
+   * Called to check if we have a key in session storage
+   * 
+   * @param {string} key The key to check
+   * 
+   * @returns If the key is in session storage or not 
+   */
+  public hasValue(key: string): boolean {
+    if (sessionStorage.getItem(key) === null) {
+      return false;
     }
 
-    /*
-        This method is called to check if we have a key in the session storage
-        @param key: string - The key to check
-        @return boolean - If they key is in session storage or not
-    */
-    public hasValue(key: string): boolean {
-        if (sessionStorage.getItem(key) === null) {
-            return false;
-        }
+    return true;
+  }
 
-        return true;
+  /**
+   * Called whenever we remove a value from session storage
+   * 
+   * @param {string} key The key to remomve from session storage 
+   */
+  public removeValue(key: string): void {
+    sessionStorage.removeItem(key);
+  }
+
+  /**
+   * Called whenever we want to clear all values from session storage
+   */
+  public clearAll(): void {
+    sessionStorage.clear();
+  }
+
+  /**
+   * Called whenever we want to save a value to local storage
+   * 
+   * @param {string} key The key to save 
+   * @param {any} value The value for the key 
+   */
+  public saveToLocal(key: string, value: any): void {
+    if (value) {
+      value = JSON.stringify(value);
     }
 
-    /*
-        This method is called whenever we remove a value from session storage
-        @param key: string - The key to remove from session storage
-    */
-    public removeValue(key: string): void {
-        sessionStorage.removeItem(key);
+    localStorage.setItem(key, value);
+  }
+
+  /**
+   * Called whenever we attempt to get a value from local storage
+   * 
+   * @param {string} key
+   * 
+   * @returns The value of the key 
+   */
+  public getFromLocal(key: string): any {
+    let value = localStorage.getItem(key);
+
+    if (value && value !== "undefined" && value !== "null") {
+      return JSON.parse(value);
     }
 
-    /*
-        This method is called whenever we want to clear all values from session storage
-    */
-    public clearAll(): void {
-        sessionStorage.clear();
-    }
+    return null;
+  }
 
-    /*
-        This method is called whenever we want to save a value to local storage
-        @param key: string - The key to save
-        @param value: any - The value for the key
-    */
-    public saveToLocal(key: string, value: any): void {
-        if (value) {
-            value = JSON.stringify(value);
-        }
-
-        localStorage.setItem(key, value);
-    }
-
-    /*
-        This method is called whenever we attemp to get a value from local storage
-        @param key: string - The key to get
-        @return any - the value of the key
-    */
-    public getFromLocal(key: string): any {
-        let value = localStorage.getItem(key);
-
-        if (value && value !== "undefined" && value !== "null") {
-            return JSON.parse(value);
-        }
-
-        return null;
-    }
-
-    /*
-        This method is called when we want to remove a key from local storage
-        @key: string - The key to remove
-    */
-    public removeFromLocal(key: string): void {
-        localStorage.removeItem(key);
-    }
+  /**
+   * Called whenever we want to remove a key from local storage
+   * 
+   * @param {string} key The key to be removed 
+   */
+  public removeFromLocal(key: string): void {
+    localStorage.removeItem(key);
+  }
 }

@@ -64,11 +64,12 @@ export class SnackbarComponent implements OnInit {
     // this.timer = this.maxTime;
   }
 
-  /*
-    This methood is called whenever the data service for the message is changed, it allows for us to display
-    the snackbar messsage in the view
-    @param message: MessageOutput - The message to display on screen
-  */
+  /**
+   * Called whenever the data service for the message is changed, it allows for us to display
+   * the snackbar message in the view
+   * 
+   * @param {MessageOutput} message The message to display on screen 
+   */
   private onMessageChange(message: MessageOutput) {
     this.messageOut = message;
 
@@ -89,10 +90,10 @@ export class SnackbarComponent implements OnInit {
     }
   }
 
-  /*
-    This method is called once we display the message in the view. It reduces our local field timer that
-    will reduce the progress bar on the snackbar. (This needs to be fixed due to the change of .interval)
-  */
+  /**
+   * Called once we display the message to the view. It reduces our local field timer that will reduce the 
+   * progress bar on the snackbar. (needs to be fixed due to change of .interval)
+   */
   private startTimer() {
     this.s = this.interval
     .takeWhile(() => this.timer > 0)
@@ -106,11 +107,12 @@ export class SnackbarComponent implements OnInit {
     );
   }
 
-  /*
-    This method is called when we need to reduce the size of our message string to make sure
-    that the snackbar looks nice in the view
-    @param message: string - The message to display (and fix)
-  */
+  /**
+   * Called when we need to reduce the size of our message string to make sure that the snackbar
+   * looks nice in the view
+   * 
+   * @param {string} message The message to display  
+   */
   public fixMessageString(message: string): string {
     message = message.trim();
     let tmp: string = "";
@@ -149,10 +151,11 @@ export class SnackbarComponent implements OnInit {
     return tmp;
   }
 
-  /*
-    This method is called when the user hovers over the snackbar
-    @param boolean - If we want to keep the snackbar on the screen or not
-  */
+  /**
+   * Called when the user hovers over the snackbar (forces it to stay on screen)
+   * 
+   * @param {boolean} keep If we want to keep the snackbar on the screen or not 
+   */
   public hoverToKeepMessage(keep: boolean) {
     this.hovering = keep;
   }

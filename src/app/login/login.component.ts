@@ -36,9 +36,9 @@ export class LoginComponent implements OnInit {
 
   constructor(private _apiService: ApiService, public _storage: StorageService, private _router: Router, private _dataShareService: DataShareService) { }
 
-  /*
-      If we click remember me, load the last username sent into our box
-  */
+  /**
+   * If we click remember me, load the last username used to login
+   */
   ngOnInit() {
     let usrName = this._storage.getFromLocal('savedUsername');
 
@@ -46,10 +46,10 @@ export class LoginComponent implements OnInit {
       this.username = usrName;
   }
 
-  /*
-      Called when the user clicks login. Only able to if all the fields are filled in
-      It first gets a token from the API then validates the token
-  */
+  /**
+   * Called when the user clicks login. Only able to if all the fields are filled in.
+   * First we get an auth. token from the API then validates the token
+   */
   private loginClicked() {
     if (!this.allFieldsFilled())
       return;
@@ -75,10 +75,10 @@ export class LoginComponent implements OnInit {
     );
   }
 
-  /*
-      Called after the user attempts to login. The method validates if the token is correct
-      or not. If it is, the DOM is moved to the homepage
-  */
+  /**
+   * Called after we get the token from logining in. The method validates if the token is corrent or not.
+   * If it is correct, we move to the home page
+   */
   private validateLogin() {
     let user: User;
     let s: Subscription = this._apiService.validateToken().subscribe(
@@ -102,10 +102,10 @@ export class LoginComponent implements OnInit {
     );
   }
 
-  /*
-      Called after the user leaves the username box. It checks with the API to see if
-      the given username has been taken or not, if so it alerts the user with the error
-  */
+  /**
+   * Called when the user clicks off of the username box. It checks with the API to see if the given
+   * username has been taken. If it has, it alerts the user with the error
+   */
   private validateUsername() {
     if (this.displayName.length <= 0)
       return;
@@ -123,9 +123,9 @@ export class LoginComponent implements OnInit {
     )
   }
 
-  /*
-      When the user clicks create an account, we clear all of the values
-  */
+  /**
+   * When the user clicks create an accout, we clear all of the values
+   */
   private createUserClicked() {
     this.createUser = true;
     this.displayName = "";
@@ -135,11 +135,11 @@ export class LoginComponent implements OnInit {
     this.confirmPassword = "";
   }
 
-  /*
-      Called when the user creates their account. It validates that all off the fields are correct
-      if not, it alerts the user of the error. If they are valid, we add them to the backend
-      and then call the login method
-  */
+  /**
+   * Called when the user creates their account. It validates that all of the fields are correct.
+   * If they are not correct, it alerts the user of the error. If they are valid, we add them to the
+   * backend and call the login method
+   */
   private createAccount() {
     let s: Subscription;
 
@@ -168,24 +168,25 @@ export class LoginComponent implements OnInit {
     );
   }
 
+  /**
+   * Sets all of the storage values for the app
+   */
   private setAllStorageValues() {
     this._storage.setValue("onSong", 0);
     this._storage.setValue("onPlaylist", null);
   }
 
-  /*
-      Called when entering passwords, returns if they match or not
-      @return boolean - If the passwords are matching
-  */
+  /**
+   * @returns If the passwords are matching
+   */
   private passwordsMatch(): boolean {
     return this.newPassword.toLocaleLowerCase() === this.confirmPassword.toLocaleLowerCase()
       && this.newPassword.length > 0 && this.confirmPassword.length > 0;
   }
 
-  /*
-      Called when disabling buttons or attempting to login/create user
-      @return boolean - Returns if all the fields are filled in
-  */
+  /**
+   * @returns If all fields are filled in
+   */
   private allFieldsFilled(): boolean {
     if (this.createUser)
       return this.passwordsMatch() && !this.usernameTaken && this.displayName.length > 0 && this.firstName.length > 0 && this.lastName.length > 0;

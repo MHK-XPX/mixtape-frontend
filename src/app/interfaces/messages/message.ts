@@ -1,18 +1,24 @@
-/*
-    The messages sent from user to api
-    globalPlaylistSongId: number - The ID of the globalplaylist that is is referring to
-    username: string - the username of the user who sent the message
-    song: Song - The song sent
-    votes: number - the number of votes on the song
-    isStatic: boolean - if the song can be voted on or not
-
-*/
 import { Song } from '../api/song';
 
 export interface Message{
+    /**
+     * The ID of the globalplaylist that is is referring to
+     */
     globalPlaylistSongId: number;
+    /**
+     * The username of the user who sent the message
+     */
     username: string;
+    /**
+     * The song send
+     */
     song: Song;    
+    /**
+     * The number of votes on the song
+     */
     votes: number;
+    /**
+     * If the song can be voted on or not
+     */
     isStatic: boolean;
 }

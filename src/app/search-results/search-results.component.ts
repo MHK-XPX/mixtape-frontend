@@ -41,6 +41,9 @@ export class SearchResultsComponent implements OnInit {
   MessageType = MessageType;
   mouseOver: number = -1;
 
+  /**
+   * Supported comment
+   */
   searchString: string = "";
 
   searchResults: SearchResults;
@@ -85,10 +88,11 @@ export class SearchResultsComponent implements OnInit {
     this._dataShareService.searchString.subscribe(res => this.updateSearch(res));
   }
 
-  /*
-    This method is called whenever our search string is changed
-    @param search: string - The new word or phrase to search
-  */
+  /**
+   * This method is called whenever our search string is changed
+   * @param {string} search The new search string
+   */
+
   private updateSearch(search: string) {
     this.searchString = search;
 

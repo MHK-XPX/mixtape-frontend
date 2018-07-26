@@ -52,8 +52,6 @@ export class YoutubeComponent implements OnInit {
   private repeat: boolean = false;
   private paused: boolean = false;
 
-  currentSongURL: string = "";
-
   constructor(private _dataShareService: DataShareService) { }
 
   @HostListener('window:resize') onResize() {
@@ -62,15 +60,19 @@ export class YoutubeComponent implements OnInit {
     }
   }
 
+  /**
+   * Subscribe to our DataShare service to get the next song to play and check if we are using the global playlist or not
+   */
   ngOnInit() {
     this._dataShareService.usingGlobalPlaylist.subscribe(res => this.switchFromLocalToGlobal(res));
     this._dataShareService.nextSong.subscribe(res => this.changeSong(res));
   }
 
-  /*
-    This method is called whenever the current song changes (from dataShareService)
-    @param ss: SongStart - The song we are changing to
-  */
+  /**
+   * This method is called whenever the current song changes (from dataShareService)
+   * 
+   * @param {SongStart} ss The song we are changing to
+   */
   public changeSong(ss: SongStart) {
     this.videoId = "";
     if (ss) {
@@ -80,10 +82,11 @@ export class YoutubeComponent implements OnInit {
     }
   }
 
-  /*
-    This method is called when the user switches between the global and local playlist
-    @param onGlobal: boolean - if we are on the global playlist or not
-  */
+  /**
+   * This method is called when the user switches between the global and local playlist
+   * 
+   * @param {boolean} onGlobal if we are on the global playlist or not
+   */
   private switchFromLocalToGlobal(onGlobal: boolean) {
     this.viewingGlobalPlaylist = onGlobal;
 
@@ -97,15 +100,21 @@ export class YoutubeComponent implements OnInit {
     this.player.setSize(this.getScreenWidth(), this.getScreenHeight());
   }
 
-  /*
-    Called when the YT video changes states
-    -1 --> Not started
-    0 --> ended
-    1 --> playing
-    2 --> paused
-    3 --> loading
+  /**
+   * Called when the YT video changes states
+   * -1 --> Not started
+   * 
+   * 0 --> ended
+   * 
+   * 1 --> playing
+   * 
+   * 2 --> paused
+   * 
+   * 3 --> loading
+   * 
+   * @param {any} event The event that occured due to a user's action on the youtube player
   */
-  public onStateChange(event) {
+  public onStateChange(event: any) {
     switch (event.data) {
       case -1:
         break;
@@ -125,10 +134,9 @@ export class YoutubeComponent implements OnInit {
     }
   }
 
-  /*
-    This method is called whenever a song ends and we need to move to the next one 
-    (called from the onStateChange via youtube player)
-  */
+  /**
+   * Called whenever a song ends and we need to move to the next song
+   */
   private handleNextSong() {
     if (this.viewingGlobalPlaylist)
       this.globalPlaylist.nextSong();
@@ -136,10 +144,9 @@ export class YoutubeComponent implements OnInit {
       this.localPlaylist.nextSong(1);
   }
 
-  /*
-    This method is called when the user clicks the pause button, it will pause
-    or play
-  */
+  /**
+   * Called when the user clikcs the pause/play button. It will pause or play the current song
+   */
   public pauseClicked() {
     this.paused = !this.paused;
 
@@ -149,28 +156,33 @@ export class YoutubeComponent implements OnInit {
       this.player.playVideo();
   }
 
-  /*
-    This method is called whenever the user clicks repeat
-  */
+  /**
+   * Enables/Disables the repeat playlist button
+   */
   public repeatClicked() {
     this.repeat = !this.repeat;
     this.localPlaylist.repeat = this.repeat;
   }
 
-  /*
-    This method is called when the user moves in the 
-    playlist
-    @param dir: number - The direction to move in the playlist
-  */
+  /**
+   * Called when the user moves in the playlist
+   * 
+   * @example
+   * moveInPlaylist(1) - Moves the playlist forward one spot
+   * moveInPlaylist(-1) - Moves the playlist backward one spot
+   * 
+   * 
+   * @param {number} dir The direction to move in the playlist (-1 back, 1 forward) 
+   */
   public moveInPlaylist(dir: number) {
     this.localPlaylist.nextSong(dir);
   }
 
-  /*
-   This method is called when we load a video, it parses the video ID from the youtube link
-   @Input url: string - The url to parse
-   @POST: sets this.videoId to the parsed string
-  */
+  /**
+   * Called when we load a video. The method parses the video ID from the youtube URL
+   * 
+   * @param {string} url The URL of the youtube video to load 
+   */
   private parseAndSetVideoId(url: string) {
     if (url !== '') {
       var fixedUrl = url.replace(/(>|<)/gi, '').split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/);
@@ -183,16 +195,16 @@ export class YoutubeComponent implements OnInit {
     }
   }
 
-  /*
-    This method is called so we can set the youtube player to 65% of our current height
-  */
+  /**
+   * @ignore
+   */
   public getScreenHeight(): number {
     return window.screen.height * .35;
   }
 
-  /*
-    This method is called so we can set the youtube player to 45% of our width
-  */
+  /**
+   * @ignore
+   */
   public getScreenWidth(): number {
     return window.screen.width * .40;
   }

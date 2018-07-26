@@ -45,19 +45,24 @@ export class MouseoverMenuComponent implements OnInit {
 
   constructor(private _apiService: ApiService, private _dataShareService: DataShareService, private _msgService: MessageService) { }
 
+  /**
+   * Get the current user, playlists, and current playlist
+   */
   ngOnInit() {
     this._dataShareService.user.subscribe(res => this.user = res);
     this._dataShareService.playlists.subscribe(res => this.playlists = res);
     this._dataShareService.currentPlaylist.subscribe(res => this.currentPL = res);
   }
 
-  /*
-      Called when we attempt to add a song to a given playlist, if successful we add the song to the given playlist, update the global lists, and output a message.
-      If not successful we output a fail message.
-      @param p: Playlist - The playlist to add the song to
-      @param index: number - The index of the 'p' in our global array of playlists (from the DataShareService)
-  */
-  public addToPlaylist(p: Playlist, index: number, event) {
+  /**
+   * Called when we attempt to add a song to a given playlist, if successful we add the song to the given playlist, update it in our share service, and output a message
+   * If not successful, we output a failure message
+   * 
+   * @param {Playlist} p The playlist to add the song to 
+   * @param {number} index The index of the playlist in our shared array of playlists from DataShareService 
+   * @param {any} event Used to stop propagation on the clicked buttton 
+   */
+  public addToPlaylist(p: Playlist, index: number, event: any) {
     event.stopPropagation();
     let toSendPLS = {
       playlistId: p.playlistId,
@@ -81,7 +86,12 @@ export class MouseoverMenuComponent implements OnInit {
     );
   }
 
-  public addToGlobalPlaylist(event){
+  /**
+   * Adds a song to the global playlist
+   * 
+   * @param {any} event Used to stop propagation on the clicked buttton 
+   */
+  public addToGlobalPlaylist(event: any) {
     event.stopPropagation();
     let gpls = {
       songId: this.selectedSong.songId,
@@ -94,11 +104,12 @@ export class MouseoverMenuComponent implements OnInit {
     this._apiService.postSong(gpls);
   }
 
-  /*
-    Called when we want to add a song to our queue, this does NOT add it to the playlist forever, just until it is cleared
-    @param event - The click event, used to stop propagation
-  */
-  public addToQueue(event) {
+  /**
+   * Called when we want to add a song to our queue, it does NOT add the song to the playlist in the DB, only until it is cleared
+   * 
+   * @param {any} event Used to stop propagation on the clicked buttton
+   */
+  public addToQueue(event: any) {
     event.stopPropagation();
     let pls: PlaylistSong;
     let copyPL: Playlist;
@@ -141,10 +152,11 @@ export class MouseoverMenuComponent implements OnInit {
     this._dataShareService.changeMessage(out);
   }
 
-  /*
-    This method is called when we want to delete a playlist song.
-  */
-  public deletePlaylistSong(event) {
+  /**
+   * Called when we want to delete a playlist song
+   * @param {any} event Used to stop propagation on the clicked buttton
+   */
+  public deletePlaylistSong(event: any) {
     event.stopPropagation();
     let plIndex: number = this.playlists.findIndex(pl => pl.playlistId === this.currentPL.playlistId);
     let plsIndex: number = this.currentPL.playlistSong.findIndex(pls => pls.playlistSongId === this.selectedPLS.playlistSongId);
@@ -169,9 +181,9 @@ export class MouseoverMenuComponent implements OnInit {
     }
   }
 
-  /*
-    This method is called when the user attempts to delete a playlist. It will remove it from the api and update our view
-  */
+  /**
+   * Called when the user attemps to delete a playlist. It will remove it from the api and update our view
+   */
   public deletePlaylist() {
     let plIndex: number = this.playlists.findIndex(pl => pl.playlistId === this.plToDelete.playlistId);
     let s: Subscription;
@@ -188,11 +200,11 @@ export class MouseoverMenuComponent implements OnInit {
     );
   }
 
-  /*
-    This method is called everytime we need to create a playlist song to add to a playlist OR queue
-    @param p: Playlist - The playlist we want to add the song to
-    @return PlaylistSong - a new playlist song entity
-  */
+  /**
+   * Called everytime we need to create a playlist song to add to a playlist OR queue
+   * @param {Playlist} p The Playlist to add the song to 
+   * @returns A New playlist song
+   */
   private createPlaylistSong(p: Playlist): PlaylistSong {
     let pls: PlaylistSong = {
       playlistSongId: null,
@@ -205,13 +217,23 @@ export class MouseoverMenuComponent implements OnInit {
     return pls;
   }
 
+  /**
+   * @ignore
+   */
   public cancelDropdown(event) {
     event.stopPropagation();
   }
 
-  /*
-    Used to trigger snackbar events
-  */
+  /**
+   * Called when we need to give feedback on a user action to the user
+   * 
+   * @example triggerMessage("", "Playlist created", MessageType.Success);
+   * 
+   * 
+   * @param {string} message The message to show
+   * @param {action} action The action taken
+   * @param {MessageType} level Success, Failure, Notification 
+   */
   public outputMessage(message: string, action: string, level: MessageType) {
     let out: MessageOutput = {
       message: message,

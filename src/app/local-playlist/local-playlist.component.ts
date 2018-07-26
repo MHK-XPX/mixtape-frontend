@@ -68,11 +68,12 @@ export class LocalPlaylistComponent implements OnInit {
       .subscribe(res => this.playPreviewSong(res));
   }
 
-  /*
-    This method is called when the user clicks a local playlist. It sets it to the view
-    and it sets the current song to the first song in the playlist
-    @param playlist: Playlist - The playlist to set the view to
-  */
+  /**
+   * Called when the user clicks a local playlist. It sets it to the view and it sets the current
+   * song to the first song in the playlist
+   * 
+   * @param {Playlist} playlist The playlist to set the view to 
+   */
   public setPlaylist(playlist: Playlist) {
     this.playlist = playlist;
 
@@ -85,23 +86,25 @@ export class LocalPlaylistComponent implements OnInit {
     }
   }
 
-  /*
-    This method is called when the user clicks a song on the playlist,
-    it skips to that song and starts to play it
-    @param index: number - The index of the song in the playlist
-    @param url: string - The url of the song to play
-  */
+  /**
+   * Called when the user clicks a song in the playlist, it skips to
+   * that song and starts to play it
+   * 
+   * @param {number} index The index of the song in the playlist
+   * @param {string} url The url of the song to play
+   */
   public playGivenVideo(index: number, url: string) {
     this.onSong = index;
 
     this.setCurrentSong(url);
   }
 
-  /*
-    This method is called when the user clicks a song from the search results
-    to preview. It will start playing it on the youtube player
-    @param song: Song - The song to preview
-  */
+  /**
+   * Called when the user clicks a song from the search results to preivew
+   * It will start playing it on the youtube player
+   * 
+   * @param {Song} song The song to preview
+   */
   public playPreviewSong(song: Song) {
     this.previewSong = song;
 
@@ -110,10 +113,11 @@ export class LocalPlaylistComponent implements OnInit {
     this.setCurrentSong(this.previewSong.url);
   }
 
-  /*
-    This method is called when the user tries to move to or back to a song
-    @dir: number - The direction to move in the playlist (1) forward (-1) back
-  */
+  /**
+   * Called when the user tries to move to or back to a song
+   * 
+   * @param {number} dir The direction to move in the playlist (1) foreard (-1) back 
+   */
   public nextSong(dir: number) {
     //This is called after we preview a song and it ends (or we click the next button on a song)
     if (this.previewSong) {
@@ -136,9 +140,11 @@ export class LocalPlaylistComponent implements OnInit {
     this.setCurrentSong(this.playlist.playlistSong[this.onSong].song.url);
   }
 
-  /*
-    This method is called whenever the user clicks save current playlist or save to new playlist
-  */
+  /**
+   * Called whenever the user clicks save current playlist or save to new playlist
+   * 
+   * @param {boolean} newPlaylist If we are saving to a new playlist or not
+   */
   public savePlaylist(newPlaylist: boolean) {
     if (newPlaylist || !this.playlist.playlistId) { //If we are saving it to a new playlist OR we are trying to save our current custom queue
       this.addNewPlaylist();
@@ -147,11 +153,11 @@ export class LocalPlaylistComponent implements OnInit {
     }
   }
 
-  /*
-    This method is called when the user attempts to save the current playlist (or queue) to a new playlist.
-    The method creates a new playlist and adds it to the DB, once added, it calls addSongToNewPlaylist
-    and will add all the songs to the new playlist
-  */
+  /**
+   * Called when the user attempts to save the current playlist (or queue) to a new playlist.
+   * The method create a new playlist and adds it to the DB, once added, it calls addSongToNewPlaylist
+   * and will add all the songs to the new playlist
+   */
   private addNewPlaylist() {
     let userPlaylists: Playlist[];
     this._dataShareService.playlists.subscribe(res => userPlaylists = res);
@@ -179,20 +185,21 @@ export class LocalPlaylistComponent implements OnInit {
     );
   }
 
-  /*
-    This method is called when the user saves an already saved playlist (IE they are patching it)
-  */
+  /**
+   * Called when the user saves an already saved playlist (patching it)
+   */
   private updatePlaylist() {
     let allNotAdded = this.playlist.playlistSong.filter(s => !s.playlistSongId); //Get all of the songs that they added but didn't save to the playlist (queued songs)
 
     this.addSongsToNewPlaylist(null, allNotAdded);
   }
 
-  /*
-    This method is called whenever the user creates or saves songs to a playlist.
-    @newPlaylist: Playlist - The new playlist to add songs to
-    @songsToAdd: PlaylistSong[] - An array of songs to add to the given playlist
-  */
+  /**
+   * Called whenever the user creates or saves songs to a playlist
+   * 
+   * @param {Playlist} newPlaylist The new playlist to add songs to 
+   * @param {PlaylistSong} songsToAdd An array of songs to add to the given playlist
+   */
   private addSongsToNewPlaylist(newPlaylist: Playlist, songsToAdd: PlaylistSong[]) {
     let playlist: Playlist = newPlaylist ? newPlaylist : this.playlist;
 
@@ -230,6 +237,11 @@ export class LocalPlaylistComponent implements OnInit {
     }
   }
 
+  /**
+   * Called whenever the user drags a song in the playlist to reorder it
+   * 
+   * @param {SortEvent} event The event occured when sorting 
+   */
   sort(event: SortEvent) {
     this.mouseOver = -1;
     const current = this.playlist.playlistSong[event.currentIndex];
@@ -244,11 +256,11 @@ export class LocalPlaylistComponent implements OnInit {
       this.onSong = event.currentIndex;
   }
 
-  /*
-    This method will create a new SongStart object, it sets the URL and has
-    our video start playing the song
-    @param url: string - The url of the song to set to
-  */
+  /**
+   * Called when we set the current song to the given url. It will start playing it in the player
+   * 
+   * @param {string} url The url of the song to start playing
+   */
   private setCurrentSong(url: string) {
     if (!url) return;
 
@@ -262,6 +274,9 @@ export class LocalPlaylistComponent implements OnInit {
     this._dataShareService.nextSong.next(ss);
   }
 
+  /**
+   * @ignore
+   */
   openModal(content) {
     this._modalService.open(content).result.then((result) => {
       if (this.playlistRename.length > 0)
@@ -273,6 +288,9 @@ export class LocalPlaylistComponent implements OnInit {
     });
   }
 
+  /**
+   * Called when the user clicks the playlist name to rename it
+   */
   private renamePlaylist() {
     if (!this.playlist.playlistId) return; //The user shouldnt be allowed to rename a queue
 
@@ -286,12 +304,13 @@ export class LocalPlaylistComponent implements OnInit {
     );
   }
 
-  /*
-    This method is called everytime we display a song on the DOM, it requests the thumbnail saved via youtube's api
-    and returns the source string to load the image from
-    @Input url: string - The video url to get the thumbnail for
-    @Output string - The thumbnail source link from the youtube api
-  */
+  /**
+   * Called everytime we display a song on the DOM, it requests the video's thumbnail from youtube's api
+   * and returns the url for the image
+   * 
+   * @param {strinng} url The URL of the youtube video
+   * @returns The url of the video's thumbnail 
+   */
   public getThumbnail(url: string): string {
     var prefixImgUrl: string = "https://img.youtube.com/vi/";
     var suffixImgUrl: string = "/default.jpg";
@@ -311,6 +330,16 @@ export class LocalPlaylistComponent implements OnInit {
     return imgURL;
   }
 
+  /**
+   * Called when we need to give feedback on a user action to the user
+   * 
+   * @example triggerMessage("", "Playlist created", MessageType.Success);
+   * 
+   * 
+   * @param {string} message The message to show
+   * @param {action} action The action taken
+   * @param {MessageType} level Success, Failure, Notification 
+   */
   private triggerMessage(message: string, action: string, level: MessageType) {
     let out: MessageOutput = {
       message: message,

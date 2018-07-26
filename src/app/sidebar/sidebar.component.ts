@@ -1,9 +1,8 @@
-/*
-  Written by: Ryan Kruse
-  This component controls all actions on the sidebar visual. It allows the user to create a new playlist, delete a playlist
-  and play a new playlist. It allows allows them to clear their current queue. In the future it will allow them to view the global 
-  playlist
-*/
+/**
+ * Written by: Ryan Kruse
+ * This component controls all actions on the sidebar visual. It allows the user to create a new playlist, delete a playlist
+ * and play a new playlist. It allows allows them to clear their current queue. In the future it will allow them to view the global playlist
+ */
 
 import { Component, OnInit } from '@angular/core';
 import { trigger, state, animate, transition, style } from '@angular/animations';
@@ -42,7 +41,6 @@ export class SidebarComponent implements OnInit {
 
   mouseOver: number = -1;
 
-
   dropDown: number = -1;
   dropDownMouseOver: number = -1;
   expandedPlaylist: Playlist;
@@ -53,6 +51,9 @@ export class SidebarComponent implements OnInit {
 
   constructor(private _apiService: ApiService, private _dataShareService: DataShareService) { }
 
+  /**
+   * Get the uer and all of the user's playlists
+   */
   ngOnInit() {
     this._dataShareService.playlists.subscribe(res => this.userPlaylists = res);
     this._dataShareService.user.subscribe(res => this.user = res);
@@ -69,10 +70,9 @@ export class SidebarComponent implements OnInit {
     );
   }
 
-  /*
-    This method is called when the user clicks the new playlist button. It will create a new playlist
-    and add it to the database
-  */
+  /**
+   * Called when the user clicks the create new playlist button. It creates a new playlist and adds it to the DB
+   */
   public createPlaylist() {
     let nPL = {
       active: true,
@@ -93,31 +93,47 @@ export class SidebarComponent implements OnInit {
     );
   }
 
-  public expandPlaylist(playlist: Playlist, index: number, event){
+  /**
+   * Called when the user clicks the expand button on a playlist
+   * it shows all of songs in the given playlist (if any)
+   * 
+   * @param {Playlist} playlist The playlist to expand 
+   * @param {number} index The index of the playlist in the user's list of playlists 
+   * @param {any} event used to stop propagation on the button click
+   */
+  public expandPlaylist(playlist: Playlist, index: number, event: any){
     event.stopPropagation();
 
     this.dropDown = this.dropDown !== index ? index : -1;
     this.expandedPlaylist = playlist;
   }
 
-
-  /*
-    This method is called when the user clicks a playlist to play. It updates the datashare subject so that
-    all subscribers know that the user wants to play the given playlist
-    @param playlist: Playlist - The playlist the user wants to play
-  */
+  /**
+   * Called when the user selects a playlist to play
+   * @param {Playlist} playlist The playlist to start playing 
+   */
   public selectPlaylist(playlist: Playlist) {
     this._dataShareService.changeUsingGlobalPlaylist(false);
     this._dataShareService.changeCurrentPlaylist(playlist);
   }
 
+  /**
+   * Called when the user switches to the global playlist
+   */
   public selectGlobalPlaylist(){
     this._dataShareService.changeUsingGlobalPlaylist(true);    
   }
 
-  /*
-    This method handles snackbar event triggers
-  */
+  /**
+   * Called when we need to give feedback on a user action to the user
+   * 
+   * @example triggerMessage("", "Playlist created", MessageType.Success);
+   * 
+   * 
+   * @param {string} message The message to show
+   * @param {action} action The action taken
+   * @param {MessageType} level Success, Failure, Notification 
+   */
   private triggerMessage(message: string, action: string, level: MessageType) {
     let out: MessageOutput = {
       message: message,

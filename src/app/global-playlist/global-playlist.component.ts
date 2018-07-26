@@ -28,6 +28,9 @@ export class GlobalPlaylistComponent implements OnInit {
 
   constructor(public _msgService: MessageService, private _storage: StorageService, private _dataShareService: DataShareService) { }
 
+  /**
+  * Connects the user to the signalR hub, gets the first song (currently playing), and gets all of the songs in the global playlist
+  */
   ngOnInit() {
     this._msgService.setConnection();
 
@@ -44,11 +47,12 @@ export class GlobalPlaylistComponent implements OnInit {
     }
   }
 
-  /*
-    This method is called whenever a song is added or removed from the global playlist
-    It will get the first song in the playlist and start playing it for the user
-    @param messages: Message[] - The list of songs in the global playlist
-  */
+  /**
+   * Called whenever a song is added or removed from the global playlist
+   * It will get the first song in the playlist and start playing it for the user
+   * 
+   * @param {Message[]} messages The list of song in the global playlist 
+   */
   private getFirstSongURL(messages: Message[]) {
     if (!messages || !messages.length || this._msgService.connection === null || this._msgService.connection === undefined) return;
     this.onSong = 0;
@@ -64,12 +68,13 @@ export class GlobalPlaylistComponent implements OnInit {
     }
   }
 
-  /*
-    This method is called to see if we have voted on a song or not
-    If we haven't voted then it allows us to vote up or down on a song
-    @param id: number - The id of the song to check
-    @return boolean - if we have voted on the given song or not
-  */
+  /**
+   * Called to see if the uer has voted on a song or not. If the user has not voted
+   * on the song it allows them to vote up or down on it
+   * 
+   * @param {number} id The id of the song to check
+   * @returns If the user has voted on the given song or not
+   */
   public checkHasVotedOn(id: number): boolean {
     this.hasVotedOn = this._storage.getValue("votedOn") || [];
 
@@ -92,13 +97,12 @@ export class GlobalPlaylistComponent implements OnInit {
     }
   }
 
-  /*
-    This method is called when the user clicks the upvote button
-    It adds +1 to the votes, if the votes are >= 3 then we
-    set its value to static meaning that it will stay on the playlist 
-    until it is played
-    @param msg: Message - The song we are voting up
-  */
+  /**
+   * Called when the user clicks the upvote button. It adds +1 to the votes, if there are >= 3 votes
+   * then we set its value to static => making it stay on the playlist until it is played
+   * 
+   * @param {Message} msg The song the user is voting up  
+   */
   public upVote(msg: Message) {
     let index: number = this.getVoteIndex(msg.globalPlaylistSongId);
     this.hasVotedOn[index].voted = true;
@@ -114,17 +118,17 @@ export class GlobalPlaylistComponent implements OnInit {
     this._msgService.patchSong(msg);
   }
 
-  /*
-    This method is called when the user clicks the downvote button
-    It adds -1 to the votes, if the votes are <= -3 then it removes it
-    from the list, otherwise it goes down a value
-    @param msg: Message - The song we are voting down
-  */
+  /**
+   * Called when the user clicks the downvote button. It adds -1 to the votes, if there are <= -3 votes
+   * then we remove it from the global playlist
+   * 
+   * @param {Message} msg The song the user is down voting 
+   */
   public downVote(msg: Message) {
     let index: number = this.getVoteIndex(msg.globalPlaylistSongId);
     this.hasVotedOn[index].voted = true;
     msg.votes--;
-    
+
     this._storage.setValue("votedOn", this.hasVotedOn);
 
     if (msg.votes <= -this.maxVotes) {
@@ -134,12 +138,13 @@ export class GlobalPlaylistComponent implements OnInit {
     }
   }
 
-  /*
-    This method is called when we need to add a new vote item to our list
-    (IE when a song is added or when we havent voted on a song)
-    @param id: number - The id of the globalPlaylistSongID
-    @return VotedOn - A new vote object
-  */
+  /**
+   * Called when we need to a a new vote item to our list (when a song is added 
+   * or when we haven't voted on a song)
+   * 
+   * @param {number} id The id of the globalPlaylistSongID
+   * @returns A new vote object 
+   */
   private createNewVote(id: number): VotedOn {
     let newVote: VotedOn = {
       globalPlaylistSongId: id,
@@ -149,17 +154,19 @@ export class GlobalPlaylistComponent implements OnInit {
     return newVote;
   }
 
-  /*
-    This method returns the index of a song in our hasVotedOn boolean array
-  */
+  /**
+   * Gets the index of a song in our hasVotedOn boolean array
+   * @param {number} id The id of the globalPlaylistSong to get 
+   * @returns The index of the global PlaylistSong in the hasVotedOn boolean array 
+   */
   public getVoteIndex(id: number): number {
     return this.hasVotedOn.findIndex(x => x.globalPlaylistSongId === id);
   }
 
-  /*
-    This method is called when the person in the front of the queue (on the api) finishes 
-    their song, it will move everyone to the next song on the global playlist
-  */
+  /**
+   * Called when the first person in the queue (on signalR) finishes their song
+   * it will mvoe everyone connected to the next song in the global playlist
+   */
   public nextSong() {
     if (!this._msgService.connection.first) return;
 
@@ -168,12 +175,13 @@ export class GlobalPlaylistComponent implements OnInit {
     this._msgService.moveToNextSongAndResetHeartbeat();
   }
 
-  /*
-    This method is called everytime we display a song on the DOM, it requests the thumbnail saved via youtube's api
-    and returns the source string to load the image from
-    @Input url: string - The video url to get the thumbnail for
-    @Output string - The thumbnail source link from the youtube api
-  */
+  /**
+   * Called everytime we display a song on the DOM, it requests the video's thumbnail from youtube's api
+   * and returns the url for the image
+   * 
+   * @param {strinng} url The URL of the youtube video
+   * @returns The url of the video's thumbnail 
+   */
   private getThumbnail(url: string): string {
     var prefixImgUrl: string = "https://img.youtube.com/vi/";
     var suffixImgUrl: string = "/default.jpg";
@@ -193,6 +201,9 @@ export class GlobalPlaylistComponent implements OnInit {
     return imgURL;
   }
 
+  /**
+   * When we leave the page, disconnect from the hub
+   */
   ngOnDestroy() {
     this._msgService.disconnectFromHub();
     this.alive = false;
