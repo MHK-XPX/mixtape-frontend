@@ -1,4 +1,5 @@
 import { Song } from './song';
+import { Artist } from './artist'
 
 export interface Album{
     albumId: number;
@@ -8,5 +9,5 @@ export interface Album{
     year: number;
     albumRating;
     song: Song[];
-    artist: null;
+    artist?: Artist;
 }

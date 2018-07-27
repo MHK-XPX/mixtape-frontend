@@ -1,5 +1,7 @@
 import { PlaylistSong } from './playlistsong';
 import { SongRating } from './songrating';
+import { Artist } from './artist'
+
 export interface Song{
     /*
     "songId": 1,
@@ -23,6 +25,6 @@ export interface Song{
     playlistSong: PlaylistSong[];
     songRating: SongRating[];
     album: string;
-    artist: string;
+    artist: Artist;
     featuredArtist: string
 }

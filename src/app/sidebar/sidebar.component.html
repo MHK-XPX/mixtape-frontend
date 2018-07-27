@@ -14,9 +14,11 @@
         <app-mouseover-menu [@showState]="this.mouseOver === i ? 'show' : 'hide'" [addToPL]="false" [addToQ]="false" [deleteFromPL]="false"
           [deletePL]="true" [selectedSong]="null" [plToDelete]="playlist" (click)="$event.stopPropagation()"></app-mouseover-menu>
 
-        <img [@showState]="this.mouseOver === i ? 'show' : 'hide'" id="expandButton" class="icon icon-middle icon-ex-sm float-right no-padding"
-          src="assets/shared/expand_button.png" placement="bottom" ngbTooltip="Expand" (click)="this.expandPlaylist(playlist, i, $event)"
-        />
+        <img id="expandButton" class="icon icon-middle icon-ex-sm float-right no-padding" src="assets/shared/expand_button.png" placement="bottom"
+          ngbTooltip="Hide" (click)="this.expandPlaylist(playlist, i, $event)" *ngIf="this.dropDown === i" />
+
+        <img id="expandButton" class="icon icon-middle icon-ex-sm float-right no-padding" src="assets/shared/shrink_button.png" placement="bottom"
+          ngbTooltip="Show" (click)="this.expandPlaylist(playlist, i, $event)" *ngIf="this.dropDown !== i" />
 
         <!-- All of the songs in the expanded playlist -->
         <ul class="list-group half-height playlist-holder" *ngIf="this.dropDown === i">

@@ -8,36 +8,51 @@
         </div>
         <ul class="list-group list-group-flush" *ngIf="this.searchResults">
           <h5 class="mb-1">Artists
-            <img class="icon icon-middle icon-ex-sm  no-padding d-inline" src="assets/shared/expand_button.png" placement="bottom" ngbTooltip="Hide/Show"
-              (click)="showArtistList = !showArtistList" />
+            <img class="icon icon-middle icon-ex-sm  no-padding d-inline" src="assets/shared/expand_button.png" placement="right" ngbTooltip="Hide"
+              (click)="showArtistList = !showArtistList" *ngIf="showArtistList" />
+            <img class="icon icon-middle icon-ex-sm  no-padding d-inline" src="assets/shared/shrink_button.png" placement="right" ngbTooltip="Show"
+              (click)="showArtistList = !showArtistList" *ngIf="!showArtistList" />
           </h5>
 
           <div *ngIf="showArtistList">
             <li class="list-group-item list-group-item-action" *ngFor="let artist of searchResults.artists" (click)="createNewSearch(artist.name)">
               {{ artist.name }}
             </li>
+            <li class="list-group-item" *ngIf="!searchResults.artists.length">
+              No Artists
+            </li>
           </div>
 
           <h5 class="mb-1">Albums
-            <img class="icon icon-middle icon-ex-sm  no-padding d-inline" src="assets/shared/expand_button.png" placement="bottom" ngbTooltip="Hide/Show"
-              (click)="showAlbumList = !showAlbumList" />
+            <img class="icon icon-middle icon-ex-sm  no-padding d-inline" src="assets/shared/expand_button.png" placement="right" ngbTooltip="Hide"
+              (click)="showAlbumList = !showAlbumList" *ngIf="showAlbumList" />
+            <img class="icon icon-middle icon-ex-sm  no-padding d-inline" src="assets/shared/shrink_button.png" placement="right" ngbTooltip="Show"
+              (click)="showAlbumList = !showAlbumList" *ngIf="!showAlbumList" />
           </h5>
           <div *ngIf="showAlbumList">
             <li class="list-group-item list-group-item-action" *ngFor="let album of searchResults.albums index as i" (click)="createNewSearch(album.name)">
-              {{ album.name }}
+              {{ getAlbumArtistName(album) }}
+            </li>
+            <li class="list-group-item" *ngIf="!searchResults.albums.length">
+              No Albums
             </li>
           </div>
 
           <h5 class="mb-1">Songs
-            <img class="icon icon-middle icon-ex-sm  no-padding d-inline" src="assets/shared/expand_button.png" placement="bottom" ngbTooltip="Hide/Show"
-              (click)="showSongList = !showSongList" />
+            <img class="icon icon-middle icon-ex-sm  no-padding d-inline" src="assets/shared/expand_button.png" placement="right" ngbTooltip="Hide"
+              (click)="showSongList = !showSongList" *ngIf="showSongList" />
+            <img class="icon icon-middle icon-ex-sm  no-padding d-inline" src="assets/shared/shrink_button.png" placement="right" ngbTooltip="Show"
+              (click)="showSongList = !showSongList" *ngIf="!showSongList" />
           </h5>
           <div *ngIf="showSongList">
             <li class="list-group-item list-group-item-action" (mouseover)="this.mouseOver = i" (mouseout)="this.mouseOver = -1" *ngFor="let song of searchResults.songs index as i"
               (click)="previewSong(song)">
-              {{ song.name }}
+              {{ getSongArtistName(song) }}
               <app-mouseover-menu [@showState]="this.mouseOver === i ? 'show': 'hide'" [addToPL]="true" [addToQ]="true" [deleteFromPL]="false"
                 [selectedSong]="song"></app-mouseover-menu>
+            </li>
+            <li class="list-group-item" *ngIf="!searchResults.songs.length">
+              No Songs
             </li>
           </div>
         </ul>

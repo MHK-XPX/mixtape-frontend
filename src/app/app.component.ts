@@ -11,7 +11,7 @@
       3) Controls dont exist on global playlist => cannot toggle queue (Fix)
       4) Adding a song to queue starts it over (Fix)
       5) Mouse hover toaster gets clipped on top song (Fix)
-      6) Have search results have the artist name in them (for song and album)
+      6) Have search results have the artist name in them *DONE*
 
     FEATURES:
       1) Make it so you can share playlist with other users (selected)

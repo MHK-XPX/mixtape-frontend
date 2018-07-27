@@ -407,6 +407,28 @@ export class SearchResultsComponent implements OnInit {
     );
   }
 
+  /**
+   * Called when we need to display the album name with the artist name
+   * 
+   * @param {Album} album The album to get the proper string for
+   * 
+   * @returns Either the album name and artist name or just the album name
+   */
+  public getAlbumArtistName(album: Album): string {
+    return album.artist ? album.name + " (by " + album.artist.name + ")" : album.name;
+  }
+
+  /**
+   * Called when we need to display the song name with the artist name
+   *  
+   * @param {Song} song The song to get the proper string for
+   * 
+   * @returns Either the song name and artist name or just the song name
+   */
+  public getSongArtistName(song: Song) {
+    return song.artist ? song.name + " (by " + song.artist.name + ")" : song.name;
+  }
+
   /*
     Used to trigger snackbar events
   */
